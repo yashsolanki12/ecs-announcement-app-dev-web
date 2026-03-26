@@ -1,20 +1,24 @@
 import "@shopify/shopify-app-react-router/adapters/node";
+import { MongoDBSessionStorage } from "@shopify/shopify-app-session-storage-mongodb";
+
 import {
   ApiVersion,
   AppDistribution,
   shopifyApp,
 } from "@shopify/shopify-app-react-router/server";
-import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
-import prisma from "./db.server";
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
   apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
   apiVersion: ApiVersion.October25,
-  scopes: process.env.SCOPES?.split(","),
+  scopes: (process.env.SCOPES?.split(",") || []).concat("read_themes"),
   appUrl: process.env.SHOPIFY_APP_URL || "",
   authPathPrefix: "/auth",
-  sessionStorage: new PrismaSessionStorage(prisma),
+  sessionStorage: new MongoDBSessionStorage(
+    process.env.MONGO_URL,
+    process.env.DB_NAME,
+    { sessionCollectionName: "shopify_sessions" },
+  ),
   distribution: AppDistribution.AppStore,
   future: {
     expiringOfflineAccessTokens: true,
@@ -23,6 +27,21 @@ const shopify = shopifyApp({
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),
 });
+
+export async function registerAppUninstalledWebhook(session) {
+  const response = await shopify.webhook.register({
+    session,
+    topic: "APP_UNINSTALLED",
+    address:
+      "https://ecs-announcement-app-dev-backend.onrender.com/api/shopify/webhook",
+    format: "json",
+  });
+  if (response.success) {
+    console.log("Webhook registered successfully");
+  } else {
+    console.error("Failed to register webhook", response.result);
+  }
+}
 
 export default shopify;
 export const apiVersion = ApiVersion.October25;

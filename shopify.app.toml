@@ -2,30 +2,29 @@
 
 client_id = "bd6d6ca602b0833023a4dd1f6fc6fe5d"
 name = "Ecs Announcement App Dev"
-application_url = "https://example.com"
+application_url = "https://ecs-announcement-app-dev-web.onrender.com"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
-include_config_on_deploy = true
 
 [webhooks]
 api_version = "2026-04"
 
   [[webhooks.subscriptions]]
   topics = [ "app/uninstalled" ]
-  uri = "/webhooks/app/uninstalled"
-
-  [[webhooks.subscriptions]]
-  topics = [ "app/scopes_update" ]
-  uri = "/webhooks/app/scopes_update"
+  uri = "https://ecs-announcement-app-dev-backend.onrender.com/api/shopify/webhook"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
 scopes = "write_metaobject_definitions,write_metaobjects,write_products,read_themes"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [
+  "https://ecs-announcement-app-dev-web.onrender.com/auth/callback",
+  "https://ecs-announcement-app-dev-web.onrender.com/auth/shopify/callback",
+  "https://ecs-announcement-app-dev-web.onrender.com/api/auth/callback"
+]
 
 [product.metafields.app.demo_info]
 type = "single_line_text_field"
