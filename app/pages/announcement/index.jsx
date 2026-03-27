@@ -1,7 +1,13 @@
 import React from "react";
-import { getAllAnnouncement } from "../../api/announcement";
+import {
+  deleteAnnouncement,
+  duplicateAnnouncement,
+  getAllAnnouncement,
+  toggleAnnouncementEnabled,
+} from "../../api/announcement";
 import { getCurrentShopSession } from "../../api/current-shop-session";
 import useAnnouncementData from "../../hooks/useAnnouncementData";
+import useAnnouncementSubmit from "../../hooks/useAnnouncementSubmit";
 import Loader from "../../ui/loader";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -15,6 +21,11 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import SafeLink from "../../helper/safe-link";
 import Stack from "@mui/material/Stack";
+import {
+  bulkDeleteAnnouncement,
+  bulkToggleAnnouncement,
+} from "../../api/bulk-operation";
+import ConfirmDialog from "../../ui/confirmation-dialog";
 
 const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
   const [snackbar, setSnackbar] = React.useState({
@@ -28,6 +39,9 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
 
   // Filter state
   const [filter, setFilter] = React.useState("all");
+
+  // Bulk delete confirmation dialog state
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = React.useState(false);
 
   // Handle filter change
   const handleFilterChange = (event, newValue) => {
@@ -47,6 +61,41 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
     ["announcement-session"],
     getCurrentShopSession,
     null,
+  );
+
+  // Toggle enable mutation
+  const toggleMutation = useAnnouncementSubmit(
+    (id) => toggleAnnouncementEnabled(id),
+    setSnackbar,
+    { invalidateKeys: [["announcement"]] },
+  );
+
+  // Duplicate announcement mutation
+  const duplicateMutation = useAnnouncementSubmit(
+    (id) => duplicateAnnouncement(id),
+    setSnackbar,
+    { invalidateKeys: [["announcement"]] },
+  );
+
+  // Delete mutation
+  const deleteMutation = useAnnouncementSubmit(
+    (id) => deleteAnnouncement(id),
+    setSnackbar,
+    { invalidateKeys: [["announcement"]] },
+  );
+
+  // Bulk toggle announcement mutation
+  const bulkToggleMutation = useAnnouncementSubmit(
+    ({ ids, enabled }) => bulkToggleAnnouncement(ids, enabled),
+    setSnackbar,
+    { invalidateKeys: [["announcement"]] },
+  );
+
+  // Bulk delete announcement mutation
+  const bulkDeleteMutation = useAnnouncementSubmit(
+    (ids) => bulkDeleteAnnouncement(ids),
+    setSnackbar,
+    { invalidateKeys: [["announcement"]] },
   );
 
   const navigateAppEmbed = () => {
@@ -94,11 +143,52 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
     setSelectedIds(newSelected);
   };
 
-  const handleBulkEnable = () => {};
+  // Handle bulk enable
+  const handleBulkEnable = () => {
+    if (selectedIds.length > 0) {
+      bulkToggleMutation.mutate(
+        { ids: selectedIds, enabled: true },
+        {
+          onSuccess: () => {
+            setSelectedIds([]);
+          },
+        },
+      );
+    }
+  };
 
-  const handleBulkDisable = () => {};
+  // Handle bulk disable
+  const handleBulkDisable = () => {
+    if (selectedIds.length > 0) {
+      bulkToggleMutation.mutate(
+        { ids: selectedIds, enabled: false },
+        {
+          onSuccess: () => {
+            setSelectedIds([]);
+          },
+        },
+      );
+    }
+  };
 
-  const handleBulkDeleteClick = () => {};
+  const handleBulkDeleteClick = () => {
+    setBulkDeleteDialogOpen(true);
+  };
+
+  // Confirm bulk delete
+  const handleConfirmBulkDelete = () => {
+    if (selectedIds.length > 0) {
+      bulkDeleteMutation.mutate(selectedIds, {
+        onSuccess: () => {
+          setSelectedIds([]);
+          setBulkDeleteDialogOpen(false);
+        },
+        onError: () => {
+          setBulkDeleteDialogOpen(false);
+        },
+      });
+    }
+  };
 
   if (announcementListLoading) {
     return <Loader />;
@@ -223,7 +313,7 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
         <Tabs
           value={filter}
           onChange={handleFilterChange}
-          aria-label="USP Bar filter tabs"
+          aria-label="Announcement filter tabs"
         >
           <Tab
             label={`All (${announcementListData?.data?.length || 0})`}
@@ -312,11 +402,11 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
         data={getFilteredData()}
         columns={announcementColumns}
         actions={announcementActions}
-        // mutations={{
-        //   deleteMutation,
-        //   toggleMutation,
-        //   duplicateMutation,
-        // }}
+        mutations={{
+          toggleMutation,
+          duplicateMutation,
+          deleteMutation,
+        }}
         showStatus={true}
         snackbarState={snackbar}
         setSnackbar={setSnackbar}
@@ -325,6 +415,16 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
         onSelectAll={handleSelectAll}
         onSelectOne={handleSelectOne}
         showCheckbox={true}
+      />
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        title="Confirm Bulk Delete?"
+        message={`This action cannot be undone. This will permanently delete ${selectedIds.length} selected entries.`}
+        onClose={() => setBulkDeleteDialogOpen(false)}
+        onConfirm={handleConfirmBulkDelete}
+        loading={bulkDeleteMutation?.isPending}
       />
     </Box>
   );
