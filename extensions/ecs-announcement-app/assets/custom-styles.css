@@ -1,0 +1,70 @@
+/* ==========================================================================
+   CUSTOM THEME OVERRIDES
+   ========================================================================== */
+
+/* CSS Variables & Theme Overrides
+   ========================================================================== */
+:root {
+  --custom-accent: #FF6B35;
+  --custom-spacing: 2rem;
+  --custom-border-radius: 8px;
+}
+
+/* Product Page Customizations
+   ========================================================================== */
+.custom-main-product .price {
+  font-size: 1.5rem;
+  color: var(--custom-accent);
+  font-weight: 600;
+}
+
+.custom-main-product .product-form__submit {
+  background: var(--custom-accent);
+  border-radius: var(--custom-border-radius);
+  transition: transform 0.2s ease;
+}
+
+.custom-main-product .product-form__submit:hover {
+  transform: translateY(-2px);
+}
+
+/* Collection Page Enhancements
+   ========================================================================== */
+.collection-grid .product-card {
+  border-radius: var(--custom-border-radius);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.collection-grid .product-card:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+/* Custom Button Styles
+   ========================================================================== */
+.btn-custom {
+  background: var(--custom-accent);
+  padding: 1rem 2rem;
+  border-radius: var(--custom-border-radius);
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+  background: color-mix(in srgb, var(--custom-accent) 85%, black);
+  transform: translateY(-2px);
+}
+
+/* Responsive Adjustments
+   ========================================================================== */
+@media (max-width: 768px) {
+  :root {
+    --custom-spacing: 1rem;
+  }
+  
+  .custom-main-product .price {
+    font-size: 1.25rem;
+  }
+}

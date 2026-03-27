@@ -1,13 +1,9 @@
-import React from "react";
+import { useLoaderData, Form } from "react-router";
 import { authenticate } from "../shopify.server";
-import { useLoaderData } from "react-router";
-const AnnouncementListPage = React.lazy(
-  () => import("../pages/announcement/index.jsx"),
-);
+import shopify from "../shopify.server";
 
 export const loader = async ({ request }) => {
-  const { admin, session, billing } = await authenticate.admin(request);
-  const { appSubscriptions } = await billing.check();
+  const { admin, session } = await authenticate.admin(request);
   try {
     // Fetch main theme using raw fetch
     const themesResponse = await fetch(
@@ -23,12 +19,9 @@ export const loader = async ({ request }) => {
     if (!themesResponse.ok) {
       const errorText = await themesResponse.text();
       return {
-        appEmbedEnabled: false,
-        session: session,
         error: "Theme fetch failed",
         status: themesResponse.status,
         details: errorText,
-        subscription: appSubscriptions?.[0],
         sessionDebug: {
           shop: session?.shop,
           scopes: session?.scope,
@@ -47,7 +40,6 @@ export const loader = async ({ request }) => {
       return {
         appEmbedEnabled: false,
         session: session,
-        subscription: appSubscriptions?.[0],
         error: "No main theme found in response",
         response: themesData,
       };
@@ -70,12 +62,7 @@ export const loader = async ({ request }) => {
     const asset = assetData.asset;
 
     if (!asset || !asset.value) {
-      return {
-        appEmbedEnabled: false,
-        session: session,
-        subscription: appSubscriptions?.[0],
-        error: "No settings_data.json found",
-      };
+      return { error: "No settings_data.json found" };
     }
 
     const settings = JSON.parse(asset.value);
@@ -101,6 +88,7 @@ export const loader = async ({ request }) => {
             simulation.logs.push(
               `Found matching block: ${key} (${block.type})`,
             );
+          console.log("MATCH:::", isMatch);
           return isMatch;
         })
         .map((key) => ({ ...rawBlocks[key], id: key }));
@@ -118,24 +106,18 @@ export const loader = async ({ request }) => {
         });
         simulation.finalDecision = isAnyEnabled;
       } else {
-        simulation.logs.push("No blocks matching 'usp_bar' found.");
+        simulation.logs.push("No blocks matching 'announcement_app' found.");
       }
     }
 
     return {
-      appEmbedEnabled: simulation.finalDecision,
-      session: session,
       shop: session?.shop,
       settings: settings,
       raw: asset.value,
       simulation,
-      subscription: appSubscriptions?.[0],
     };
   } catch (error) {
     return {
-      appEmbedEnabled: false,
-      session: session,
-      subscription: appSubscriptions?.[0],
       error: error.message,
       stack: error.stack,
       sessionDebug: {
@@ -150,17 +132,103 @@ export const loader = async ({ request }) => {
   }
 };
 
-export default function AnnouncementPage() {
-  const data = useLoaderData() || {};
+export const action = async ({ request }) => {
+  const { session } = await authenticate.admin(request);
+  await shopify.sessionStorage.deleteSession(session.id);
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: `/auth/login?shop=${session.shop}`,
+    },
+  });
+};
 
-  const appEmbedEnabled = data?.appEmbedEnabled ?? false;
-
+export default function Debug() {
+  const data = useLoaderData();
+  console.log('dd0',data)
   return (
-    <React.Suspense fallback="">
-      <AnnouncementListPage
-        appEmbedEnabled={appEmbedEnabled}
-        session={data?.session}
-      />
-    </React.Suspense>
+    <div style={{ padding: "20px", fontFamily: "monospace" }}>
+      <h1>Debug Settings Data</h1>
+
+      <div
+        style={{
+          padding: "15px",
+          background: "#f0f0f0",
+          marginBottom: "20px",
+          borderRadius: "5px",
+        }}
+      >
+        <h2>Logic Simulation</h2>
+        <p>
+          <strong>Should Icon Be Visible?</strong>:{" "}
+          <span
+            style={{
+              color: data.simulation?.finalDecision ? "green" : "red",
+              fontWeight: "bold",
+              fontSize: "1.2em",
+            }}
+          >
+            {data.simulation?.finalDecision ? "YES" : "NO"}
+          </span>
+        </p>
+
+        <h4>Details:</h4>
+        <ul>
+          {data.simulation?.logs.map((log, i) => (
+            <li key={i}>{log}</li>
+          ))}
+        </ul>
+
+        <h4>Found Blocks:</h4>
+        <pre>{JSON.stringify(data.simulation?.foundBlocks, null, 2)}</pre>
+      </div>
+      {data.error && (
+        <div
+          style={{
+            color: "red",
+            border: "1px solid red",
+            padding: "10px",
+            marginBottom: "20px",
+          }}
+        >
+          <h3>Error: {data.error}</h3>
+          {data.details && <pre>{data.details}</pre>}
+          {data.sessionDebug && (
+            <div>
+              <h4>Session Debug:</h4>
+              <pre>{JSON.stringify(data.sessionDebug, null, 2)}</pre>
+              {JSON.stringify(data.sessionDebug.scopes) !==
+                JSON.stringify(data.sessionDebug.configuredScopes) && (
+                <div style={{ marginTop: "10px" }}>
+                  <p>
+                    <strong>Permissions Mismatch Detected!</strong>
+                  </p>
+                  <p>
+                    <strong>Permissions Mismatch Detected!</strong>
+                  </p>
+                  <Form method="post">
+                    <button
+                      type="submit"
+                      style={{
+                        display: "inline-block",
+                        backgroundColor: "red",
+                        color: "white",
+                        padding: "10px 20px",
+                        border: "none",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Force Reset Session & Permissions
+                    </button>
+                  </Form>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </div>
   );
 }

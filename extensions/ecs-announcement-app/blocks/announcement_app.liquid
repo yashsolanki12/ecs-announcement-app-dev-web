@@ -1,0 +1,50 @@
+{% comment %}
+  Custom UX Scripts and Styles
+  This app embed loads global customizations without editing theme files
+{% endcomment %}
+
+{% if block.settings.enabled %}
+  {% comment %} Load custom CSS {% endcomment %}
+  {% if block.settings.custom_css != blank %}
+    <style>
+      {{ block.settings.custom_css }}
+    </style>
+  {% endif %}
+
+  {% comment %} Load CSS from external file {% endcomment %}
+  {% if block.settings.load_css_file %}
+    {{ 'custom-styles.css' | asset_url | stylesheet_tag }}
+  {% endif %}
+
+  {% comment %} Load custom JavaScript {% endcomment %}
+  {% if block.settings.custom_js != blank %}
+    <script>
+      {{ block.settings.custom_js }}
+    </script>
+  {% endif %}
+
+  {% comment %} Load JS from external file {% endcomment %}
+  {% if block.settings.load_js_file %}
+    <script src="{{ 'custom-scripts.js' | asset_url }}" defer></script>
+  {% endif %}
+
+  {% comment %} Optional: Add custom HTML {% endcomment %}
+  {% if block.settings.custom_html != blank %}
+    {{ block.settings.custom_html }}
+  {% endif %}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Ecs Announcement App",
+  "target": "head",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Enable ecs announcement app",
+      "default": true
+    },
+  ]
+}
+{% endschema %}
