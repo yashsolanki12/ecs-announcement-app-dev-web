@@ -14,6 +14,7 @@ import MuiAlert from "@mui/material/Alert";
 import SafeLink from "../../helper/safe-link";
 import ConfirmDialog from "../../ui/confirmation-dialog";
 import Checkbox from "@mui/material/Checkbox";
+import TableShimmerLoader from "./table-shimmer-loader";
 
 // Icons
 import EditIcon from "@mui/icons-material/Edit";
@@ -56,8 +57,12 @@ const DataTable = ({
   selectedIds = [],
   onSelectAll,
   onSelectOne,
-  // New props for search and sort controls
+  // Search and sort controls
   searchControls = null,
+  // Loading state for shimmer
+  isLoading = false,
+  // Custom loading component (optional)
+  loadingComponent = null,
 }) => {
   // Internal snackbar state (used if external state not provided)
   const [internalSnackbar, setInternalSnackbar] = React.useState({
@@ -258,263 +263,279 @@ const DataTable = ({
     <>
       {/* Search and Sort Controls */}
       {searchControls && <Box sx={{ mb: 2 }}>{searchControls}</Box>}
-      <TableContainer
-        component={Box}
-        sx={{
-          backgroundColor: "white",
-          borderRadius: "8px",
-          boxShadow: 1,
-          maxHeight: 450,
-          overflowY: "auto",
-          "&::-webkit-scrollbar": { width: "8px" },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#ccc",
-            borderRadius: "8px",
-          },
-        }}
-      >
-        <Table stickyHeader sx={{ minWidth: 650 }} aria-label="data table">
-          <TableHead>
-            <TableRow>
-              {showCheckbox && (
-                <TableCell
-                  sx={{
-                    color: "#6b7280",
-                    fontWeight: 600,
-                    fontSize: 13,
-                    backgroundColor: "#f7f7f7",
-                  }}
-                >
-                  <Checkbox
-                    indeterminate={
-                      selectedIds.length > 0 && selectedIds.length < data.length
-                    }
-                    checked={
-                      data.length > 0 && selectedIds.length === data.length
-                    }
-                    onChange={onSelectAll}
-                  />
-                </TableCell>
-              )}
-              {columns.map((column) => (
-                <TableCell
-                  key={column.key}
-                  align={column.align || "left"}
-                  sx={{
-                    color: "#6b7280",
-                    fontWeight: 600,
-                    fontSize: 13,
-                    backgroundColor: "#f7f7f7",
-                    ...column.sx,
-                  }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-              {actionButtons.length > 0 && (
-                <TableCell
-                  align="right"
-                  sx={{
-                    color: "#6b7280",
-                    fontWeight: 600,
-                    fontSize: 13,
 
-                    backgroundColor: "#f7f7f7",
-                  }}
-                >
-                  Actions
-                </TableCell>
-              )}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data && data.length > 0 ? (
-              data.map((row) => {
-                const rowId = getId(row);
-                const isSelected = selectedIds.includes(rowId);
-                return (
-                  <TableRow
-                    key={rowId}
+      {/* Show shimmer loader when loading */}
+      {isLoading &&
+        (loadingComponent || (
+          <TableShimmerLoader
+            columns={columns}
+            showCheckbox={showCheckbox}
+            showActions={actions.length > 0}
+            rowCount={5}
+          />
+        ))}
+
+      {/* Show actual table when not loading */}
+      {!isLoading && (
+        <TableContainer
+          component={Box}
+          sx={{
+            backgroundColor: "white",
+            borderRadius: "8px",
+            boxShadow: 1,
+            maxHeight: 450,
+            overflowY: "auto",
+            "&::-webkit-scrollbar": { width: "8px" },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#ccc",
+              borderRadius: "8px",
+            },
+          }}
+        >
+          <Table stickyHeader sx={{ minWidth: 650 }} aria-label="data table">
+            <TableHead>
+              <TableRow>
+                {showCheckbox && (
+                  <TableCell
                     sx={{
-                      "&:nth-of-type(odd)": {
-                        backgroundColor: isSelected ? "#e3f2fd" : "#f4f4f4",
-                      },
-                      "&:hover": {
-                        backgroundColor: isSelected ? "#bbdefb" : "#f7f7f7",
-                      },
-                      "&:last-child td, &:last-child th": { border: 0 },
-                      opacity: row.enabled !== false ? 1 : 0.6,
+                      color: "#6b7280",
+                      fontWeight: 600,
+                      fontSize: 13,
+                      backgroundColor: "#f7f7f7",
                     }}
                   >
-                    {showCheckbox && (
-                      <TableCell>
-                        <Checkbox
-                          checked={isSelected}
-                          onChange={() => onSelectOne(rowId)}
-                        />
-                      </TableCell>
-                    )}
-                    {columns.map((column) => (
-                      <TableCell
-                        key={`${rowId}-${column.key}`}
-                        align={column.align || "left"}
-                        style={{ paddingTop: "10px", paddingBottom: "10px" }}
-                        sx={column.sx}
-                      >
-                        {column.type === "tooltip" ? (
-                          <Tooltip
-                            placement="top"
-                            slotProps={{
-                              tooltip: {
-                                sx: {
-                                  fontSize: column.tooltipFontSize || "12px",
-                                  maxWidth: column.maxWidth || "300px",
-                                },
-                              },
-                              popper: {
-                                modifiers: [
-                                  {
-                                    name: "offset",
-                                    options: {
-                                      offset: [0, 10],
-                                    },
+                    <Checkbox
+                      indeterminate={
+                        selectedIds.length > 0 &&
+                        selectedIds.length < data.length
+                      }
+                      checked={
+                        data.length > 0 && selectedIds.length === data.length
+                      }
+                      onChange={onSelectAll}
+                    />
+                  </TableCell>
+                )}
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.key}
+                    align={column.align || "left"}
+                    sx={{
+                      color: "#6b7280",
+                      fontWeight: 600,
+                      fontSize: 13,
+                      backgroundColor: "#f7f7f7",
+                      ...column.sx,
+                    }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+                {actionButtons.length > 0 && (
+                  <TableCell
+                    align="right"
+                    sx={{
+                      color: "#6b7280",
+                      fontWeight: 600,
+                      fontSize: 13,
+
+                      backgroundColor: "#f7f7f7",
+                    }}
+                  >
+                    Actions
+                  </TableCell>
+                )}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data && data.length > 0 ? (
+                data.map((row) => {
+                  const rowId = getId(row);
+                  const isSelected = selectedIds.includes(rowId);
+                  return (
+                    <TableRow
+                      key={rowId}
+                      sx={{
+                        "&:nth-of-type(odd)": {
+                          backgroundColor: isSelected ? "#e3f2fd" : "#f4f4f4",
+                        },
+                        "&:hover": {
+                          backgroundColor: isSelected ? "#bbdefb" : "#f7f7f7",
+                        },
+                        "&:last-child td, &:last-child th": { border: 0 },
+                        opacity: row.enabled !== false ? 1 : 0.6,
+                      }}
+                    >
+                      {showCheckbox && (
+                        <TableCell>
+                          <Checkbox
+                            checked={isSelected}
+                            onChange={() => onSelectOne(rowId)}
+                          />
+                        </TableCell>
+                      )}
+                      {columns.map((column) => (
+                        <TableCell
+                          key={`${rowId}-${column.key}`}
+                          align={column.align || "left"}
+                          style={{ paddingTop: "10px", paddingBottom: "10px" }}
+                          sx={column.sx}
+                        >
+                          {column.type === "tooltip" ? (
+                            <Tooltip
+                              placement="top"
+                              slotProps={{
+                                tooltip: {
+                                  sx: {
+                                    fontSize: column.tooltipFontSize || "12px",
+                                    maxWidth: column.maxWidth || "300px",
                                   },
-                                ],
-                              },
-                            }}
-                            title={getCellValue(column, row)}
-                            arrow
-                          >
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                fontSize: column.fontSize || "14px",
-                                maxWidth: column.maxWidth || 200,
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                                marginRight: "auto",
-                                display: "block",
-                                width: "fit-content",
-                                ...column.typographySx,
+                                },
+                                popper: {
+                                  modifiers: [
+                                    {
+                                      name: "offset",
+                                      options: {
+                                        offset: [0, 10],
+                                      },
+                                    },
+                                  ],
+                                },
+                              }}
+                              title={getCellValue(column, row)}
+                              arrow
+                            >
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  fontSize: column.fontSize || "14px",
+                                  maxWidth: column.maxWidth || 200,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  marginRight: "auto",
+                                  display: "block",
+                                  width: "fit-content",
+                                  ...column.typographySx,
+                                }}
+                              >
+                                <span>{getCellValue(column, row)}</span>
+                              </Typography>
+                            </Tooltip>
+                          ) : (
+                            <span>{renderCellContent(column, row)}</span>
+                          )}
+                        </TableCell>
+                      ))}
+                      {actionButtons.length > 0 && (
+                        <TableCell
+                          align="right"
+                          sx={{ paddingTop: "2px", paddingBottom: "2px" }}
+                        >
+                          {/* Toggle/Visibility Button */}
+                          {showStatus && mutations?.toggleMutation && (
+                            <Tooltip
+                              title={
+                                row.enabled
+                                  ? "Disable (Hide from store)"
+                                  : "Enable (Show in store)"
+                              }
+                              placement="top"
+                              slotProps={{
+                                popper: {
+                                  modifiers: [
+                                    {
+                                      name: "offset",
+                                      options: {
+                                        offset: [0, -18],
+                                      },
+                                    },
+                                  ],
+                                },
                               }}
                             >
-                              <span>{getCellValue(column, row)}</span>
-                            </Typography>
-                          </Tooltip>
-                        ) : (
-                          <span>{renderCellContent(column, row)}</span>
-                        )}
-                      </TableCell>
-                    ))}
-                    {actionButtons.length > 0 && (
-                      <TableCell
-                        align="right"
-                        sx={{ paddingTop: "2px", paddingBottom: "2px" }}
-                      >
-                        {/* Toggle/Visibility Button */}
-                        {showStatus && mutations?.toggleMutation && (
-                          <Tooltip
-                            title={
-                              row.enabled
-                                ? "Disable (Hide from store)"
-                                : "Enable (Show in store)"
-                            }
-                            placement="top"
-                            slotProps={{
-                              popper: {
-                                modifiers: [
-                                  {
-                                    name: "offset",
-                                    options: {
-                                      offset: [0, -18],
-                                    },
-                                  },
-                                ],
-                              },
-                            }}
-                          >
-                            <IconButton
-                              onClick={() => handleToggleEnabled(row)}
-                              color={
-                                row.enabled !== false ? "success" : "default"
-                              }
-                              disabled={togglingId === rowId}
-                            >
-                              {row.enabled !== false ? (
-                                <VisibilityIcon fontSize="medium" />
-                              ) : (
-                                <VisibilityOffIcon fontSize="medium" />
-                              )}
-                            </IconButton>
-                          </Tooltip>
-                        )}
+                              <IconButton
+                                onClick={() => handleToggleEnabled(row)}
+                                color={
+                                  row.enabled !== false ? "success" : "default"
+                                }
+                                disabled={togglingId === rowId}
+                              >
+                                {row.enabled !== false ? (
+                                  <VisibilityIcon fontSize="medium" />
+                                ) : (
+                                  <VisibilityOffIcon fontSize="medium" />
+                                )}
+                              </IconButton>
+                            </Tooltip>
+                          )}
 
-                        {/* Custom Action Buttons */}
-                        {actionButtons.map((action) => (
-                          <Tooltip
-                            key={action.name}
-                            title={action.tooltip || action.name}
-                            placement="top"
-                            slotProps={{
-                              popper: {
-                                modifiers: [
-                                  {
-                                    name: "offset",
-                                    options: {
-                                      offset: [0, -18],
+                          {/* Custom Action Buttons */}
+                          {actionButtons.map((action) => (
+                            <Tooltip
+                              key={action.name}
+                              title={action.tooltip || action.name}
+                              placement="top"
+                              slotProps={{
+                                popper: {
+                                  modifiers: [
+                                    {
+                                      name: "offset",
+                                      options: {
+                                        offset: [0, -18],
+                                      },
                                     },
-                                  },
-                                ],
-                              },
-                            }}
-                          >
-                            {action.type === "link" ? (
-                              <IconButton
-                                component={SafeLink}
-                                to={action.to ? action.to(row) : "#"}
-                                color={action.color || "default"}
-                                disabled={action.disabled?.(row)}
-                                sx={action.sx}
-                              >
-                                {getIcon(action.icon)}
-                              </IconButton>
-                            ) : (
-                              <IconButton
-                                onClick={() => handleActionClick(action, row)}
-                                color={action.color || "default"}
-                                disabled={action.disabled?.(row)}
-                                sx={action.sx}
-                              >
-                                {getIcon(action.icon)}
-                              </IconButton>
-                            )}
-                          </Tooltip>
-                        ))}
-                      </TableCell>
-                    )}
-                  </TableRow>
-                );
-              })
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={
-                    columns.length +
-                    (actionButtons.length > 0 ? 1 : 0) +
-                    (showCheckbox ? 1 : 0)
-                  }
-                  align="center"
-                >
-                  <Typography variant="body2" color="text.secondary">
-                    {emptyMessage}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                                  ],
+                                },
+                              }}
+                            >
+                              {action.type === "link" ? (
+                                <IconButton
+                                  component={SafeLink}
+                                  to={action.to ? action.to(row) : "#"}
+                                  color={action.color || "default"}
+                                  disabled={action.disabled?.(row)}
+                                  sx={action.sx}
+                                >
+                                  {getIcon(action.icon)}
+                                </IconButton>
+                              ) : (
+                                <IconButton
+                                  onClick={() => handleActionClick(action, row)}
+                                  color={action.color || "default"}
+                                  disabled={action.disabled?.(row)}
+                                  sx={action.sx}
+                                >
+                                  {getIcon(action.icon)}
+                                </IconButton>
+                              )}
+                            </Tooltip>
+                          ))}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={
+                      columns.length +
+                      (actionButtons.length > 0 ? 1 : 0) +
+                      (showCheckbox ? 1 : 0)
+                    }
+                    align="center"
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      {emptyMessage}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog

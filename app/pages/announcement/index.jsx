@@ -27,6 +27,7 @@ import {
 } from "../../api/bulk-operation";
 import ConfirmDialog from "../../ui/confirmation-dialog";
 import SearchSortControls from "../../components/search-sort-controls";
+import TableShimmerLoader from "../../components/table/table-shimmer-loader";
 
 const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
   const [snackbar, setSnackbar] = React.useState({
@@ -211,9 +212,6 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
     }
   };
 
-  if (announcementListLoading) {
-    return <Loader />;
-  }
   return (
     <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
       {!appEmbedEnabled && (
@@ -331,7 +329,6 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
         </Stack>
       </Box>
 
-      {/* Filter Tabs */}
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
         <Tabs
           value={filter}
@@ -425,6 +422,7 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
         data={getFilteredData()}
         columns={announcementColumns}
         actions={announcementActions}
+        isLoading={announcementListLoading}
         mutations={{
           toggleMutation,
           duplicateMutation,
