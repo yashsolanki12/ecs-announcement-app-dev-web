@@ -1,4 +1,5 @@
 // Column configurations for different tables
+import { getFormattedDate } from "../utils/helper";
 
 /**
  * Announcement List Columns
@@ -15,6 +16,16 @@ export const announcementColumns = [
     label: "Status",
     // align: "center",
     type: "status",
+  },
+  {
+    key: "createdAt",
+    label: "Created At",
+    render: (value) => getFormattedDate(new Date(value)),
+  },
+  {
+    key: "updatedAt",
+    label: "Updated At",
+    render: (value) => getFormattedDate(new Date(value)),
   },
 ];
 
