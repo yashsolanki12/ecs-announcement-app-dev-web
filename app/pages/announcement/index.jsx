@@ -6,6 +6,7 @@ import {
   toggleAnnouncementEnabled,
 } from "../../api/announcement";
 import { getCurrentShopSession } from "../../api/current-shop-session";
+import { announcementColumns, announcementActions } from "../../utils/column";
 import useAnnouncementData from "../../hooks/useAnnouncementData";
 import useAnnouncementSubmit from "../../hooks/useAnnouncementSubmit";
 import Loader from "../../ui/loader";
@@ -16,7 +17,6 @@ import Box from "@mui/material/Box";
 import Warning from "@mui/icons-material/Warning";
 import Button from "@mui/material/Button";
 import DataTable from "../../components/table/data-table";
-import { announcementColumns, announcementActions } from "../../utils/column";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import SafeLink from "../../helper/safe-link";
@@ -26,6 +26,8 @@ import {
   bulkToggleAnnouncement,
 } from "../../api/bulk-operation";
 import ConfirmDialog from "../../ui/confirmation-dialog";
+import SearchSortControls from "../../components/search-sort-controls";
+import TableShimmerLoader from "../../components/table/table-shimmer-loader";
 
 const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
   const [snackbar, setSnackbar] = React.useState({
@@ -40,6 +42,30 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
   // Filter state
   const [filter, setFilter] = React.useState("all");
 
+  // Search and sort state - default is "desc" (oldest first)
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [sortOrder, setSortOrder] = React.useState("desc");
+
+  // Build query params for API
+  const getQueryParams = () => {
+    const params = {};
+    if (searchQuery) {
+      params.search = searchQuery;
+    }
+    if (sortOrder) {
+      params.sortOrder = sortOrder;
+    }
+    return params;
+  };
+
+  // List API with search and sort params
+  const { data: announcementListData, isLoading: announcementListLoading } =
+    useAnnouncementData(
+      ["announcement", searchQuery, sortOrder],
+      () => getAllAnnouncement(getQueryParams()),
+      null,
+    );
+
   // Bulk delete confirmation dialog state
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = React.useState(false);
 
@@ -48,10 +74,6 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
     setFilter(newValue);
     setSelectedIds([]); // Clear selection when filter changes
   };
-
-  // List API
-  const { data: announcementListData, isLoading: announcementListLoading } =
-    useAnnouncementData(["announcement"], getAllAnnouncement, null);
 
   // Current shop API
   const {
@@ -190,9 +212,6 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
     }
   };
 
-  if (announcementListLoading) {
-    return <Loader />;
-  }
   return (
     <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
       {!appEmbedEnabled && (
@@ -286,29 +305,30 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
             Announcement List
           </Typography>
 
-          <Button
-            variant="contained"
-            component={SafeLink}
-            to="/app/ecs-announcement/create"
-            sx={{
-              backgroundColor: "#202223",
-              color: "white",
-              textTransform: "none",
-              borderRadius: "6px",
-              fontWeight: 600,
-              padding: "7px 18px",
-              textDecoration: "none",
-              "&:hover": {
-                backgroundColor: "#303030",
-              },
-            }}
-          >
-            Create Announcement
-          </Button>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <Button
+              variant="contained"
+              component={SafeLink}
+              to="/app/ecs-announcement/create"
+              sx={{
+                backgroundColor: "#202223",
+                color: "white",
+                textTransform: "none",
+                borderRadius: "6px",
+                fontWeight: 600,
+                padding: "7px 18px",
+                textDecoration: "none",
+                "&:hover": {
+                  backgroundColor: "#303030",
+                },
+              }}
+            >
+              Create Announcement
+            </Button>
+          </Stack>
         </Stack>
       </Box>
 
-      {/* Filter Tabs */}
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
         <Tabs
           value={filter}
@@ -402,6 +422,7 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
         data={getFilteredData()}
         columns={announcementColumns}
         actions={announcementActions}
+        isLoading={announcementListLoading}
         mutations={{
           toggleMutation,
           duplicateMutation,
@@ -415,6 +436,14 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
         onSelectAll={handleSelectAll}
         onSelectOne={handleSelectOne}
         showCheckbox={true}
+        searchControls={
+          <SearchSortControls
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+          />
+        }
       />
 
       {/* Bulk Delete Confirmation Dialog */}
