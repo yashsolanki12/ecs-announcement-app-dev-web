@@ -56,6 +56,8 @@ const DataTable = ({
   selectedIds = [],
   onSelectAll,
   onSelectOne,
+  // New props for search and sort controls
+  searchControls = null,
 }) => {
   // Internal snackbar state (used if external state not provided)
   const [internalSnackbar, setInternalSnackbar] = React.useState({
@@ -254,6 +256,8 @@ const DataTable = ({
 
   return (
     <>
+      {/* Search and Sort Controls */}
+      {searchControls && <Box sx={{ mb: 2 }}>{searchControls}</Box>}
       <TableContainer
         component={Box}
         sx={{

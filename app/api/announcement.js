@@ -7,15 +7,28 @@ export const getShopDomain = () => {
 };
 
 // List
-export const getAllAnnouncement = async () => {
+export const getAllAnnouncement = async (params = {}) => {
   const shopDomain = getShopDomain();
 
   if (!shopDomain) {
     console.error("No shop domain found in URL parameters.");
     throw new Error("Shop domain is required.");
   }
+
+  // Build query string from params
+  const queryParams = new URLSearchParams();
+  if (params.search) {
+    queryParams.append("search", params.search);
+  }
+  if (params.sortOrder) {
+    queryParams.append("sortOrder", params.sortOrder);
+  }
+
+  const queryString = queryParams.toString();
+  const url = queryString ? `announcement?${queryString}` : "announcement";
+
   return axiosInstance
-    .get("announcement", {
+    .get(url, {
       headers: {
         "x-shopify-shop-domain": shopDomain,
       },
