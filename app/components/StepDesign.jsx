@@ -11,105 +11,8 @@ import Grid from "@mui/material/Grid";
 
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import { Select } from "@mui/material";
-
-const templates = [
-  {
-    id: "custom",
-    name: "Custom (Manual)",
-  },
-  {
-    id: "soft_blush",
-    name: "Soft Blush",
-    config: {
-      backgroundType: "image",
-      backgroundImage: "/holiday_pink_pattern.png",
-      titleColor: "#202223",
-      subheadingColor: "#202223",
-      titleSize: 14,
-    },
-  },
-  {
-    id: "sunset_orange",
-    name: "Sunset Orange",
-    config: {
-      backgroundType: "image",
-      backgroundImage: "/sunset_orange.png",
-      gradientColors: ["#ff7e5f", "#feb47b"],
-      subheadingColor: "#ffffff",
-      titleSize: 14,
-    },
-  },
-  {
-    id: "nature_teal",
-    name: "Nature Teal",
-    config: {
-      backgroundType: "image",
-      backgroundImage: "/modern_abstract_pattern.png",
-      titleColor: "#ffffff",
-      subheadingColor: "#ffffff",
-      titleSize: 15,
-    },
-  },
-  {
-    id: "winter_magic",
-    name: "Winter Magic",
-    config: {
-      backgroundType: "image",
-      backgroundImage: "/winter_snowflake_pattern.png",
-      titleColor: "#ffffff",
-      subheadingColor: "#ffffff",
-      titleSize: 15,
-    },
-  },
-  {
-    id: "midnight_blue",
-    name: "Midnight Blue",
-    config: {
-      backgroundType: "image",
-      backgroundImage: "/midnight_galaxy_pattern.png",
-      titleColor: "#ffffff",
-      subheadingColor: "#ffffff",
-      titleSize: 14,
-    },
-  },
-  {
-    id: "lavender_breeze",
-    name: "Lavender Breeze",
-    config: {
-      backgroundType: "image",
-      backgroundImage: "/lavender_floral_pattern.png",
-      titleColor: "#202223",
-      subheadingColor: "#202223",
-      titleSize: 14,
-    },
-  },
-  {
-    id: "arctic_frost",
-    name: "Arctic Frost",
-    config: {
-      backgroundType: "image",
-      backgroundImage: "/arctic_frost_crystal.png",
-      backgroundColor: "#e0f7fa",
-      titleColor: "#006064",
-      subheadingColor: "#006064",
-      titleSize: 13,
-    },
-  },
-  {
-    id: "royal_gold",
-    name: "Royal Gold",
-    config: {
-      backgroundType: "image",
-      // SVG Marble/Geo Pattern
-      backgroundImage: "/royal_gold.png",
-      backgroundColor: "#fffdf0",
-      titleColor: "#202223",
-      subheadingColor: "#202223",
-      titleSize: 15,
-    },
-  },
-];
+import Select from "@mui/material/Select";
+import { templates } from "../utils/helper";
 
 const StepDesign = ({ formData, setFormData, setSnackbar }) => {
   const handleChange = (e) => {
@@ -167,7 +70,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
 
         <Box sx={{ mb: 2 }}>
           <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-            Template Selection
+            Template selection
           </Typography>
           <Select
             fullWidth
@@ -175,6 +78,14 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             value={formData.templateId || "custom"}
             onChange={handleTemplateChange}
             size="small"
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  maxHeight: 260,
+                  width: 250,
+                },
+              },
+            }}
           >
             {templates.map((t) => (
               <MenuItem key={t.id} value={t.id}>
@@ -183,53 +94,35 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             ))}
           </Select>
         </Box>
-        {/* <Box sx={{ display: "flex", gap: 3 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="sticky"
-                checked={formData.sticky}
-                onChange={handleChange}
-                size="small"
-              />
-            }
-            label="Sticky Bar"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="closeButton"
-                checked={formData.closeButton}
-                onChange={handleChange}
-                size="small"
-              />
-            }
-            label="Close Button"
-          />
-        </Box> */}
-        {/* {formData.closeButton && (
+
+        {formData.type === "multiple" && (
           <Box sx={{ mt: 2 }}>
             <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-              Close icon color
+              Arrow icon color
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <input
                 type="color"
-                name="closeIconColor"
-                value={formData.closeIconColor}
+                name="arrowIconColor"
+                value={formData.arrowIconColor || "#17d0d3"}
                 onChange={handleChange}
-                style={{ width: "40px", height: "40px", border: "none" }}
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  border: "none",
+                  cursor: "pointer",
+                }}
               />
               <TextField
-                name="closeIconColor"
-                value={formData.closeIconColor}
+                name="arrowIconColor"
+                value={formData.arrowIconColor || "#17d0d3"}
                 onChange={handleChange}
                 size="small"
                 sx={{ width: "120px" }}
               />
             </Box>
           </Box>
-        )} */}
+        )}
       </Paper>
 
       <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
@@ -456,8 +349,16 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
         <Typography variant="subtitle2" sx={{ mb: 2, color: "text.secondary" }}>
           Typography
         </Typography>
-        <Grid container spacing={3}>
-          {/* Row 1: Title Size | Title Color */}
+
+        {/* Typography Settings */}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+            gap: { xs: 1.5, sm: 2 },
+          }}
+        >
+          {/* Title Size */}
           <Grid item xs={12} sm={6}>
             <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
               Title size
@@ -468,6 +369,14 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
               value={formData.titleSize}
               onChange={handleChange}
               size="small"
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 200,
+                    width: 250,
+                  },
+                },
+              }}
             >
               {[10, 11, 12, 13, 14, 15, 16, 17, 18].map((size) => (
                 <MenuItem key={size} value={size}>
@@ -476,6 +385,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
               ))}
             </Select>
           </Grid>
+
+          {/* Title Color */}
           <Grid item xs={12} sm={6}>
             <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
               Title color
@@ -505,8 +416,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
 
           {formData.type !== "running" && (
             <>
-              {" "}
-              {/* Row 2: Subheading Size | Subheading Color */}
+              {/* Subheading Size  */}
               <Grid item xs={12} sm={6}>
                 <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
                   Subheading size
@@ -517,6 +427,14 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   value={formData.subheadingSize}
                   onChange={handleChange}
                   size="small"
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        maxHeight: 200,
+                        width: 250,
+                      },
+                    },
+                  }}
                 >
                   {[10, 11, 12, 13, 14, 15, 16, 17, 18].map((size) => (
                     <MenuItem key={size} value={size}>
@@ -525,6 +443,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   ))}
                 </Select>
               </Grid>
+
+              {/* Subheading Color */}
               <Grid item xs={12} sm={6}>
                 <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
                   Subheading color
@@ -553,7 +473,163 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
               </Grid>
             </>
           )}
-        </Grid>
+        </Box>
+
+        {/* Button Settings */}
+        {(formData.type === "multiple" || formData.type === "running") && (
+          <>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                mt: 4,
+                mb: 2,
+                color: "text.secondary",
+                pt: 2,
+                borderTop: "1px solid #dfe3e8",
+              }}
+            >
+              Button
+            </Typography>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                gap: { xs: 1.5, sm: 2 },
+              }}
+            >
+              {/* Font Size */}
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                  Font size
+                </Typography>
+                <Select
+                  fullWidth
+                  name="buttonFontSize"
+                  value={formData.buttonFontSize || 14}
+                  onChange={handleChange}
+                  size="small"
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        maxHeight: 200,
+                        width: 250,
+                      },
+                    },
+                  }}
+                >
+                  {[10, 11, 12, 13, 14, 15].map((size) => (
+                    <MenuItem key={size} value={size}>
+                      {size}px
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+
+              {/* Text Color */}
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                  Text color
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <input
+                    type="color"
+                    name="buttonTextColor"
+                    value={formData.buttonTextColor || "#ffffff"}
+                    onChange={handleChange}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  />
+                  <TextField
+                    name="buttonTextColor"
+                    value={formData.buttonTextColor || "#ffffff"}
+                    onChange={handleChange}
+                    size="small"
+                    fullWidth
+                  />
+                </Box>
+              </Grid>
+
+              {/*  Border style  */}
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                  Border style
+                </Typography>
+                <Select
+                  fullWidth
+                  name="buttonBorderStyle"
+                  value={formData.buttonBorderStyle || "none"}
+                  onChange={handleChange}
+                  size="small"
+                >
+                  <MenuItem value="none">None</MenuItem>
+                  <MenuItem value="solid">Solid</MenuItem>
+                  <MenuItem value="dashed">Dashed</MenuItem>
+                  <MenuItem value="dotted">Dotted</MenuItem>
+                </Select>
+              </Grid>
+
+              {/* Border color */}
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                  Border color
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <input
+                    type="color"
+                    name="buttonBorderColor"
+                    value={formData.buttonBorderColor || "#9dfc1f"}
+                    onChange={handleChange}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  />
+                  <TextField
+                    name="buttonBorderColor"
+                    value={formData.buttonBorderColor || "#9dfc1f"}
+                    onChange={handleChange}
+                    size="small"
+                    fullWidth
+                  />
+                </Box>
+              </Grid>
+
+              {/* Background Color */}
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                  Background
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <input
+                    type="color"
+                    name="buttonBackgroundColor"
+                    value={formData.buttonBackgroundColor || "#55c521"}
+                    onChange={handleChange}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  />
+                  <TextField
+                    name="buttonBackgroundColor"
+                    value={formData.buttonBackgroundColor || "#55c521"}
+                    onChange={handleChange}
+                    size="small"
+                    fullWidth
+                  />
+                </Box>
+              </Grid>
+            </Box>
+          </>
+        )}
       </Paper>
     </Box>
   );
