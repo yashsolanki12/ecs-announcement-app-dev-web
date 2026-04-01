@@ -25,16 +25,16 @@ const StepPlacement = ({ formData, setFormData }) => {
         </Typography>
 
         <Box sx={{ mt: 2 }}>
-          <Typography
+          {/* <Typography
             sx={{
               color: "#6b7280",
               mb: 0.5,
               display: "block",
-              fontSize: "16px",
+              fontSize: "12px",
             }}
           >
             Display On Pages (Optional)
-          </Typography>
+          </Typography> */}
           <FormControl
             size="small"
             sx={{ mt: 1, width: "100%", maxWidth: 500 }}

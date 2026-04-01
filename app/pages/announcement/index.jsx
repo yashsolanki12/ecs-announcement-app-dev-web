@@ -9,7 +9,7 @@ import { getCurrentShopSession } from "../../api/current-shop-session";
 import { announcementColumns, announcementActions } from "../../utils/column";
 import useAnnouncementData from "../../hooks/useAnnouncementData";
 import useAnnouncementSubmit from "../../hooks/useAnnouncementSubmit";
-import Loader from "../../ui/loader";
+// import Loader from "../../ui/loader";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -27,7 +27,7 @@ import {
 } from "../../api/bulk-operation";
 import ConfirmDialog from "../../ui/confirmation-dialog";
 import SearchSortControls from "../../components/search-sort-controls";
-import TableShimmerLoader from "../../components/table/table-shimmer-loader";
+// import TableShimmerLoader from "../../components/table/table-shimmer-loader";
 
 const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
   const [snackbar, setSnackbar] = React.useState({

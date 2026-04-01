@@ -62,3 +62,101 @@ export const builtinIcons = {
   //   mapPin: `<svg xmlns="http://w3.org" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`,
   // },
 };
+
+export const templates = [
+  {
+    id: "custom",
+    name: "Custom (Manual)",
+  },
+  {
+    id: "soft_blush",
+    name: "Soft Blush",
+    config: {
+      backgroundType: "image",
+      backgroundImage: "/holiday_pink_pattern.png",
+      titleColor: "#202223",
+      subheadingColor: "#202223",
+      titleSize: 14,
+    },
+  },
+  {
+    id: "sunset_orange",
+    name: "Sunset Orange",
+    config: {
+      backgroundType: "image",
+      backgroundImage: "/sunset_orange.png",
+      gradientColors: ["#ff7e5f", "#feb47b"],
+      subheadingColor: "#ffffff",
+      titleSize: 14,
+    },
+  },
+  {
+    id: "nature_teal",
+    name: "Nature Teal",
+    config: {
+      backgroundType: "image",
+      backgroundImage: "/modern_abstract_pattern.png",
+      titleColor: "#ffffff",
+      subheadingColor: "#ffffff",
+      titleSize: 15,
+    },
+  },
+  {
+    id: "winter_magic",
+    name: "Winter Magic",
+    config: {
+      backgroundType: "image",
+      backgroundImage: "/winter_snowflake_pattern.png",
+      titleColor: "#ffffff",
+      subheadingColor: "#ffffff",
+      titleSize: 15,
+    },
+  },
+  {
+    id: "midnight_blue",
+    name: "Midnight Blue",
+    config: {
+      backgroundType: "image",
+      backgroundImage: "/midnight_galaxy_pattern.png",
+      titleColor: "#ffffff",
+      subheadingColor: "#ffffff",
+      titleSize: 14,
+    },
+  },
+  {
+    id: "lavender_breeze",
+    name: "Lavender Breeze",
+    config: {
+      backgroundType: "image",
+      backgroundImage: "/lavender_floral_pattern.png",
+      titleColor: "#202223",
+      subheadingColor: "#202223",
+      titleSize: 14,
+    },
+  },
+  {
+    id: "arctic_frost",
+    name: "Arctic Frost",
+    config: {
+      backgroundType: "image",
+      backgroundImage: "/arctic_frost_crystal.png",
+      backgroundColor: "#e0f7fa",
+      titleColor: "#006064",
+      subheadingColor: "#006064",
+      titleSize: 13,
+    },
+  },
+  {
+    id: "royal_gold",
+    name: "Royal Gold",
+    config: {
+      backgroundType: "image",
+      // SVG Marble/Geo Pattern
+      backgroundImage: "/royal_gold.png",
+      backgroundColor: "#fffdf0",
+      titleColor: "#202223",
+      subheadingColor: "#202223",
+      titleSize: 15,
+    },
+  },
+];

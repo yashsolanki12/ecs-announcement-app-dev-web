@@ -81,6 +81,7 @@ const SearchSortControls = ({
         sx={{
           minWidth: { xs: "auto", sm: 200, md: 300 },
           width: { xs: "100%", sm: "auto" },
+          backgroundColor: "white",
         }}
         helperText={
           debouncedSearch.length > 0 && debouncedSearch.length < minSearchLength
@@ -98,7 +99,10 @@ const SearchSortControls = ({
         {/* Sort Dropdown */}
         <FormControl
           size="small"
-          sx={{ minWidth: { xs: "auto", sm: 120, md: 150 } }}
+          sx={{
+            minWidth: { xs: "auto", sm: 120, md: 150 },
+            backgroundColor: "white",
+          }}
         >
           <InputLabel>Sort Order</InputLabel>
           <Select
@@ -117,7 +121,10 @@ const SearchSortControls = ({
           onClick={handleReset}
           disabled={!hasActiveFilters}
           size="small"
-          sx={{ minWidth: { xs: "100%", sm: 80, md: 100 } }}
+          sx={{
+            minWidth: { xs: "100%", sm: 80, md: 100 },
+            backgroundColor: "white",
+          }}
         >
           Reset
         </Button>
