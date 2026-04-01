@@ -54,11 +54,11 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
     const newAnnouncement = {
       title: "New Announcement",
       subheading: "Subheading",
-      ctaType: "none",
-      ctaLink: "",
-      ctaText: "Shop now!",
+      cta_type: "none",
+      cta_link: "",
+      cta_text: "Shop now!",
       icon: "",
-      iconColor: "#000000",
+      icon_color: "#e14749",
     };
     setFormData((prev) => ({
       ...prev,
@@ -84,7 +84,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
         updates.title = newAnnouncements[0].title;
         updates.subheading = newAnnouncements[0].subheading;
         updates.icon = newAnnouncements[0].icon;
-        updates.iconColor = newAnnouncements[0].iconColor;
+        updates.icon_color = newAnnouncements[0].icon_color;
       }
       return { ...prev, ...updates };
     });
@@ -145,6 +145,14 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
       }
 
       const reader = new FileReader();
+      // reader.onload = (e) => {
+      //   const base64Image = e.target.value;
+      //   setFormData((prev) => ({
+      //     ...prev,
+      //     icon: base64Image,
+      //   }));
+      //   e.target.value;
+      // };
       reader.onloadend = () => {
         setFormData((prev) => ({ ...prev, icon: reader.result }));
         e.target.value = "";
@@ -183,7 +191,11 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
           <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
             Announcement Type
           </Typography>
-          <RadioGroup name="type" value={formData.type} onChange={handleChange}>
+          <RadioGroup
+            name="announcement_type"
+            value={formData.announcement_type}
+            onChange={handleChange}
+          >
             <FormControlLabel
               value="simple"
               control={<Radio size="small" />}
@@ -202,7 +214,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
           </RadioGroup>
         </Box>
 
-        {formData.type === "running" && (
+        {formData.announcement_type === "running" && (
           <Box sx={{ mt: 3, pt: 3, borderTop: "1px solid #dfe3e8" }}>
             <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
               Running Animation Settings
@@ -212,8 +224,8 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                 Marquee Direction
               </Typography>
               <RadioGroup
-                name="marqueeDirection"
-                value={formData.marqueeDirection || "right"}
+                name="marquee_direction"
+                value={formData.marquee_direction || "right"}
                 onChange={handleChange}
                 row
               >
@@ -235,9 +247,9 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
               </Typography>
               <Box sx={{ px: 1 }}>
                 <Slider
-                  value={formData.marqueeSpeed || 20}
+                  value={formData.marquee_speed || 20}
                   onChange={(e, val) =>
-                    setFormData((prev) => ({ ...prev, marqueeSpeed: val }))
+                    setFormData((prev) => ({ ...prev, marquee_speed: val }))
                   }
                   min={10}
                   max={20}
@@ -274,7 +286,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
           Announcements List
         </Typography>
 
-        {formData.type === "multiple" ? (
+        {formData.announcement_type === "multiple" ? (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {(formData.announcements || []).map((announcement, index) => (
               <Box
@@ -397,11 +409,11 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                       </Typography>
                       <Select
                         fullWidth
-                        value={announcement.ctaType || "none"}
+                        value={announcement.cta_type || "none"}
                         onChange={(e) =>
                           handleAnnouncementChange(
                             index,
-                            "ctaType",
+                            "cta_type",
                             e.target.value,
                           )
                         }
@@ -415,10 +427,10 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                       </Select>
                     </Box>
 
-                    {(announcement.ctaType === "button" ||
-                      announcement.ctaType === "clickable_bar") && (
+                    {(announcement.cta_type === "button" ||
+                      announcement.cta_type === "clickable_bar") && (
                       <>
-                        {announcement.ctaType === "button" && (
+                        {announcement.cta_type === "button" && (
                           <Box sx={{ mb: 3 }}>
                             <Typography
                               variant="body2"
@@ -428,19 +440,19 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                             </Typography>
                             <TextField
                               fullWidth
-                              value={announcement.ctaText || ""}
+                              value={announcement.cta_text || ""}
                               onChange={(e) =>
                                 handleAnnouncementChange(
                                   index,
-                                  "ctaText",
+                                  "cta_text",
                                   e.target.value,
                                 )
                               }
-                              placeholder={announcement.ctaText}
+                              placeholder={announcement.cta_text}
                               size="small"
-                              name="ctaText"
+                              name="cta_text"
                               inputProps={{ maxLength: 20 }}
-                              helperText={`${(announcement.ctaText || "").length}/20`}
+                              helperText={`${(announcement.cta_text || "").length}/20`}
                             />
                           </Box>
                         )}
@@ -454,11 +466,11 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                           </Typography>
                           <TextField
                             fullWidth
-                            value={announcement.ctaLink || ""}
+                            value={announcement.cta_link || ""}
                             onChange={(e) =>
                               handleAnnouncementChange(
                                 index,
-                                "ctaLink",
+                                "cta_link",
                                 e.target.value,
                               )
                             }
@@ -507,7 +519,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "center",
-                                  color: announcement.iconColor,
+                                  color: announcement.icon_color,
                                   "& svg": { width: 32, height: 32 },
                                 }}
                                 dangerouslySetInnerHTML={{
@@ -519,7 +531,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                                 sx={{
                                   width: 50,
                                   height: 50,
-                                  backgroundColor: announcement.iconColor,
+                                  backgroundColor: announcement.icon_color,
                                   maskImage: `url(${announcement.icon})`,
                                   maskSize: "contain",
                                   maskRepeat: "no-repeat",
@@ -606,11 +618,11 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                             >
                               <input
                                 type="color"
-                                value={announcement.iconColor}
+                                value={announcement.icon_color}
                                 onChange={(e) =>
                                   handleAnnouncementChange(
                                     index,
-                                    "iconColor",
+                                    "icon_color",
                                     e.target.value,
                                   )
                                 }
@@ -624,11 +636,11 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                                 }}
                               />
                               <TextField
-                                value={announcement.iconColor}
+                                value={announcement.icon_color}
                                 onChange={(e) =>
                                   handleAnnouncementChange(
                                     index,
-                                    "iconColor",
+                                    "icon_color",
                                     e.target.value,
                                   )
                                 }
@@ -734,7 +746,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
               />
             </Box>
 
-            {formData.type !== "running" && (
+            {formData.announcement_type !== "running" && (
               <Box sx={{ mb: 3 }}>
                 <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
                   Subheading
@@ -751,7 +763,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
               </Box>
             )}
 
-            {formData.type === "running" && (
+            {formData.announcement_type === "running" && (
               <>
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
@@ -759,8 +771,8 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                   </Typography>
                   <Select
                     fullWidth
-                    name="ctaType"
-                    value={formData.ctaType || "none"}
+                    name="cta_type"
+                    value={formData.cta_type || "none"}
                     onChange={handleChange}
                     size="small"
                   >
@@ -771,10 +783,10 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                     </MenuItem>
                   </Select>
                 </Box>
-                {(formData.ctaType === "button" ||
-                  formData.ctaType === "clickable_bar") && (
+                {(formData.cta_type === "button" ||
+                  formData.cta_type === "clickable_bar") && (
                   <>
-                    {formData.ctaType === "button" && (
+                    {formData.cta_type === "button" && (
                       <Box sx={{ mb: 3 }}>
                         <Typography
                           variant="body2"
@@ -784,13 +796,13 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                         </Typography>
                         <TextField
                           fullWidth
-                          value={formData.ctaText || ""}
+                          value={formData.cta_text || ""}
                           onChange={handleChange}
-                          placeholder={formData.ctaText}
+                          placeholder={formData.cta_text}
                           size="small"
-                          name="ctaText"
+                          name="cta_text"
                           inputProps={{ maxLength: 20 }}
-                          helperText={`${(formData.ctaText || "").length}/20`}
+                          helperText={`${(formData.cta_text || "").length}/20`}
                         />
                       </Box>
                     )}
@@ -804,8 +816,8 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                       </Typography>
                       <TextField
                         fullWidth
-                        name="ctaLink"
-                        value={formData.ctaLink || ""}
+                        name="cta_link"
+                        value={formData.cta_link || ""}
                         onChange={handleChange}
                         placeholder="https://example.com"
                         size="small"
@@ -816,7 +828,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
               </>
             )}
 
-            {formData.type !== "running" && (
+            {formData.announcement_type !== "running" && (
               <Box sx={{ mb: 2 }}>
                 <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
                   Icon
@@ -852,7 +864,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            color: formData.iconColor,
+                            color: formData.icon_color,
                             "& svg": { width: 32, height: 32 },
                           }}
                           dangerouslySetInnerHTML={{ __html: formData.icon }}
@@ -862,7 +874,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                           sx={{
                             width: 50,
                             height: 50,
-                            backgroundColor: formData.iconColor,
+                            backgroundColor: formData.icon_color,
                             maskImage: `url(${formData.icon})`,
                             maskSize: "contain",
                             maskRepeat: "no-repeat",
@@ -920,8 +932,8 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                       >
                         <input
                           type="color"
-                          name="iconColor"
-                          value={formData.iconColor}
+                          name="icon_color"
+                          value={formData.icon_color}
                           onChange={handleChange}
                           style={{
                             width: "32px",
@@ -933,8 +945,8 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                           }}
                         />
                         <TextField
-                          name="iconColor"
-                          value={formData.iconColor}
+                          name="icon_color"
+                          value={formData.icon_color}
                           onChange={handleChange}
                           size="small"
                           sx={{ width: "100px" }}
@@ -1007,8 +1019,8 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
             </Typography>
             <TextField
               type="datetime-local"
-              name="startTime"
-              value={formData.startTime}
+              name="start_datetime"
+              value={formData.start_datetime}
               onChange={handleChange}
               size="small"
             />
@@ -1017,8 +1029,8 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
             <FormControlLabel
               control={
                 <Checkbox
-                  name="hasEndDate"
-                  checked={formData.hasEndDate}
+                  name="has_end_date"
+                  checked={formData.has_end_date}
                   onChange={handleChange}
                   size="small"
                 />
@@ -1026,15 +1038,15 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
               label="Set end date"
             />
           </Box>
-          {formData.hasEndDate && (
+          {formData.has_end_date && (
             <Box>
               <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
                 End date
               </Typography>
               <TextField
                 type="datetime-local"
-                name="endDate"
-                value={formData.endDate || ""}
+                name="end_datetime"
+                value={formData.end_datetime || ""}
                 onChange={handleChange}
                 size="small"
               />

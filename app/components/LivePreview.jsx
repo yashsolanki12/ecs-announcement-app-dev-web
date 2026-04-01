@@ -21,7 +21,8 @@ const LivePreview = ({ formData, viewMode }) => {
   const [isTransitioning, setIsTransitioning] = React.useState(true);
 
   const items =
-    formData.type === "multiple" && (formData.announcements || []).length > 0
+    formData.announcement_type === "multiple" &&
+    (formData.announcements || []).length > 0
       ? formData.announcements
       : [formData];
   const extendedItems = [items[items.length - 1], ...items, items[0]];
@@ -41,7 +42,7 @@ const LivePreview = ({ formData, viewMode }) => {
   };
 
   React.useEffect(() => {
-    if (formData.type === "multiple" && items.length > 1) {
+    if (formData.announcement_type === "multiple" && items.length > 1) {
       const interval = setInterval(() => {
         handleNext();
       }, 5000);
@@ -49,7 +50,7 @@ const LivePreview = ({ formData, viewMode }) => {
     } else {
       setCurrentAnnouncementIndex(1);
     }
-  }, [formData.type, items.length]);
+  }, [formData.announcement_type, items.length]);
 
   // Handle Jump Back/Forward for Infinite Effect
   React.useEffect(() => {
@@ -82,21 +83,21 @@ const LivePreview = ({ formData, viewMode }) => {
   }, [isTransitioning]);
 
   const getBackgroundStyle = () => {
-    if (formData.backgroundType === "image") {
+    if (formData.background_type === "image") {
       return {
-        backgroundImage: `url(${formData.backgroundImage})`,
+        backgroundImage: `url(${formData.background_image})`,
         backgroundRepeat: "repeat",
         backgroundSize: "cover",
         backgroundPosition: "center center",
-        backgroundColor: formData.backgroundColor || "transparent",
+        backgroundColor: formData.background_color || "transparent",
       };
     }
-    if (formData.backgroundType === "single") {
-      return { backgroundColor: formData.backgroundColor };
+    if (formData.background_type === "single") {
+      return { backgroundColor: formData.background_color };
     }
-    if (formData.backgroundType === "gradient") {
+    if (formData.background_type === "gradient") {
       return {
-        background: `linear-gradient(90deg, ${formData.gradientColors[0]}, ${formData.gradientColors[1]})`,
+        background: `linear-gradient(90deg, ${formData.gradient_colors?.[0] || "#ff7e5f"}, ${formData.gradient_colors?.[1] || "#feb47b"})`,
       };
     }
     return { backgroundColor: "#fce1d0" };
@@ -104,10 +105,11 @@ const LivePreview = ({ formData, viewMode }) => {
 
   const AnnouncementContent = ({ item }) => {
     const data = item || formData;
-    const currentCtaType =
-      data.ctaType && data.ctaType !== "none" ? data.ctaType : formData.ctaType;
-    const currentCtaLink = data.ctaLink || formData.ctaLink;
-    console.log("curr", formData.type);
+    const current_cta_type =
+      data.cta_type && data.cta_type !== "none"
+        ? data.cta_type
+        : formData.cta_type;
+    const current_cta_link = data.cta_link || formData.cta_link;
     const content = (
       <Box
         sx={{
@@ -120,14 +122,14 @@ const LivePreview = ({ formData, viewMode }) => {
           textDecoration: "none",
           color: "inherit",
           cursor:
-            currentCtaType === "clickable_bar" &&
-            currentCtaLink &&
-            currentCtaLink.trim() !== ""
+            current_cta_type === "clickable_bar" &&
+            current_cta_link &&
+            current_cta_link.trim() !== ""
               ? "pointer"
               : "default",
         }}
       >
-        {formData.type !== "running" && (
+        {formData.announcement_type !== "running" && (
           <Box
             sx={{
               width: isMobile ? 24 : 32,
@@ -135,7 +137,7 @@ const LivePreview = ({ formData, viewMode }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: data.iconColor,
+              color: data.icon_color,
               flexShrink: 0,
               "& svg": { width: "100%", height: "100%" },
             }}
@@ -151,7 +153,7 @@ const LivePreview = ({ formData, viewMode }) => {
                   sx={{
                     width: "100%",
                     height: "100%",
-                    backgroundColor: data.iconColor,
+                    backgroundColor: data.icon_color,
                     maskImage: `url(${data.icon})`,
                     maskSize: "contain",
                     maskRepeat: "no-repeat",
@@ -198,9 +200,9 @@ const LivePreview = ({ formData, viewMode }) => {
           <Box
             sx={{
               fontSize: isMobile
-                ? `${Math.min(14, Math.max(11, formData.titleSize - 4))}px`
-                : `${formData.titleSize}px`,
-              color: formData.titleColor,
+                ? `${Math.min(14, Math.max(11, formData.title_size - 4))}px`
+                : `${formData.title_size}px`,
+              color: formData.title_color,
               fontWeight: 400,
               lineHeight: 1.2,
               whiteSpace: "nowrap",
@@ -213,11 +215,11 @@ const LivePreview = ({ formData, viewMode }) => {
             }}
           />
 
-          {formData.type !== "running" && data.subheading && (
+          {formData.announcement_type !== "running" && data.subheading && (
             <Typography
               sx={{
-                fontSize: `${formData.subheadingSize}px`,
-                color: formData.subheadingColor,
+                fontSize: `${formData.subheading_size}px`,
+                color: formData.subheading_color,
                 fontWeight: 500,
                 mt: 0.1,
                 whiteSpace: "nowrap",
@@ -229,52 +231,55 @@ const LivePreview = ({ formData, viewMode }) => {
           )}
         </Box>
 
-        {formData.type !== "running" && currentCtaType === "button" && (
-          <Box sx={{ ml: isMobile ? 1 : 2, flexShrink: 0 }}>
-            <Button
-              variant="contained"
-              size={isMobile ? "extra-small" : "small"}
-              href={currentCtaLink}
-              target="_blank"
-              sx={{
-                bgcolor: formData.buttonBackgroundColor || "#55c521",
-                color: formData.buttonTextColor || "#ffffff",
-                textTransform: "none",
-                borderRadius: "6px",
-                whiteSpace: "nowrap",
-                fontSize: isMobile
-                  ? `${Math.max(10, (formData.buttonFontSize || 14) - 2)}px`
-                  : `${formData.buttonFontSize || 14}px`,
-                padding: isMobile ? "2px 8px" : "4px 12px",
-                borderStyle: formData.buttonBorderStyle || "solid",
-                borderWidth:
-                  formData.buttonBorderStyle &&
-                  formData.buttonBorderStyle !== "none"
-                    ? "3px"
-                    : "0px",
-                borderColor: formData.buttonBorderColor || "#9dfc1f",
-                "&:hover": {
-                  bgcolor: formData.buttonBackgroundColor || "#55c521",
-                  filter: "brightness(0.9)",
-                },
-              }}
-            >
-              {data.ctaText || formData.ctaText || "Shop now!"}
-            </Button>
-          </Box>
-        )}
+        {formData.announcement_type !== "running" &&
+          current_cta_type === "button" && (
+            <Box sx={{ ml: isMobile ? 1 : 2, flexShrink: 0 }}>
+              <Button
+                variant="contained"
+                size={isMobile ? "extra-small" : "small"}
+                href={current_cta_link}
+                target="_blank"
+                sx={{
+                  bgcolor: formData.button_background_color || "#55c521",
+                  color: formData.button_text_color || "#ffa8B6",
+                  textTransform: "none",
+                  borderRadius: "6px",
+                  whiteSpace: "nowrap",
+                  fontSize: isMobile
+                    ? `${Math.max(10, (formData.button_font_size || 14) - 2)}px`
+                    : `${formData.button_font_size || 14}px`,
+                  padding: isMobile ? "2px 8px" : "4px 12px",
+                  borderStyle: formData.button_border_style || "solid",
+                  borderWidth:
+                    formData.button_border_style &&
+                    formData.button_border_style !== "none"
+                      ? "3px"
+                      : "0px",
+                  borderColor: formData.button_border_color || "#9dfc1f",
+                  "&:hover": {
+                    bgcolor: formData.button_background_color || "#55c521",
+                    filter: "brightness(0.9)",
+                  },
+                  flexShrink: 0,
+                }}
+              >
+                {data.cta_text || formData.cta_text || "Shop now!"}
+              </Button>
+            </Box>
+          )}
       </Box>
     );
 
     if (
-      (currentCtaType === "clickable_bar" || formData.type === "multiple") &&
-      currentCtaLink &&
-      currentCtaLink.trim() !== ""
+      (current_cta_type === "clickable_bar" ||
+        formData.announcement_type === "multiple") &&
+      current_cta_link &&
+      current_cta_link.trim() !== ""
     ) {
       return (
         <Box
           component="a"
-          href={currentCtaLink}
+          href={current_cta_link}
           target="_blank"
           sx={{
             textDecoration: "none",
@@ -327,14 +332,14 @@ const LivePreview = ({ formData, viewMode }) => {
             flexGrow: 1,
           }}
         >
-          {formData.type === "running" ? (
+          {formData.announcement_type === "running" ? (
             <Box
               sx={{
                 display: "flex",
                 width: "max-content",
-                animation: `marquee ${(formData.marqueeSpeed || 20) * 3}s linear infinite`,
+                animation: `marquee ${(formData.marquee_speed || 20) * 3}s linear infinite`,
                 animationDirection:
-                  formData.marqueeDirection === "left" ? "normal" : "reverse",
+                  formData.marquee_direction === "left" ? "normal" : "reverse",
                 "@keyframes marquee": {
                   "0%": { transform: "translateX(0)" },
                   "100%": { transform: "translateX(-50%)" },
@@ -361,18 +366,19 @@ const LivePreview = ({ formData, viewMode }) => {
                 height: "100%",
               }}
             >
-              {formData.type === "multiple" &&
+              {formData.announcement_type === "multiple" &&
                 (formData.announcements || []).length > 1 && (
                   <IconButton
                     size="small"
                     onClick={handlePrev}
                     sx={{
-                      color: formData.arrowIconColor || "#3c9eff",
+                      color: formData.arrow_icon_color || "#3c9eff",
                       zIndex: 3,
                       position: "absolute",
                       left: isMobile ? -4 : 0,
                       padding: isMobile ? "4px" : "8px",
                       "& svg": { fontSize: isMobile ? "1.2rem" : "1.5rem" },
+                      flexShrink: 0,
                     }}
                   >
                     <ChevronLeftIcon />
@@ -417,13 +423,13 @@ const LivePreview = ({ formData, viewMode }) => {
                 </Box>
               </Box>
 
-              {formData.type === "multiple" &&
+              {formData.announcement_type === "multiple" &&
                 (formData.announcements || []).length > 1 && (
                   <IconButton
                     size="small"
                     onClick={handleNext}
                     sx={{
-                      color: formData.arrowIconColor || "#3c9eff",
+                      color: formData.arrow_icon_color || "#3c9eff",
                       zIndex: 3,
                       position: "absolute",
                       right: isMobile ? -4 : 0,
@@ -439,40 +445,41 @@ const LivePreview = ({ formData, viewMode }) => {
         </Box>
 
         {/* Call to action button */}
-        {formData.type === "running" && formData.ctaType === "button" && (
-          <Box sx={{ px: 2, flexShrink: 0, zIndex: 2 }}>
-            <Button
-              variant="contained"
-              size={isMobile ? "extra-small" : "small"}
-              href={formData.ctaLink}
-              target="_blank"
-              sx={{
-                bgcolor: formData.buttonBackgroundColor || "#55c521",
-                color: formData.buttonTextColor || "#ffffff",
-                textTransform: "none",
-                borderRadius: "6px",
-                whiteSpace: "nowrap",
-                fontSize: isMobile
-                  ? `${Math.max(10, (formData.buttonFontSize || 14) - 2)}px`
-                  : `${formData.buttonFontSize || 14}px`,
-                padding: isMobile ? "2px 8px" : "4px 12px",
-                borderStyle: formData.buttonBorderStyle || "solid",
-                borderWidth:
-                  formData.buttonBorderStyle &&
-                  formData.buttonBorderStyle !== "none"
-                    ? "1px"
-                    : "0px",
-                borderColor: formData.buttonBorderColor || "#9dfc1f",
-                "&:hover": {
-                  bgcolor: formData.buttonBackgroundColor || "#55c521",
-                  filter: "brightness(0.9)",
-                },
-              }}
-            >
-              {formData.ctaText || "Shop now"}
-            </Button>
-          </Box>
-        )}
+        {formData.announcement_type === "running" &&
+          formData.cta_type === "button" && (
+            <Box sx={{ px: 2, flexShrink: 0, zIndex: 2 }}>
+              <Button
+                variant="contained"
+                size={isMobile ? "extra-small" : "small"}
+                href={formData.cta_link}
+                target="_blank"
+                sx={{
+                  bgcolor: formData.button_background_color || "#55c521",
+                  color: formData.button_text_color || "#ffffff",
+                  textTransform: "none",
+                  borderRadius: "6px",
+                  whiteSpace: "nowrap",
+                  fontSize: isMobile
+                    ? `${Math.max(10, (formData.button_font_size || 14) - 2)}px`
+                    : `${formData.button_font_size || 14}px`,
+                  padding: isMobile ? "2px 8px" : "4px 12px",
+                  borderStyle: formData.button_border_style || "solid",
+                  borderWidth:
+                    formData.button_border_style &&
+                    formData.button_border_style !== "none"
+                      ? "2.5px"
+                      : "0px",
+                  borderColor: formData.button_border_color || "#9dfc1f",
+                  "&:hover": {
+                    bgcolor: formData.button_background_color || "#55c521",
+                    filter: "brightness(0.9)",
+                  },
+                }}
+              >
+                {formData.cta_text || "Shop now"}
+              </Button>
+            </Box>
+          )}
       </Box>
     </Box>
   );
