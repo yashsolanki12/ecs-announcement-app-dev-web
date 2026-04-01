@@ -12,7 +12,7 @@ import Grid from "@mui/material/Grid";
 import { builtinIcons } from "../utils/helper";
 
 const IconPickerModal = ({ open, onClose, onSelect, selectedIcon }) => {
-  // const [searchTerm, setSearchTerm] = useState("");
+  // const [searchTerm, setSearchTerm] = React.useState("");
   const [tempSelectedIcon, setTempSelectedIcon] = React.useState(selectedIcon);
 
   // Sync temp state when modal opens
@@ -76,11 +76,12 @@ const IconPickerModal = ({ open, onClose, onSelect, selectedIcon }) => {
       <DialogContent dividers sx={{ p: 2 }}>
         {categories.map((category) => {
           const categoryIcons = builtinIcons[category];
-          // const filteredIcons = Object.entries(categoryIcons).filter(([name]) =>
-          //   name.toLowerCase().includes(searchTerm.toLowerCase()),
-          // );
+          const filteredIcons = Object.entries(categoryIcons).filter(
+            ([name]) => name.toLowerCase(),
+            //.includes(searchTerm.toLowerCase())
+          );
 
-          // if (filteredIcons.length === 0) return null;
+          if (filteredIcons.length === 0) return null;
 
           return (
             <Box key={category} sx={{ mb: 4 }}>
@@ -96,7 +97,7 @@ const IconPickerModal = ({ open, onClose, onSelect, selectedIcon }) => {
                 {category.replace("_", " ")}
               </Typography>
               <Grid container spacing={1}>
-                {/* {filteredIcons.map(([name, svg]) => (
+                {filteredIcons.map(([name, svg]) => (
                   <Grid item key={name}>
                     <IconButton
                       onClick={() => setTempSelectedIcon(svg)}
@@ -120,16 +121,26 @@ const IconPickerModal = ({ open, onClose, onSelect, selectedIcon }) => {
                       }}
                     >
                       <Box
+                        component="span"
                         sx={{
-                          display: "flex",
+                          display: "inline-flex",
                           alignItems: "center",
                           justifyContent: "center",
+                          width: 24,
+                          height: 24,
+                          color: "#637381",
+                          "& svg": {
+                            width: "100%",
+                            height: "100%",
+                            fill: "none",
+                            stroke: "currentColor",
+                          },
                         }}
                         dangerouslySetInnerHTML={{ __html: svg }}
                       />
                     </IconButton>
                   </Grid>
-                ))} */}
+                ))}
               </Grid>
             </Box>
           );
