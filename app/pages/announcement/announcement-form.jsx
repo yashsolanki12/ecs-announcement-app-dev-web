@@ -28,6 +28,7 @@ import {
 
 import { getCurrentShopSession } from "../../api/current-shop-session";
 import useAnnouncementData from "../../hooks/useAnnouncementData";
+import useAnnouncementSubmit from "../../hooks/useAnnouncementSubmit";
 
 const steps = ["Content", "Design", "Placement"];
 
@@ -45,50 +46,73 @@ const AnnouncementForm = ({ id, heading }) => {
 
   const [formData, setFormData] = React.useState({
     announcement_name: "Quick Announcement Bar",
-    type: "simple",
+    announcement_type: "simple",
     title: "Free shipping over $ 100🎁",
     subheading: "Subheading",
     icon: "",
-    iconColor: "#000000",
-    startTime: new Date().toISOString().slice(0, 16),
-    hasEndDate: false,
-    endDate: "",
+    icon_color: "#e14749",
+    start_datetime: new Date().toISOString().slice(0, 16),
+    has_end_date: false,
+    end_datetime: "",
     position: "top",
-    backgroundType: "gradient",
-    backgroundColor: "#fce1d0",
-    gradientColors: ["#fce1d0", "#ffadd6"],
-    backgroundImage: "",
-    fontFamily: "inherit",
-    titleSize: 14,
-    titleColor: "#000000",
-    subheadingSize: 12,
-    subheadingColor: "#000000",
+    background_type: "gradient",
+    background_color: "#b69784",
+    gradient_colors: ["#fce1d0", "#ffadd6"],
+    background_image: "",
+    title_size: 14,
+    title_color: "#64a7e2",
+    subheading_size: 12,
+    subheading_color: "#bb7ece",
     page_display: ["all", "home", "products", "catalog", "contact"],
-    templateId: "custom",
+    template_id: "custom",
     enabled: false,
-    marqueeDirection: "right",
-    marqueeSpeed: 20,
-    ctaType: "none",
-    ctaText: "Shop now!",
-    ctaLink: "",
-    arrowIconColor: "#3c9eff",
-    buttonFontSize: 14,
-    buttonTextColor: "#ffffff",
-    buttonBackgroundColor: "#16180a",
-    buttonBorderStyle: "solid",
-    buttonBorderColor: "#9dfc1f",
+    marquee_direction: "right",
+    marquee_speed: 20,
+    cta_type: "none",
+    cta_text: "Shop now!",
+    cta_link: "",
+    arrow_icon_color: "#3c9eff",
+    button_font_size: 14,
+    button_text_color: "#c48282",
+    button_background_color: "#aeb963",
+    button_border_style: "solid",
+    button_border_color: "#9dfc1f",
     announcements: [
       {
         title: "Free shipping over $ 100🎁",
         subheading: "",
-        ctaType: "none",
-        ctaLink: "",
-        ctaText: "Shop now!",
+        cta_type: "none",
+        cta_link: "",
+        cta_text: "Shop now!",
         icon: "",
-        iconColor: "#000000",
+        icon_color: "#e14749",
       },
     ],
   });
+
+  // Create mutation
+  const createMutation = useAnnouncementSubmit(
+    (data) => createAnnouncement(data),
+    setSnackbar,
+    {
+      invalidateKeys: [["announcement-bar"]],
+      onSuccess: () => {
+        navigate("/app");
+      },
+    },
+  );
+
+  // Update mutation
+  const updateMutation = useAnnouncementSubmit(
+    (data) => updateAnnouncement({ id, data }),
+    setSnackbar,
+    {
+      invalidateKeys: [["announcement"]],
+      onSuccess: () => {
+        navigate("/app");
+      },
+    },
+  );
 
   // Current shop API
   const {
@@ -104,7 +128,47 @@ const AnnouncementForm = ({ id, heading }) => {
     try {
       const response = await getAnnouncementById(id);
       if (response.success && response.data) {
-        setFormData(response.data);
+        const data = response.data;
+
+        // If announcement_type is multiple, we need to convert flat data to announcements array
+        if (data.announcement_type === "multiple") {
+          const announcements = [];
+
+          // Use existing announcements from backend or create from title/subheading
+          if (data.announcements && data.announcements.length > 0) {
+            // Backend already has announcements array
+            announcements.push(...data.announcements);
+          } else {
+            // Create announcement from flat fields
+            announcements.push({
+              title: data.title || "",
+              subheading: data.subheading || "",
+              cta_type: data.cta_type || "none",
+              cta_link: data.cta_link || "",
+              cta_text: data.cta_text || "Shop now!",
+              icon: data.icon || "",
+              icon_color: data.icon_color || "#e14749",
+            });
+          }
+
+          setFormData({ ...data, announcements });
+        } else {
+          // For simple type, keep the flat structure
+          setFormData({
+            ...data,
+            announcements: [
+              {
+                title: data.title || "",
+                subheading: data.subheading || "",
+                cta_type: data.cta_type || "none",
+                cta_link: data.cta_link || "",
+                cta_text: data.cta_text || "Shop now!",
+                icon: data.icon || "",
+                icon_color: data.icon_color || "#e14749",
+              },
+            ],
+          });
+        }
       }
     } catch (error) {
       console.error("Error fetching announcement:", error);
@@ -135,18 +199,15 @@ const AnnouncementForm = ({ id, heading }) => {
       shopify_session_id: announcementSessionData?.data?._id || null,
     };
     try {
-      let response;
       if (isEditMode) {
-        response = await updateAnnouncement({ id, data: formData });
+        updateMutation.mutate(formData, {
+          onError: handleApiError,
+        });
       } else {
-        response = await createAnnouncement(createPayload);
+        createMutation.mutate(createPayload, {
+          onError: handleApiError,
+        });
       }
-      setSnackbar({
-        open: true,
-        message: isEditMode ? response.message : response.message,
-        severity: "success",
-      });
-      setTimeout(() => navigate("/app/announcement"), 1500);
     } catch (error) {
       setSnackbar({
         open: true,
@@ -254,6 +315,44 @@ const AnnouncementForm = ({ id, heading }) => {
     }
   };
 
+  const handleApiError = (error) => {
+    const errorResponse = error.response?.data;
+    const errorMessage = errorResponse?.message;
+    let message = "Failed to save announcement";
+
+    if (Array.isArray(errorResponse) && errorResponse.length > 0) {
+      message = errorResponse.join(" | ");
+    } else if (errorResponse?.message) {
+      message = errorResponse.message;
+    } else if (error.message) {
+      message = error.message;
+    }
+    if (Array.isArray(errorMessage)) {
+      // API returns array of validation errors
+      const newErrors = {};
+      errorMessage.forEach((msg) => {
+        if (typeof msg === "string") {
+          if (msg.toLowerCase().includes("title")) {
+            newErrors.title = msg;
+          }
+          // else if (msg.toLowerCase().includes("description")) {
+          //   newErrors.description = msg;
+          // }
+        }
+      });
+
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+      }
+    } else {
+      setSnackbar({
+        open: true,
+        message,
+        severity: "error",
+      });
+    }
+  };
+
   React.useEffect(() => {
     if (isEditMode) {
       fetchData();
@@ -294,7 +393,7 @@ const AnnouncementForm = ({ id, heading }) => {
           </Box>
         </Box>
         <Stack direction="row" spacing={1}>
-          {isEditMode && (
+          {/* {isEditMode && (
             <>
               <Button
                 variant="outlined"
@@ -322,7 +421,7 @@ const AnnouncementForm = ({ id, heading }) => {
                 {formData.enabled ? "Unpublish" : "Publish"}
               </Button>
             </>
-          )}
+          )} */}
           <Button
             variant="contained"
             onClick={handleSave}

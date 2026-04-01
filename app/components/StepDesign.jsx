@@ -24,9 +24,11 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
   };
 
   const handleGradientChange = (index, color) => {
-    const newGradients = [...formData.gradientColors];
+    const newGradients = [
+      ...(formData.gradient_colors || ["#ff7e5f", "#feb47b"]),
+    ];
     newGradients[index] = color;
-    setFormData((prev) => ({ ...prev, gradientColors: newGradients }));
+    setFormData((prev) => ({ ...prev, gradient_colors: newGradients }));
   };
   const handleTemplateChange = (e) => {
     const templateId = e.target.value;
@@ -35,11 +37,12 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
     if (selectedTemplate && selectedTemplate.config) {
       setFormData((prev) => ({
         ...prev,
-        templateId,
+        template_id: templateId,
+        background_image: selectedTemplate.config.backgroundImage || "",
         ...selectedTemplate.config,
       }));
     } else {
-      setFormData((prev) => ({ ...prev, templateId }));
+      setFormData((prev) => ({ ...prev, template_id: templateId }));
     }
   };
 
@@ -74,8 +77,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
           </Typography>
           <Select
             fullWidth
-            name="templateId"
-            value={formData.templateId || "custom"}
+            name="template_id"
+            value={formData.template_id || "custom"}
             onChange={handleTemplateChange}
             size="small"
             MenuProps={{
@@ -95,7 +98,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
           </Select>
         </Box>
 
-        {formData.type === "multiple" && (
+        {formData.announcement_type === "multiple" && (
           <Box sx={{ mt: 2 }}>
             <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
               Arrow icon color
@@ -103,8 +106,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <input
                 type="color"
-                name="arrowIconColor"
-                value={formData.arrowIconColor || "#17d0d3"}
+                name="arrow_icon_color"
+                value={formData.arrow_icon_color || "#17d0d3"}
                 onChange={handleChange}
                 style={{
                   width: "40px",
@@ -114,8 +117,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                 }}
               />
               <TextField
-                name="arrowIconColor"
-                value={formData.arrowIconColor || "#17d0d3"}
+                name="arrow_icon_color"
+                value={formData.arrow_icon_color || "#17d0d3"}
                 onChange={handleChange}
                 size="small"
                 sx={{ width: "120px" }}
@@ -133,8 +136,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
           Background
         </Typography>
         <RadioGroup
-          name="backgroundType"
-          value={formData.backgroundType}
+          name="background_type"
+          value={formData.background_type}
           onChange={handleChange}
         >
           <FormControlLabel
@@ -142,12 +145,19 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             control={<Radio size="small" />}
             label="Single color background"
           />
-          {formData.backgroundType === "single" && (
-            <Box sx={{ ml: 4, mb: 2 }}>
+          {formData.background_type === "single" && (
+            <Box
+              sx={{
+                mb: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
               <input
                 type="color"
-                name="backgroundColor"
-                value={formData.backgroundColor}
+                name="background_color"
+                value={formData.background_color}
                 onChange={handleChange}
                 style={{
                   width: "40px",
@@ -155,6 +165,12 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   border: "none",
                   cursor: "pointer",
                 }}
+              />
+              <TextField
+                name="background_color"
+                value={formData.background_color}
+                onChange={handleChange}
+                size="small"
               />
             </Box>
           )}
@@ -164,11 +180,11 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             control={<Radio size="small" />}
             label="Gradient background"
           />
-          {formData.backgroundType === "gradient" && (
-            <Box sx={{ ml: 4, mb: 2, display: "flex", gap: 2 }}>
+          {formData.background_type === "gradient" && (
+            <Box sx={{ mb: 2, display: "flex", gap: 2 }}>
               <input
                 type="color"
-                value={formData.gradientColors[0]}
+                value={formData.gradient_colors?.[0] || "#ff7e5f"}
                 onChange={(e) => handleGradientChange(0, e.target.value)}
                 style={{
                   width: "40px",
@@ -177,9 +193,21 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   cursor: "pointer",
                 }}
               />
+              <TextField
+                name="background_color"
+                value={formData.background_color}
+                onChange={handleChange}
+                size="small"
+              />
+              {/* <TextField
+                name="gradient_colors"
+                value={formData.gradient_colors[0]}
+                onChange={handleChange}
+                size="small"
+              /> */}
               <input
                 type="color"
-                value={formData.gradientColors[1]}
+                value={formData.gradient_colors?.[1] || "#feb47b"}
                 onChange={(e) => handleGradientChange(1, e.target.value)}
                 style={{
                   width: "40px",
@@ -188,6 +216,18 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   cursor: "pointer",
                 }}
               />
+              <TextField
+                name="background_color"
+                value={formData.background_color}
+                onChange={handleChange}
+                size="small"
+              />
+              {/* <TextField
+                name="gradient_colors"
+                value={formData.gradient_colors[1]}
+                onChange={handleChange}
+                size="small"
+              /> */}
             </Box>
           )}
 
@@ -196,7 +236,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             control={<Radio size="small" />}
             label="Upload Image background"
           />
-          {formData.backgroundType === "image" && (
+          {formData.background_type === "image" && (
             <Box sx={{ ml: 4, mb: 2 }}>
               <Box
                 sx={{
@@ -220,9 +260,9 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                     flexShrink: 0,
                   }}
                 >
-                  {formData.backgroundImage ? (
+                  {formData.background_image ? (
                     <img
-                      src={formData.backgroundImage}
+                      src={formData.background_image}
                       alt="Background"
                       style={{
                         width: "100%",
@@ -306,7 +346,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                             reader.onloadend = () => {
                               setFormData((prev) => ({
                                 ...prev,
-                                backgroundImage: reader.result,
+                                background_image: reader.result,
                               }));
                               e.target.value = "";
                             };
@@ -315,7 +355,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                         }}
                       />
                     </Button>
-                    {formData.backgroundImage && (
+                    {formData.background_image && (
                       <Button
                         variant="text"
                         color="error"
@@ -324,7 +364,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                         onClick={() =>
                           setFormData((prev) => ({
                             ...prev,
-                            backgroundImage: "",
+                            background_image: "",
                           }))
                         }
                       >
@@ -365,8 +405,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             </Typography>
             <Select
               fullWidth
-              name="titleSize"
-              value={formData.titleSize}
+              name="title_size"
+              value={formData.title_size}
               onChange={handleChange}
               size="small"
               MenuProps={{
@@ -394,8 +434,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <input
                 type="color"
-                name="titleColor"
-                value={formData.titleColor}
+                name="title_color"
+                value={formData.title_color ?? "#ffa8B6"}
                 onChange={handleChange}
                 style={{
                   width: "32px",
@@ -405,8 +445,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                 }}
               />
               <TextField
-                name="titleColor"
-                value={formData.titleColor}
+                name="title_color"
+                value={formData.title_color}
                 onChange={handleChange}
                 size="small"
                 fullWidth
@@ -414,7 +454,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             </Box>
           </Grid>
 
-          {formData.type !== "running" && (
+          {formData.announcement_type !== "running" && (
             <>
               {/* Subheading Size  */}
               <Grid item xs={12} sm={6}>
@@ -423,8 +463,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                 </Typography>
                 <Select
                   fullWidth
-                  name="subheadingSize"
-                  value={formData.subheadingSize}
+                  name="subheading_size"
+                  value={formData.subheading_size}
                   onChange={handleChange}
                   size="small"
                   MenuProps={{
@@ -452,8 +492,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <input
                     type="color"
-                    name="subheadingColor"
-                    value={formData.subheadingColor}
+                    name="subheading_color"
+                    value={formData.subheading_color ?? "#a28089"}
                     onChange={handleChange}
                     style={{
                       width: "32px",
@@ -463,8 +503,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                     }}
                   />
                   <TextField
-                    name="subheadingColor"
-                    value={formData.subheadingColor}
+                    name="subheading_color"
+                    value={formData.subheading_color}
                     onChange={handleChange}
                     size="small"
                     fullWidth
@@ -476,7 +516,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
         </Box>
 
         {/* Button Settings */}
-        {(formData.type === "multiple" || formData.type === "running") && (
+        {(formData.announcement_type === "multiple" ||
+          formData.announcement_type === "running") && (
           <>
             <Typography
               variant="subtitle2"
@@ -504,8 +545,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                 </Typography>
                 <Select
                   fullWidth
-                  name="buttonFontSize"
-                  value={formData.buttonFontSize || 14}
+                  name="button_font_size"
+                  value={formData.button_font_size || 14}
                   onChange={handleChange}
                   size="small"
                   MenuProps={{
@@ -533,8 +574,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <input
                     type="color"
-                    name="buttonTextColor"
-                    value={formData.buttonTextColor || "#ffffff"}
+                    name="button_text_color"
+                    value={formData.button_text_color || "#ffffff"}
                     onChange={handleChange}
                     style={{
                       width: "32px",
@@ -544,8 +585,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                     }}
                   />
                   <TextField
-                    name="buttonTextColor"
-                    value={formData.buttonTextColor || "#ffffff"}
+                    name="button_text_color"
+                    value={formData.button_text_color || "#ffffff"}
                     onChange={handleChange}
                     size="small"
                     fullWidth
@@ -560,8 +601,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                 </Typography>
                 <Select
                   fullWidth
-                  name="buttonBorderStyle"
-                  value={formData.buttonBorderStyle || "none"}
+                  name="button_border_style"
+                  value={formData.button_border_style || "none"}
                   onChange={handleChange}
                   size="small"
                 >
@@ -580,8 +621,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <input
                     type="color"
-                    name="buttonBorderColor"
-                    value={formData.buttonBorderColor || "#9dfc1f"}
+                    name="button_border_color"
+                    value={formData.button_border_color || "#9dfc1f"}
                     onChange={handleChange}
                     style={{
                       width: "32px",
@@ -591,8 +632,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                     }}
                   />
                   <TextField
-                    name="buttonBorderColor"
-                    value={formData.buttonBorderColor || "#9dfc1f"}
+                    name="button_border_color"
+                    value={formData.button_border_color || "#9dfc1f"}
                     onChange={handleChange}
                     size="small"
                     fullWidth
@@ -608,8 +649,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <input
                     type="color"
-                    name="buttonBackgroundColor"
-                    value={formData.buttonBackgroundColor || "#55c521"}
+                    name="button_background_color"
+                    value={formData.button_background_color || "#55c521"}
                     onChange={handleChange}
                     style={{
                       width: "32px",
@@ -619,8 +660,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                     }}
                   />
                   <TextField
-                    name="buttonBackgroundColor"
-                    value={formData.buttonBackgroundColor || "#55c521"}
+                    name="button_background_color"
+                    value={formData.button_background_color || "#55c521"}
                     onChange={handleChange}
                     size="small"
                     fullWidth
