@@ -1,20 +1,19 @@
-import React, { useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Box,
-  Typography,
-  IconButton,
-  Grid,
-} from "@mui/material";
-import { builtinIcons } from "../../../utils/helper";
+import React from "react";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import Grid from "@mui/material/Grid";
+
+import { builtinIcons } from "../utils/helper";
 
 const IconPickerModal = ({ open, onClose, onSelect, selectedIcon }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [tempSelectedIcon, setTempSelectedIcon] = useState(selectedIcon);
+  // const [searchTerm, setSearchTerm] = useState("");
+  const [tempSelectedIcon, setTempSelectedIcon] = React.useState(selectedIcon);
 
   // Sync temp state when modal opens
   React.useEffect(() => {
@@ -77,11 +76,11 @@ const IconPickerModal = ({ open, onClose, onSelect, selectedIcon }) => {
       <DialogContent dividers sx={{ p: 2 }}>
         {categories.map((category) => {
           const categoryIcons = builtinIcons[category];
-          const filteredIcons = Object.entries(categoryIcons).filter(([name]) =>
-            name.toLowerCase().includes(searchTerm.toLowerCase()),
-          );
+          // const filteredIcons = Object.entries(categoryIcons).filter(([name]) =>
+          //   name.toLowerCase().includes(searchTerm.toLowerCase()),
+          // );
 
-          if (filteredIcons.length === 0) return null;
+          // if (filteredIcons.length === 0) return null;
 
           return (
             <Box key={category} sx={{ mb: 4 }}>
@@ -97,7 +96,7 @@ const IconPickerModal = ({ open, onClose, onSelect, selectedIcon }) => {
                 {category.replace("_", " ")}
               </Typography>
               <Grid container spacing={1}>
-                {filteredIcons.map(([name, svg]) => (
+                {/* {filteredIcons.map(([name, svg]) => (
                   <Grid item key={name}>
                     <IconButton
                       onClick={() => setTempSelectedIcon(svg)}
@@ -130,13 +129,13 @@ const IconPickerModal = ({ open, onClose, onSelect, selectedIcon }) => {
                       />
                     </IconButton>
                   </Grid>
-                ))}
+                ))} */}
               </Grid>
             </Box>
           );
         })}
 
-        {searchTerm &&
+        {/* {searchTerm &&
           categories.every(
             (cat) =>
               Object.entries(builtinIcons[cat]).filter(([n]) =>
@@ -148,7 +147,7 @@ const IconPickerModal = ({ open, onClose, onSelect, selectedIcon }) => {
                 No icons found for "{searchTerm}"
               </Typography>
             </Box>
-          )}
+          )} */}
       </DialogContent>
 
       <DialogActions sx={{ p: 2 }}>

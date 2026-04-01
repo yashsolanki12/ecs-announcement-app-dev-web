@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Box from "@mui/material/Box";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -43,12 +43,13 @@ const MenuButton = ({ onClick, active, icon, title }) => (
 );
 
 const CustomRichTextEditor = ({ value, onChange, maxLength }) => {
-  const [isClient, setIsClient] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [linkUrl, setLinkUrl] = useState("");
-  const [isEditingLink, setIsEditingLink] = useState(false);
+  const [isClient, setIsClient] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [linkUrl, setLinkUrl] = React.useState("");
+  const [isEditingLink, setIsEditingLink] = React.useState(false);
 
-  useEffect(() => {
+  // Enable the rich text editor
+  React.useEffect(() => {
     setIsClient(true);
   }, []);
 
@@ -72,15 +73,15 @@ const CustomRichTextEditor = ({ value, onChange, maxLength }) => {
         limit: maxLength || 30,
       }),
     ],
-    content: value,
+    content: value || "",
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
   });
 
-  useEffect(() => {
-    if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value);
+  React.useEffect(() => {
+    if (editor && value !== undefined && value !== editor.getHTML()) {
+      editor.commands.setContent(value || "");
     }
   }, [value, editor]);
 
@@ -294,9 +295,24 @@ const CustomRichTextEditor = ({ value, onChange, maxLength }) => {
       >
         <EditorContent editor={editor} />
       </Box>
-      <Box sx={{ p: 0.5, textAlign: "right", backgroundColor: "#f9f9f9", borderTop: "1px solid #eee" }}>
-        <Typography variant="caption" color={(editor?.storage?.characterCount?.characters() || 0) >= (maxLength || 30) ? "error" : "text.secondary"}>
-          {editor?.storage?.characterCount?.characters() || 0}/{(maxLength || 30)}
+      <Box
+        sx={{
+          p: 0.5,
+          textAlign: "right",
+          backgroundColor: "#f9f9f9",
+          borderTop: "1px solid #eee",
+        }}
+      >
+        <Typography
+          variant="caption"
+          color={
+            (editor?.storage?.characterCount?.characters() || 0) >=
+            (maxLength || 30)
+              ? "error"
+              : "text.secondary"
+          }
+        >
+          {editor?.storage?.characterCount?.characters() || 0}/{maxLength || 30}
         </Typography>
       </Box>
     </Box>

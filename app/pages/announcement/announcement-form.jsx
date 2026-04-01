@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
@@ -11,12 +11,13 @@ import TabletIcon from "@mui/icons-material/Tablet";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import Paper from "@mui/material/Paper";
 import Tooltip from "@mui/material/Tooltip";
+import Snackbar from "@mui/material/Snackbar";
 import { useNavigate } from "react-router";
 
-import LivePreview from "./components/LivePreview";
-import StepContent from "./components/StepContent";
-import StepDesign from "./components/StepDesign";
-import StepPlacement from "./components/StepPlacement";
+import LivePreview from "../../components/LivePreview";
+import StepContent from "../../components/StepContent";
+import StepDesign from "../../components/StepDesign";
+import StepPlacement from "../../components/StepPlacement";
 import {
   getAnnouncementById,
   createAnnouncement,
@@ -24,39 +25,35 @@ import {
   deleteAnnouncement,
   duplicateAnnouncement,
 } from "../../api/announcement";
-import Snackbar from "@mui/material/Snackbar";
-import { getCurrentShopSession } from "../..//api/current-shop-session";
-import useAnnouncementData from "../..//hooks/useAnnouncementData";
+
+import { getCurrentShopSession } from "../../api/current-shop-session";
+import useAnnouncementData from "../../hooks/useAnnouncementData";
 
 const steps = ["Content", "Design", "Placement"];
 
 const AnnouncementForm = ({ id, heading }) => {
   const isEditMode = Boolean(id);
   const navigate = useNavigate();
-  const [activeStep, setActiveStep] = useState(0);
-  const [viewMode, setViewMode] = useState("desktop");
-  const [loading, setLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState({
+  const [activeStep, setActiveStep] = React.useState(0);
+  const [viewMode, setViewMode] = React.useState("desktop");
+  const [loading, setLoading] = React.useState(false);
+  const [snackbar, setSnackbar] = React.useState({
     open: false,
     message: "",
     severity: "success",
   });
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = React.useState({
     announcement_name: "Quick Announcement Bar",
     type: "simple",
     title: "Free shipping over $ 100🎁",
     subheading: "Subheading",
-    cta: "",
     icon: "",
     iconColor: "#000000",
     startTime: new Date().toISOString().slice(0, 16),
     hasEndDate: false,
     endDate: "",
     position: "top",
-    sticky: false,
-    closeButton: false,
-    closeIconColor: "#6d7175",
     backgroundType: "gradient",
     backgroundColor: "#fce1d0",
     gradientColors: ["#fce1d0", "#ffadd6"],
@@ -74,6 +71,23 @@ const AnnouncementForm = ({ id, heading }) => {
     ctaType: "none",
     ctaText: "Shop now!",
     ctaLink: "",
+    arrowIconColor: "#3c9eff",
+    buttonFontSize: 14,
+    buttonTextColor: "#ffffff",
+    buttonBackgroundColor: "#16180a",
+    buttonBorderStyle: "solid",
+    buttonBorderColor: "#9dfc1f",
+    announcements: [
+      {
+        title: "Free shipping over $ 100🎁",
+        subheading: "",
+        ctaType: "none",
+        ctaLink: "",
+        ctaText: "Shop now!",
+        icon: "",
+        iconColor: "#000000",
+      },
+    ],
   });
 
   // Current shop API
@@ -84,8 +98,7 @@ const AnnouncementForm = ({ id, heading }) => {
     ["announcement-session"],
     getCurrentShopSession,
     null,
-    );
-  console.log("current", announcementSessionData.data._id);
+  );
 
   const fetchData = async () => {
     try {
@@ -102,12 +115,6 @@ const AnnouncementForm = ({ id, heading }) => {
       });
     }
   };
-
-  useEffect(() => {
-    if (isEditMode) {
-      fetchData();
-    }
-  }, [id, isEditMode]);
 
   const handleNavigateBack = () => {
     navigate("/app", { replace: true });
@@ -247,6 +254,12 @@ const AnnouncementForm = ({ id, heading }) => {
     }
   };
 
+  React.useEffect(() => {
+    if (isEditMode) {
+      fetchData();
+    }
+  }, [id, isEditMode]);
+
   return (
     <Box sx={{ maxWidth: "1200px", margin: "0 auto" }}>
       {/* Header */}
@@ -315,7 +328,12 @@ const AnnouncementForm = ({ id, heading }) => {
             onClick={handleSave}
             disabled={loading}
             size="small"
-            sx={{ bgcolor: "#202223", color: "white", textTransform: "none" }}
+            sx={{
+              bgcolor: "#202223",
+              color: "white",
+              textTransform: "none",
+              padding: "6px 23px",
+            }}
           >
             {isEditMode ? "Save" : "Create"}
           </Button>
@@ -323,7 +341,7 @@ const AnnouncementForm = ({ id, heading }) => {
             variant="outlined"
             onClick={handleNavigateBack}
             size="small"
-            sx={{ textTransform: "none" }}
+            sx={{ textTransform: "none", padding: "6px 23px" }}
           >
             Cancel
           </Button>
