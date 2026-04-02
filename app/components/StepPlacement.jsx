@@ -14,14 +14,17 @@ const StepPlacement = ({ formData, setFormData }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
-        <Typography
+        {/* <Typography
           variant="h6"
-          sx={{ fontWeight: 600, mb: 2, fontSize: "18px" }}
+          sx={{ fontWeight: 600, mb: 2, fontSize: "16px" }}
         >
           Placement Settings
-        </Typography>
-        <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
-          Select the pages where you want this announcement bar to appear.
+        </Typography> */}
+        <Typography
+          variant="body2"
+          sx={{ mb: 2, color: "black", fontSize: "14px", fontWeight: 650 }}
+        >
+          Select pages to display the bar
         </Typography>
 
         <Box sx={{ mt: 2 }}>
@@ -50,26 +53,40 @@ const StepPlacement = ({ formData, setFormData }) => {
                 const value = e.target.value;
                 const newValue =
                   typeof value === "string" ? value.split(",") : value;
-                
+
                 const wasAllSelected = formData.page_display.includes("all");
                 const isAllSelected = newValue.includes("all");
 
                 if (isAllSelected && !wasAllSelected) {
                   setFormData({
                     ...formData,
-                    page_display: ["all", "home", "products", "catalog", "contact"],
+                    page_display: [
+                      "all",
+                      "home",
+                      "products",
+                      "catalog",
+                      "contact",
+                    ],
                   });
                 } else if (wasAllSelected && !isAllSelected) {
                   setFormData({ ...formData, page_display: [] });
                 } else {
                   // If all items are selected without "all", or "all" was removed
                   const pagesOnly = ["home", "products", "catalog", "contact"];
-                  const allPagesSelected = pagesOnly.every((p) => newValue.includes(p));
-                  
+                  const allPagesSelected = pagesOnly.every((p) =>
+                    newValue.includes(p),
+                  );
+
                   if (allPagesSelected && !newValue.includes("all")) {
-                     setFormData({ ...formData, page_display: ["all", ...newValue] });
+                    setFormData({
+                      ...formData,
+                      page_display: ["all", ...newValue],
+                    });
                   } else if (!allPagesSelected && newValue.includes("all")) {
-                     setFormData({ ...formData, page_display: newValue.filter(p => p !== "all") });
+                    setFormData({
+                      ...formData,
+                      page_display: newValue.filter((p) => p !== "all"),
+                    });
                   } else {
                     setFormData({ ...formData, page_display: newValue });
                   }
@@ -80,7 +97,13 @@ const StepPlacement = ({ formData, setFormData }) => {
                 if (!selected || selected.length === 0) {
                   return "Select pages";
                 }
-                const allPages = ["all", "home", "products", "catalog", "contact"];
+                const allPages = [
+                  "all",
+                  "home",
+                  "products",
+                  "catalog",
+                  "contact",
+                ];
                 const allSelected = allPages.every((p) => selected.includes(p));
                 if (allSelected || selected.includes("all")) {
                   return "All Pages";
@@ -94,23 +117,40 @@ const StepPlacement = ({ formData, setFormData }) => {
             >
               <MenuItem value="all">
                 <Checkbox checked={formData.page_display.includes("all")} />
-                <ListItemText primary="All pages" />
+                <ListItemText
+                  primary="All pages"
+                  primaryTypographyProps={{ sx: { fontSize: "14px" } }}
+                />
               </MenuItem>
               <MenuItem value="home">
                 <Checkbox checked={formData.page_display.includes("home")} />
-                <ListItemText primary="Home Page" />
+                <ListItemText
+                  primary="Home Page"
+                  primaryTypographyProps={{ sx: { fontSize: "14px" } }}
+                />
               </MenuItem>
               <MenuItem value="products">
-                <Checkbox checked={formData.page_display.includes("products")} />
-                <ListItemText primary="Product Page" />
+                <Checkbox
+                  checked={formData.page_display.includes("products")}
+                />
+                <ListItemText
+                  primary="Product Page"
+                  primaryTypographyProps={{ sx: { fontSize: "14px" } }}
+                />
               </MenuItem>
               <MenuItem value="catalog">
                 <Checkbox checked={formData.page_display.includes("catalog")} />
-                <ListItemText primary="Collections Page" />
+                <ListItemText
+                  primary="Collections Page"
+                  primaryTypographyProps={{ sx: { fontSize: "14px" } }}
+                />
               </MenuItem>
               <MenuItem value="contact">
                 <Checkbox checked={formData.page_display.includes("contact")} />
-                <ListItemText primary="Contact Page" />
+                <ListItemText
+                  primary="Contact Page"
+                  primaryTypographyProps={{ sx: { fontSize: "14px" } }}
+                />
               </MenuItem>
             </Select>
           </FormControl>

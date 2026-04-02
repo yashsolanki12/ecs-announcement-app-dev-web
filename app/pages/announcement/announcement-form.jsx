@@ -431,7 +431,7 @@ const AnnouncementForm = ({ id, heading }) => {
               bgcolor: "#202223",
               color: "white",
               textTransform: "none",
-              padding: "6px 23px",
+              padding: "3px 18px",
             }}
           >
             {isEditMode ? "Save" : "Create"}
@@ -440,7 +440,7 @@ const AnnouncementForm = ({ id, heading }) => {
             variant="outlined"
             onClick={handleNavigateBack}
             size="small"
-            sx={{ textTransform: "none", padding: "6px 23px" }}
+            sx={{ textTransform: "none", padding: "3px 18px" }}
           >
             Cancel
           </Button>
@@ -592,7 +592,12 @@ const AnnouncementForm = ({ id, heading }) => {
           disabled={activeStep === 0}
           onClick={handleBack}
           variant="outlined"
-          sx={{ borderRadius: "6px", textTransform: "none" }}
+          sx={{
+            borderRadius: "6px",
+            textTransform: "none",
+            fontSize: "14px",
+            p: "3px 14px",
+          }}
         >
           Pre Step
         </Button>
@@ -605,6 +610,8 @@ const AnnouncementForm = ({ id, heading }) => {
             color: "white",
             borderRadius: "6px",
             textTransform: "none",
+            fontSize: "14px",
+            p: "3px 14px",
           }}
         >
           Next Step
