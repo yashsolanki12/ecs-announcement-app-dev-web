@@ -54,6 +54,7 @@ const AnnouncementForm = ({ id, heading }) => {
     icon_color: "#e14749",
     start_datetime: new Date().toISOString().slice(0, 16),
     has_end_date: false,
+    sticky_bar: false,
     end_datetime: "",
     position: "top",
     background_type: "gradient",
@@ -125,10 +126,18 @@ const AnnouncementForm = ({ id, heading }) => {
     null,
   );
 
-  const fetchData = async () => {
+  // Detail
+  const { data: announcementDetail, isLoading: announcementDetailLoading } =
+    useAnnouncementData(
+      ["announcement-detail"],
+      () => getAnnouncementById(id),
+      null,
+    );
+
+  const fetchData = () => {
     try {
-      const response = await getAnnouncementById(id);
-      if (response.success && response.data) {
+      const response = announcementDetail;
+      if (response?.success && response.data) {
         const data = response.data;
 
         // If announcement_type is multiple, we need to convert flat data to announcements array
@@ -152,7 +161,11 @@ const AnnouncementForm = ({ id, heading }) => {
             });
           }
 
-          setFormData({ ...data, announcements });
+          setFormData({
+            ...data,
+            sticky_bar: data.sticky_bar === true,
+            announcements,
+          });
         } else {
           // For simple type, keep the flat structure
           setFormData({
@@ -359,10 +372,10 @@ const AnnouncementForm = ({ id, heading }) => {
     : createMutation.isPending;
 
   React.useEffect(() => {
-    if (isEditMode) {
+    if (isEditMode && announcementDetail) {
       fetchData();
     }
-  }, [id, isEditMode]);
+  }, [id, isEditMode, announcementDetail]);
 
   return (
     <Box sx={{ maxWidth: "1200px", margin: "0 auto" }}>

@@ -13,6 +13,7 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Select from "@mui/material/Select";
 import { templates } from "../utils/helper";
+import Checkbox from "@mui/material/Checkbox";
 
 const StepDesign = ({ formData, setFormData, setSnackbar }) => {
   const handleChange = (e) => {
@@ -73,6 +74,23 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             <MenuItem value="bottom">Bottom Page</MenuItem>
           </Select>
         </Box>
+
+        {formData.position !== "bottom" && (
+          <Box sx={{ mb: 2 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="sticky_bar"
+                  checked={formData.sticky_bar}
+                  onChange={handleChange}
+                  size="small"
+                />
+              }
+              label="Sticky Bar"
+              componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
+            />
+          </Box>
+        )}
 
         <Box sx={{ mb: 2 }}>
           <Typography
@@ -532,7 +550,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
 
         {/* Button Settings */}
         {(formData.announcement_type === "multiple" ||
-          formData.announcement_type === "running") && (
+          (formData.announcement_type !== "running" ||
+            formData.cta_type === "button")) && (
           <>
             <Typography
               variant="subtitle2"
