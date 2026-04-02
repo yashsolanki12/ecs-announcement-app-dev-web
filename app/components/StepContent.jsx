@@ -25,7 +25,7 @@ import ConfirmDialog from "../ui/confirmation-dialog";
 
 const StepContent = ({ formData, setFormData, setSnackbar }) => {
   const [isIconModalOpen, setIsIconModalOpen] = React.useState(false);
-  const [expandedIndex, setExpandedIndex] = React.useState(0);
+  const [expandedIndex, setExpandedIndex] = React.useState(null);
   const [iconModalForIndex, setIconModalForIndex] = React.useState(null);
   const [announcementDeleteDialogOpen, setAnnouncementDeleteDialogOpen] =
     React.useState(false);

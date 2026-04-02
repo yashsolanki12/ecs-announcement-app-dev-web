@@ -141,7 +141,7 @@ const StepPlacement = ({ formData, setFormData }) => {
               <MenuItem value="catalog">
                 <Checkbox checked={formData.page_display.includes("catalog")} />
                 <ListItemText
-                  primary="Collections Page"
+                  primary="Collection Page"
                   primaryTypographyProps={{ sx: { fontSize: "14px" } }}
                 />
               </MenuItem>

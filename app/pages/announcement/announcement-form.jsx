@@ -22,13 +22,14 @@ import {
   getAnnouncementById,
   createAnnouncement,
   updateAnnouncement,
-  deleteAnnouncement,
-  duplicateAnnouncement,
+  // deleteAnnouncement,
+  // duplicateAnnouncement,
 } from "../../api/announcement";
 
 import { getCurrentShopSession } from "../../api/current-shop-session";
 import useAnnouncementData from "../../hooks/useAnnouncementData";
 import useAnnouncementSubmit from "../../hooks/useAnnouncementSubmit";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const steps = ["Content", "Design", "Placement"];
 
@@ -219,70 +220,70 @@ const AnnouncementForm = ({ id, heading }) => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this announcement?"))
-      return;
-    try {
-      const response = await deleteAnnouncement(id);
-      if (response) {
-        setSnackbar({
-          open: true,
-          message: response.message,
-          severity: "success",
-        });
-        navigate("/app");
-      }
-    } catch (error) {
-      setSnackbar({ open: true, message: "Delete failed", severity: "error" });
-    }
-  };
+  // const handleDelete = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this announcement?"))
+  //     return;
+  //   try {
+  //     const response = await deleteAnnouncement(id);
+  //     if (response) {
+  //       setSnackbar({
+  //         open: true,
+  //         message: response.message,
+  //         severity: "success",
+  //       });
+  //       navigate("/app");
+  //     }
+  //   } catch (error) {
+  //     setSnackbar({ open: true, message: "Delete failed", severity: "error" });
+  //   }
+  // };
 
-  const handleDuplicate = async () => {
-    try {
-      const response = await duplicateAnnouncement(id);
-      if (response) {
-        setSnackbar({
-          open: true,
-          message: response.message,
-          severity: "success",
-        });
-        navigate("/app");
-      }
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "Duplicate failed",
-        severity: "error",
-      });
-    }
-  };
+  // const handleDuplicate = async () => {
+  //   try {
+  //     const response = await duplicateAnnouncement(id);
+  //     if (response) {
+  //       setSnackbar({
+  //         open: true,
+  //         message: response.message,
+  //         severity: "success",
+  //       });
+  //       navigate("/app");
+  //     }
+  //   } catch (error) {
+  //     setSnackbar({
+  //       open: true,
+  //       message: "Duplicate failed",
+  //       severity: "error",
+  //     });
+  //   }
+  // };
 
-  const handlePublishToggle = async () => {
-    try {
-      setFormData((prev) => ({ ...prev, enabled: !prev.enabled }));
-      // If saving to server immediately:
-      if (isEditMode) {
-        const response = await updateAnnouncement({
-          id,
-          data: { ...formData, enabled: !formData.enabled },
-        });
-        if (response) {
-          setSnackbar({
-            open: true,
-            message: response.message,
-            severity: "success",
-          });
-          navigate("/app");
-        }
-      }
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "Failed to update status",
-        severity: "error",
-      });
-    }
-  };
+  // const handlePublishToggle = async () => {
+  //   try {
+  //     setFormData((prev) => ({ ...prev, enabled: !prev.enabled }));
+  //     // If saving to server immediately:
+  //     if (isEditMode) {
+  //       const response = await updateAnnouncement({
+  //         id,
+  //         data: { ...formData, enabled: !formData.enabled },
+  //       });
+  //       if (response) {
+  //         setSnackbar({
+  //           open: true,
+  //           message: response.message,
+  //           severity: "success",
+  //         });
+  //         navigate("/app");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     setSnackbar({
+  //       open: true,
+  //       message: "Failed to update status",
+  //       severity: "error",
+  //     });
+  //   }
+  // };
 
   const renderStepContent = (step) => {
     switch (step) {
@@ -353,6 +354,10 @@ const AnnouncementForm = ({ id, heading }) => {
     }
   };
 
+  const isSubmitting = isEditMode
+    ? updateMutation.isPending
+    : createMutation.isPending;
+
   React.useEffect(() => {
     if (isEditMode) {
       fetchData();
@@ -380,13 +385,12 @@ const AnnouncementForm = ({ id, heading }) => {
           </Typography>
           <Box
             sx={{
-              bgcolor: formData.enabled ? "#e3f2fd" : "#f1f1f1",
-              color: formData.enabled ? "#1976d2" : "#757575",
+              bgcolor: formData.enabled ? "#affebf" : "#e2e2e2",
+              color: "black",
               px: 1,
-              py: 0.2,
-              borderRadius: "4px",
+              py: "5px",
+              borderRadius: "7px",
               fontSize: "12px",
-              fontWeight: 600,
             }}
           >
             {formData.enabled ? "Published" : "Not Publish"}
@@ -425,22 +429,28 @@ const AnnouncementForm = ({ id, heading }) => {
           <Button
             variant="contained"
             onClick={handleSave}
-            disabled={loading}
+            disabled={isSubmitting}
             size="small"
             sx={{
               bgcolor: "#202223",
               color: "white",
               textTransform: "none",
-              padding: "3px 18px",
+              padding: "4px 20px",
             }}
           >
-            {isEditMode ? "Save" : "Create"}
+            {isSubmitting ? (
+              <CircularProgress size={20} color="success" />
+            ) : isEditMode ? (
+              "Save"
+            ) : (
+              "Create"
+            )}
           </Button>
           <Button
             variant="outlined"
             onClick={handleNavigateBack}
             size="small"
-            sx={{ textTransform: "none", padding: "3px 18px" }}
+            sx={{ textTransform: "none", padding: "4px 20px" }}
           >
             Cancel
           </Button>
