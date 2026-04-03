@@ -12,8 +12,10 @@ import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Select from "@mui/material/Select";
-import { templates } from "../utils/helper";
 import Checkbox from "@mui/material/Checkbox";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Tooltip from "@mui/material/Tooltip";
+import { templates } from "../utils/helper";
 
 const StepDesign = ({ formData, setFormData, setSnackbar }) => {
   const showButton =
@@ -275,7 +277,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
           />
           {formData.background_type === "image" && (
-            <Box sx={{ ml: 4, mb: 2 }}>
+            <Box sx={{ ml: 1, mb: 2 }}>
               <Box
                 sx={{
                   display: "flex",
@@ -394,20 +396,22 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                       />
                     </Button>
                     {formData.background_image && (
-                      <Button
-                        variant="text"
-                        color="error"
-                        size="small"
-                        sx={{ textTransform: "none" }}
-                        onClick={() =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            background_image: "",
-                          }))
-                        }
-                      >
-                        Remove
-                      </Button>
+                      <Tooltip placement="top" title="Remove Image" arrow>
+                        <Button
+                          variant="text"
+                          color="error"
+                          size="small"
+                          sx={{ textTransform: "none" }}
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              background_image: "",
+                            }))
+                          }
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </Button>
+                      </Tooltip>
                     )}
                   </Stack>
                 </Box>
