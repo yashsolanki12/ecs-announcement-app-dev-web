@@ -7,7 +7,11 @@ uid = "3fd3002d-237b-cc6d-c23c-67d5d5dcd9d79d459e8b"
 	name = "App Embed Block"
 	target = "body"
 	file = "blocks/announcement_app.liquid"
-	
+
+	[blocks.announcement-theme-block]
+	name = "Ecs Announcement Bar"
+	target = "section"
+	file = "blocks/announcement-theme-block.liquid"	
 
 # Optional: Add metafields if needed
 # [[extensions.metafields]]

@@ -1,125 +1,62 @@
 {% comment %}
-  Custom UX Scripts and Styles
-  This app embed loads global customizations without editing theme files
+  ECS Announcement Bar - Theme Section Block
+  Supports running, simple, and multiple announcement types
 {% endcomment %}
 
 {% if block.settings.enabled %}
-  {% comment %} Load custom CSS {% endcomment %}
-  {% if block.settings.custom_css != blank %}
-    <style>
-      {{ block.settings.custom_css }}
-    </style>
-  {% endif %}
+  <div id="ecs-announcement-top-container-{{ block.id }}"></div>
 
-  {% comment %} Load CSS from external file {% endcomment %}
-  {% if block.settings.load_css_file %}
-    {{ 'custom-styles.css' | asset_url | stylesheet_tag }}
-  {% endif %}
-
-  {% comment %} Load custom JavaScript {% endcomment %}
-  {% if block.settings.custom_js != blank %}
-    <script>
-      {{ block.settings.custom_js }}
-    </script>
-  {% endif %}
-
-  {% comment %} Load JS from external file {% endcomment %}
-  {% if block.settings.load_js_file %}
-    <script src="{{ 'custom-scripts.js' | asset_url }}" defer></script>
-  {% endif %}
-
-  {% comment %} Optional: Add custom HTML {% endcomment %}
-  {% if block.settings.custom_html != blank %}
-    {{ block.settings.custom_html }}
-  {% endif %}
-
-  <style id="ecs-announcement-styles">
-    #ecs-announcement-top-container *, 
-    #ecs-announcement-bottom-container * {
+  <style id="ecs-announcement-styles-{{ block.id }}">
+    #ecs-announcement-top-container-{{ block.id }} *, 
+    #ecs-announcement-bottom-container-{{ block.id }} * {
       box-sizing: border-box;
       line-height: 1.5 !important;
-     
     }
-    #ecs-announcement-top-container p,
-    #ecs-announcement-bottom-container p,
-    #ecs-announcement-top-container div,
-    #ecs-announcement-bottom-container div {
+    #ecs-announcement-top-container-{{ block.id }} p,
+    #ecs-announcement-bottom-container-{{ block.id }} p,
+    #ecs-announcement-top-container-{{ block.id }} div,
+    #ecs-announcement-bottom-container-{{ block.id }} div {
       margin: 0 !important;
       display: inline;
     }
-    #ecs-announcement-top-container strong,
-    #ecs-announcement-bottom-container strong,
-    #ecs-announcement-top-container b,
-    #ecs-announcement-bottom-container b,
-    #ecs-announcement-top-container span,
-    #ecs-announcement-bottom-container span {
+    #ecs-announcement-top-container-{{ block.id }} strong,
+    #ecs-announcement-bottom-container-{{ block.id }} strong,
+    #ecs-announcement-top-container-{{ block.id }} b,
+    #ecs-announcement-bottom-container-{{ block.id }} b,
+    #ecs-announcement-top-container-{{ block.id }} span,
+    #ecs-announcement-bottom-container-{{ block.id }} span {
       font-weight: 800;
       white-space: inherit;
       display: inline;
     }
-    {% comment %} .ecs-nav-btn {
-      background: rgba(255,255,255,0.4) !important;
-      border-radius: 50%;
-      box-shadow: 0 0 4px rgba(0,0,0,0.1);
-    } {% endcomment %}
-    {% comment %} .ecs-nav-btn:hover {
-      background: rgba(255,255,255,0.7) !important;
-    } {% endcomment %}
-    @media (max-width: 768px) {
-      .ecs-nav-btn {
-        padding: 2px !important;
-      }
-      .ecs-nav-btn svg {
-        width: 1.8rem !important;
-        height: 1.8rem !important;
-      }
-    }
-    @media (max-width: 480px) {
-      .ecs-nav-btn {
-        padding: 4px !important;
-      }
-      .ecs-nav-btn svg {
-        width: 1.8rem !important;
-        height: 1.8rem !important;
-      }
-    }
-    #ecs-announcement-top-container {
+    #ecs-announcement-top-container-{{ block.id }} {
       width: 100%;
       position: relative;
       background-color: transparent;
-      z-index: 999;
+      z-index: 100;
     }
-    #ecs-announcement-top-container.ecs-sticky-top {
+    #ecs-announcement-top-container-{{ block.id }}.ecs-sticky-top-{{ block.id }} {
       position: sticky;
       top: 0;
     }
-    /* Simple transition for sticky hiding */
-    .ecs-sticky-transition {
+    .ecs-sticky-transition-{{ block.id }} {
       transition: transform 0.3s ease-in-out !important;
     }
-    #ecs-announcement-top-container.ecs-sticky-hidden {
-      display: none; /* No longer used but keeping for safety if referenced elsewhere */
+    #ecs-announcement-top-container-{{ block.id }} .ecs-nav-btn {
+      padding: 4px !important;
     }
-    #ecs-announcement-bottom-container {
-      width: 100%;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      z-index: 999;
-      overflow: hidden;
+    #ecs-announcement-top-container-{{ block.id }} .ecs-nav-btn svg {
+      width: 1.8rem !important;
+      height: 1.8rem !important;
     }
   </style>
 
-  <div id="ecs-announcement-top-container"></div>
-  <div id="ecs-announcement-bottom-container"></div>
-
   <script>
     (function() {
-      const topContainer = document.getElementById('ecs-announcement-top-container');
-      const bottomContainer = document.getElementById('ecs-announcement-bottom-container');
-      const styleTag = document.getElementById('ecs-announcement-styles');
+      const topContainer = document.getElementById('ecs-announcement-top-container-{{ block.id }}');
+      const styleTag = document.getElementById('ecs-announcement-styles-{{ block.id }}');
+      const blockId = '{{ block.id }}';
       const shopDomain = Shopify.shop;
-      {% comment %} const api = "http://localhost:4000/api/" {% endcomment %}
       const api = "https://ecs-announcement-app-dev-backend.onrender.com/api/"
       const apiUrl = `${api}announcement/public/${shopDomain}`;
 
@@ -170,7 +107,7 @@
         return `background-color: #fce1d0;`;
       };
 
-      const createAnnouncementContent = (formData, data, isMobileContext) => {
+      const createAnnouncementContent = (formData, data) => {
         const current_cta_type = data.cta_type && data.cta_type !== "none" ? data.cta_type : formData.cta_type;
         const current_cta_link = data.cta_link || formData.cta_link || '#';
         
@@ -191,7 +128,6 @@
                iconHtml = `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: ${iconColor};">${rawIcon.replace(/<svg/, '<svg width="100%" height="100%"')}</div>`;
              } else {
                const resolvedIcon = resolveImageUrl(rawIcon);
-               // Use CSS mask to allow icon color to apply to monochrome images
                iconHtml = `
                  <div style="
                    width: 100%; 
@@ -222,7 +158,7 @@
               <a href="${current_cta_link}" target="_blank" style="
                 display: inline-block;
                 background-color: ${formData.button_background_color || '#55c521'};
-                color: ${formData.button_text_color || '#ffa8B6'};
+                color: ${formData.button_text_color || '#ffffff'};
                 text-decoration: none;
                 border-radius: 6px;
                 white-space: nowrap;
@@ -247,7 +183,6 @@
                 ${iconHtml}
               </div>
             ` : ''}
-             {% comment %} simple announcement padding {% endcomment %}
             <div style="display: flex; flex-direction: column; align-items: flex-start; flex-shrink: 1; min-width: 0; max-width: 100%; padding-top: 8px; padding-bottom: 8px;"> 
               <div style="font-size: var(--b-title-size); color: ${formData.title_color || '#000'}; font-weight: 400; line-height: 1.1; font-family: ${formData.fontFamily || 'inherit'}; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
                 <span style="display: inline; white-space: nowrap !important;">${data.title || "Announcement"}</span>
@@ -268,9 +203,8 @@
           ? formData.announcements : [formData];
         
         const outerDiv = document.createElement("div");
-        outerDiv.id = `ecs-b-${index}`;
+        outerDiv.id = `ecs-b-${blockId}-${index}`;
         
-        // Setup CSS Variables for responsive layout
         const tSize = formData.title_size || 14;
         const bSize = formData.button_font_size || 14;
         const tSizeM = Math.min(14, Math.max(11, tSize - 4));
@@ -283,7 +217,7 @@
         const bPxM = formData.announcement_type === "multiple" ? 32 : 8;
 
         styleTag.innerHTML += `
-          #ecs-b-${index} {
+          #ecs-b-${blockId}-${index} {
             width: 100%; display: flex; justify-content: center; align-items: center;
             overflow: hidden;
             --b-title-size: ${tSize}px;
@@ -296,7 +230,7 @@
             --b-whitespace: nowrap;
           }
           @media (max-width: 768px) {
-            #ecs-b-${index} {
+            #ecs-b-${blockId}-${index} {
               --b-title-size: ${tSizeM}px;
               --b-sub-size: ${subSizeM}px;
               --b-btn-font: ${bSizeM}px;
@@ -307,7 +241,7 @@
             }
           }
           @media (max-width: 480px) {
-            #ecs-b-${index} {
+            #ecs-b-${blockId}-${index} {
               --b-title-size: ${Math.max(12, tSize - 2)}px;
               --b-sub-size: ${Math.max(10, subSize - 2)}px;
               --b-btn-font: ${Math.max(10, bSize - 3)}px;
@@ -333,7 +267,7 @@
         contentBox.style.cssText = `display: flex; align-items: center; overflow: hidden; flex-grow: 1; height: 100%; position: relative;`;
 
         if (formData.announcement_type === "running") {
-          const animId = `marquee-anim-${index}`;
+          const animId = `marquee-anim-${blockId}-${index}`;
           const duration = (formData.marquee_speed || 20) * 3;
           const direction = formData.marquee_direction === "left" ? "normal" : "reverse";
           
@@ -344,7 +278,6 @@
             }
           `;
 
-          {% comment %} running announcement padding {% endcomment %}
           const trackDiv = document.createElement("div");
           trackDiv.style.cssText = `
             display: flex; width: max-content; 
@@ -355,7 +288,7 @@
 
           let repeatedItemsHtml = '';
           items.forEach((ann) => {
-            repeatedItemsHtml += createAnnouncementContent(formData, ann, false);
+            repeatedItemsHtml += createAnnouncementContent(formData, ann);
           });
           
           let fullTrackHtml = '';
@@ -396,6 +329,7 @@
 
           const leftBtn = document.createElement("button");
           leftBtn.innerHTML = leftArrow;
+          leftBtn.classList.add('ecs-nav-btn');
           leftBtn.style.cssText = `
             color: ${arrowColor}; z-index: 10; position: absolute; left: 4px;
             padding: 4px; flex-shrink: 0; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -403,13 +337,11 @@
 
           const rightBtn = document.createElement("button");
           rightBtn.innerHTML = rightArrow;
+          rightBtn.classList.add('ecs-nav-btn');
           rightBtn.style.cssText = `
             color: ${arrowColor}; z-index: 10; position: absolute; right: 4px;
             padding: 4px; flex-shrink: 0; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
           `;
-
-          leftBtn.classList.add('ecs-nav-btn');
-          rightBtn.classList.add('ecs-nav-btn');
 
           const sliderWrapper = document.createElement("div");
           sliderWrapper.style.cssText = `flex-grow: 1; display: flex; align-items: center; overflow: hidden; width: 100%; height: 100%;`;
@@ -421,12 +353,11 @@
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
           `;
 
-          {% comment %} multiple announcement padding {% endcomment %}
           const extendedItems = [items[items.length - 1], ...items, items[0]];
           let trackHtml = '';
           extendedItems.forEach((ann) => {
              trackHtml += `<div style="width: 100%; flex-shrink: 0; display: flex; justify-content: center; align-items: center; padding-top: 1px; padding-bottom: 1px;">
-               ${createAnnouncementContent(formData, ann, false)}
+               ${createAnnouncementContent(formData, ann)}
              </div>`;
           });
           sliderTrack.innerHTML = trackHtml;
@@ -482,10 +413,9 @@
           contentBox.appendChild(rightBtn);
           innerDiv.appendChild(contentBox);
         } else {
-          // Single
           const annDiv = document.createElement("div");
           annDiv.style.cssText = `width: 100%; display: flex; justify-content: center; align-items: center; flex-shrink:1; min-width: 0; transition: all 0.3s ease;`;
-          annDiv.innerHTML = createAnnouncementContent(formData, items[0], false);
+          annDiv.innerHTML = createAnnouncementContent(formData, items[0]);
           contentBox.appendChild(annDiv);
           innerDiv.appendChild(contentBox);
         }
@@ -501,64 +431,32 @@
           const announcements = res.data.filter(a => a.enabled && shouldDisplayOnPage(a.page_display));
           if(announcements.length === 0) return;
           
-          // Render each bar into top or bottom container based on position
           announcements.forEach((formData, index) => {
             const barDom = createBarDOM(formData, index);
-            if (formData.position === 'bottom') {
-              bottomContainer.appendChild(barDom);
-            } else {
-              topContainer.appendChild(barDom);
-            }
+            topContainer.appendChild(barDom);
           });
 
-          // Move top container to very beginning of body
-          if (topContainer.children.length > 0) {
-            document.body.insertBefore(topContainer, document.body.firstChild);
-          }
-
-          // Function to update body padding based on container heights
-          const updateBodyPadding = () => {
-            const topHeight = topContainer.offsetHeight || 0;
-            const bottomHeight = bottomContainer.offsetHeight || 0;
-            
-            // For topContainer: if it's position:sticky it's fine 
-            // but if we were using fixed we'd need top padding.
-            // For bottomContainer: since it's position:fixed, we MUST have bottom padding.
-            document.body.style.paddingBottom = `${bottomHeight}px`;
-            
-            // If the top container is NOT sticky but fixed, we would set paddingTop too.
-            // Since it's currently sticky and at the top, it pushes content naturally. 
-          };
-
-          // Handle sticky behavior for announcements with sticky_bar enabled
-          const hasStickyAnnouncement = announcements.some(a => a.position === 'top' && a.sticky_bar === true);
+          const hasStickyAnnouncement = announcements.some(a => a.sticky_bar === true);
           if (hasStickyAnnouncement && topContainer.children.length > 0) {
-            topContainer.classList.add('ecs-sticky-top');
+            topContainer.classList.add('ecs-sticky-top-{{ block.id }}');
           }
-
-          // Run once after render and update on window resize
-          setTimeout(updateBodyPadding, 100);
-          window.addEventListener('resize', updateBodyPadding);
-          
-          // Also useful to call on load just in case
-          window.addEventListener('load', updateBodyPadding);
         })
-        .catch(err => console.error('ECS Announcement Fetch Error:', err));
+        .catch(err => console.error('ECS Announcement Error:', err));
     })();
   </script>
 {% endif %}
 
 {% schema %}
 {
-  "name": "Ecs Announcement App Dev",
-  "target": "head",
+  "name": "ECS Announcement App Dev",
+  "target": "section",
   "settings": [
     {
       "type": "checkbox",
       "id": "enabled",
       "label": "Enable Ecs Announcement App Dev",
       "default": true
-    },
+    }
   ]
 }
 {% endschema %}
