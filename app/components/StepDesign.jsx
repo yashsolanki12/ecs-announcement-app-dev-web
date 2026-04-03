@@ -13,6 +13,7 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Select from "@mui/material/Select";
 import { templates } from "../utils/helper";
+import Checkbox from "@mui/material/Checkbox";
 
 const StepDesign = ({ formData, setFormData, setSnackbar }) => {
   const handleChange = (e) => {
@@ -51,12 +52,15 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
       <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
         <Typography
           variant="h6"
-          sx={{ fontWeight: 600, mb: 2, fontSize: "18px" }}
+          sx={{ fontWeight: 600, mb: 2, fontSize: "16px" }}
         >
           Template
         </Typography>
         <Box sx={{ mb: 2 }}>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+          <Typography
+            variant="body2"
+            sx={{ mb: 1, fontWeight: 500, fontSize: "14px" }}
+          >
             Positioning
           </Typography>
           <Select
@@ -71,8 +75,28 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
           </Select>
         </Box>
 
+        {formData.position !== "bottom" && (
+          <Box sx={{ mb: 2 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="sticky_bar"
+                  checked={formData.sticky_bar}
+                  onChange={handleChange}
+                  size="small"
+                />
+              }
+              label="Sticky Bar"
+              componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
+            />
+          </Box>
+        )}
+
         <Box sx={{ mb: 2 }}>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+          <Typography
+            variant="body2"
+            sx={{ mb: 1, fontWeight: 500, fontSize: "14px" }}
+          >
             Template selection
           </Typography>
           <Select
@@ -100,7 +124,10 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
 
         {formData.announcement_type === "multiple" && (
           <Box sx={{ mt: 2 }}>
-            <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+            <Typography
+              variant="body2"
+              sx={{ mb: 1, fontWeight: 500, fontSize: "14px" }}
+            >
               Arrow icon color
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -131,7 +158,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
       <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
         <Typography
           variant="h6"
-          sx={{ fontWeight: 600, mb: 2, fontSize: "18px" }}
+          sx={{ fontWeight: 600, mb: 2, fontSize: "16px" }}
         >
           Background
         </Typography>
@@ -144,6 +171,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             value="single"
             control={<Radio size="small" />}
             label="Single color background"
+            componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
           />
           {formData.background_type === "single" && (
             <Box
@@ -179,6 +207,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             value="gradient"
             control={<Radio size="small" />}
             label="Gradient background"
+            componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
           />
           {formData.background_type === "gradient" && (
             <Box sx={{ mb: 2, display: "flex", gap: 2 }}>
@@ -235,6 +264,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             value="image"
             control={<Radio size="small" />}
             label="Upload Image background"
+            componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
           />
           {formData.background_type === "image" && (
             <Box sx={{ ml: 4, mb: 2 }}>
@@ -382,11 +412,14 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
       <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
         <Typography
           variant="h6"
-          sx={{ fontWeight: 600, mb: 2, fontSize: "18px" }}
+          sx={{ fontWeight: 650, mb: 2, fontSize: "16px" }}
         >
           Announcements List Design
         </Typography>
-        <Typography variant="subtitle2" sx={{ mb: 2, color: "text.secondary" }}>
+        <Typography
+          variant="subtitle2"
+          sx={{ mb: 2, color: "black", fontSize: "14px", fontWeight: 700 }}
+        >
           Typography
         </Typography>
 
@@ -517,16 +550,18 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
 
         {/* Button Settings */}
         {(formData.announcement_type === "multiple" ||
-          formData.announcement_type === "running") && (
+          (formData.announcement_type !== "running" ||
+            formData.cta_type === "button")) && (
           <>
             <Typography
               variant="subtitle2"
               sx={{
                 mt: 4,
                 mb: 2,
-                color: "text.secondary",
+                color: "black",
                 pt: 2,
                 borderTop: "1px solid #dfe3e8",
+                fontWeight: 700,
               }}
             >
               Button
