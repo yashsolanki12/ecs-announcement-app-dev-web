@@ -16,6 +16,13 @@ import { templates } from "../utils/helper";
 import Checkbox from "@mui/material/Checkbox";
 
 const StepDesign = ({ formData, setFormData, setSnackbar }) => {
+  const showButton =
+    (formData.announcement_type !== "simple" &&
+      formData.cta_type === "button" &&
+      formData.announcement_type === "multiple") ||
+    (formData.announcement_type === "running" &&
+      formData.cta_type === "button");
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -122,37 +129,38 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
           </Select>
         </Box>
 
-        {formData.announcement_type === "multiple" && (
-          <Box sx={{ mt: 2 }}>
-            <Typography
-              variant="body2"
-              sx={{ mb: 1, fontWeight: 500, fontSize: "14px" }}
-            >
-              Arrow icon color
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <input
-                type="color"
-                name="arrow_icon_color"
-                value={formData.arrow_icon_color || "#17d0d3"}
-                onChange={handleChange}
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              />
-              <TextField
-                name="arrow_icon_color"
-                value={formData.arrow_icon_color || "#17d0d3"}
-                onChange={handleChange}
-                size="small"
-                sx={{ width: "120px" }}
-              />
+        {formData.announcement_type === "multiple" &&
+          formData.announcements.length > 1 && (
+            <Box sx={{ mt: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{ mb: 1, fontWeight: 500, fontSize: "14px" }}
+              >
+                Arrow icon color
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <input
+                  type="color"
+                  name="arrow_icon_color"
+                  value={formData.arrow_icon_color || "#17d0d3"}
+                  onChange={handleChange}
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                />
+                <TextField
+                  name="arrow_icon_color"
+                  value={formData.arrow_icon_color || "#17d0d3"}
+                  onChange={handleChange}
+                  size="small"
+                  sx={{ width: "120px" }}
+                />
+              </Box>
             </Box>
-          </Box>
-        )}
+          )}
       </Paper>
 
       <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
@@ -422,7 +430,6 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
         >
           Typography
         </Typography>
-
         {/* Typography Settings */}
         <Box
           sx={{
@@ -547,11 +554,8 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             </>
           )}
         </Box>
-
         {/* Button Settings */}
-        {(formData.announcement_type === "multiple" ||
-          (formData.announcement_type !== "running" ||
-            formData.cta_type === "button")) && (
+        {showButton && (
           <>
             <Typography
               variant="subtitle2"

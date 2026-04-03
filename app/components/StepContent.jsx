@@ -161,6 +161,12 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
     }
   };
 
+  React.useEffect(() => {
+    if (formData.announcement_type === "simple") {
+      setFormData((prev) => ({ ...prev, cta_type: "none" }));
+    }
+  }, [formData.announcement_type]);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Configuration Section */}
