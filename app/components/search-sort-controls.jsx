@@ -121,9 +121,11 @@ const SearchSortControls = ({
           onClick={handleReset}
           disabled={!hasActiveFilters}
           size="small"
+          disableTypography
           sx={{
             minWidth: { xs: "100%", sm: 80, md: 100 },
             backgroundColor: "white",
+            textTransform: "none",
           }}
         >
           Reset

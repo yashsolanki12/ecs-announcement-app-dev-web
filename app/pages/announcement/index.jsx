@@ -235,7 +235,7 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
                 component="span"
                 sx={{
                   color: "#232220",
-                  fontSize: { xs: "0.95rem", sm: "1.1rem" },
+                  fontSize: { xs: "0.95rem", sm: "1rem" },
                   fontWeight: 700,
                   lineHeight: 1.2,
                 }}
@@ -253,7 +253,9 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
                 mb: 2,
               }}
             >
-              Please activate the app by clicking{" "}
+              <span style={{ fontSize: "14px" }}>
+                Please activate the app by clicking{" "}
+              </span>
               <Box component="span" sx={{ fontWeight: 700, color: "black" }}>
                 'Activate'
               </Box>{" "}
@@ -270,7 +272,8 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
                 textTransform: "none",
                 borderRadius: "6px",
                 fontWeight: 600,
-                px: 3,
+                px: 2,
+                fontSize: "13px",
                 py: { xs: 1.5, sm: 1 },
                 "&:hover": {
                   backgroundColor: "#303030",
@@ -323,7 +326,7 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
                 },
               }}
             >
-              Create Announcement
+              New Announcement
             </Button>
           </Stack>
         </Stack>
@@ -338,14 +341,20 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
           <Tab
             label={`All (${announcementListData?.data?.length || 0})`}
             value="all"
+            disableTypography
+            sx={{ textTransform: "none" }}
           />
           <Tab
             label={`Active (${announcementListData?.data?.filter((item) => item.enabled === true).length || 0})`}
             value="active"
+            disableTypography
+            sx={{ textTransform: "none" }}
           />
           <Tab
             label={`Inactive (${announcementListData?.data?.filter((item) => item.enabled === false).length || 0})`}
             value="inactive"
+            disableTypography
+            sx={{ textTransform: "none" }}
           />
         </Tabs>
       </Box>
@@ -369,7 +378,7 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
             variant="body2"
             sx={{ textAlign: { xs: "center", sm: "left" } }}
           >
-            {selectedIds.length} item(s) selected
+            {selectedIds.length} Item(s) Selected
           </Typography>
           <Box
             sx={{

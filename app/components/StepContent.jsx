@@ -25,7 +25,7 @@ import ConfirmDialog from "../ui/confirmation-dialog";
 
 const StepContent = ({ formData, setFormData, setSnackbar }) => {
   const [isIconModalOpen, setIsIconModalOpen] = React.useState(false);
-  const [expandedIndex, setExpandedIndex] = React.useState(0);
+  const [expandedIndex, setExpandedIndex] = React.useState(null);
   const [iconModalForIndex, setIconModalForIndex] = React.useState(null);
   const [announcementDeleteDialogOpen, setAnnouncementDeleteDialogOpen] =
     React.useState(false);
@@ -67,7 +67,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
     setExpandedIndex((formData.announcements || []).length);
   };
   const deleteAnnouncementItem = (index, title) => {
-    let result = title.replace(/<\/?p>/g, "");
+    let result = title.replace(/<\/?(mark|p|strong|u|em)>/g, "");
     setItemToDelete({ id: index, title: result });
     setAnnouncementDeleteDialogOpen(true);
   };
@@ -167,13 +167,16 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
       <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
         <Typography
           variant="h6"
-          sx={{ fontWeight: 600, mb: 2, fontSize: "18px" }}
+          sx={{ fontWeight: 600, mb: 2, fontSize: "16px" }}
         >
           Announcement Config
         </Typography>
 
         <Box sx={{ mb: 3 }}>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+          <Typography
+            variant="body2"
+            sx={{ mb: 1, fontWeight: 500, fontSize: "14px" }}
+          >
             Announcement Name
           </Typography>
           <TextField
@@ -188,7 +191,10 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
         </Box>
 
         <Box sx={{ mb: 3 }}>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+          <Typography
+            variant="body2"
+            sx={{ mb: 1, fontWeight: 500, fontSize: "14px" }}
+          >
             Announcement Type
           </Typography>
           <RadioGroup
@@ -200,16 +206,19 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
               value="simple"
               control={<Radio size="small" />}
               label="Simple announcement"
+              componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
             />
             <FormControlLabel
               value="running"
               control={<Radio size="small" />}
               label="Running announcement"
+              componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
             />
             <FormControlLabel
               value="multiple"
               control={<Radio size="small" />}
               label="Multiple announcement"
+              componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
             />
           </RadioGroup>
         </Box>
@@ -281,7 +290,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
       <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
         <Typography
           variant="h6"
-          sx={{ fontWeight: 600, mb: 2, fontSize: "18px" }}
+          sx={{ fontWeight: 600, mb: 2, fontSize: "16px" }}
         >
           Announcements List
         </Typography>
@@ -364,7 +373,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                     <Box sx={{ mb: 3 }}>
                       <Typography
                         variant="body2"
-                        sx={{ mb: 1, fontWeight: 500 }}
+                        sx={{ mb: 1, fontWeight: 500, fontSize: "14px" }}
                       >
                         Title
                       </Typography>
@@ -380,7 +389,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                     <Box sx={{ mb: 3 }}>
                       <Typography
                         variant="body2"
-                        sx={{ mb: 1, fontWeight: 500 }}
+                        sx={{ mb: 1, fontWeight: 500, fontSize: "14px" }}
                       >
                         Subheading
                       </Typography>
@@ -403,7 +412,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                     <Box sx={{ mb: 3 }}>
                       <Typography
                         variant="body2"
-                        sx={{ mb: 1, fontWeight: 500 }}
+                        sx={{ mb: 1, fontWeight: 500, fontSize: "14px" }}
                       >
                         Call to action
                       </Typography>
@@ -1008,7 +1017,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
       <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
         <Typography
           variant="h6"
-          sx={{ fontWeight: 600, mb: 2, fontSize: "18px" }}
+          sx={{ fontWeight: 600, mb: 2, fontSize: "16px" }}
         >
           Scheduling
         </Typography>
@@ -1036,6 +1045,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                 />
               }
               label="Set end date"
+              componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
             />
           </Box>
           {formData.has_end_date && (

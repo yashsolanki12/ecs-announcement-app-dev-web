@@ -22,13 +22,14 @@ import {
   getAnnouncementById,
   createAnnouncement,
   updateAnnouncement,
-  deleteAnnouncement,
-  duplicateAnnouncement,
+  // deleteAnnouncement,
+  // duplicateAnnouncement,
 } from "../../api/announcement";
 
 import { getCurrentShopSession } from "../../api/current-shop-session";
 import useAnnouncementData from "../../hooks/useAnnouncementData";
 import useAnnouncementSubmit from "../../hooks/useAnnouncementSubmit";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const steps = ["Content", "Design", "Placement"];
 
@@ -53,6 +54,7 @@ const AnnouncementForm = ({ id, heading }) => {
     icon_color: "#e14749",
     start_datetime: new Date().toISOString().slice(0, 16),
     has_end_date: false,
+    sticky_bar: false,
     end_datetime: "",
     position: "top",
     background_type: "gradient",
@@ -124,10 +126,18 @@ const AnnouncementForm = ({ id, heading }) => {
     null,
   );
 
-  const fetchData = async () => {
+  // Detail
+  const { data: announcementDetail, isLoading: announcementDetailLoading } =
+    useAnnouncementData(
+      ["announcement-detail"],
+      () => getAnnouncementById(id),
+      null,
+    );
+
+  const fetchData = () => {
     try {
-      const response = await getAnnouncementById(id);
-      if (response.success && response.data) {
+      const response = announcementDetail;
+      if (response?.success && response.data) {
         const data = response.data;
 
         // If announcement_type is multiple, we need to convert flat data to announcements array
@@ -151,7 +161,11 @@ const AnnouncementForm = ({ id, heading }) => {
             });
           }
 
-          setFormData({ ...data, announcements });
+          setFormData({
+            ...data,
+            sticky_bar: data.sticky_bar === true,
+            announcements,
+          });
         } else {
           // For simple type, keep the flat structure
           setFormData({
@@ -219,70 +233,70 @@ const AnnouncementForm = ({ id, heading }) => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this announcement?"))
-      return;
-    try {
-      const response = await deleteAnnouncement(id);
-      if (response) {
-        setSnackbar({
-          open: true,
-          message: response.message,
-          severity: "success",
-        });
-        navigate("/app");
-      }
-    } catch (error) {
-      setSnackbar({ open: true, message: "Delete failed", severity: "error" });
-    }
-  };
+  // const handleDelete = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this announcement?"))
+  //     return;
+  //   try {
+  //     const response = await deleteAnnouncement(id);
+  //     if (response) {
+  //       setSnackbar({
+  //         open: true,
+  //         message: response.message,
+  //         severity: "success",
+  //       });
+  //       navigate("/app");
+  //     }
+  //   } catch (error) {
+  //     setSnackbar({ open: true, message: "Delete failed", severity: "error" });
+  //   }
+  // };
 
-  const handleDuplicate = async () => {
-    try {
-      const response = await duplicateAnnouncement(id);
-      if (response) {
-        setSnackbar({
-          open: true,
-          message: response.message,
-          severity: "success",
-        });
-        navigate("/app");
-      }
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "Duplicate failed",
-        severity: "error",
-      });
-    }
-  };
+  // const handleDuplicate = async () => {
+  //   try {
+  //     const response = await duplicateAnnouncement(id);
+  //     if (response) {
+  //       setSnackbar({
+  //         open: true,
+  //         message: response.message,
+  //         severity: "success",
+  //       });
+  //       navigate("/app");
+  //     }
+  //   } catch (error) {
+  //     setSnackbar({
+  //       open: true,
+  //       message: "Duplicate failed",
+  //       severity: "error",
+  //     });
+  //   }
+  // };
 
-  const handlePublishToggle = async () => {
-    try {
-      setFormData((prev) => ({ ...prev, enabled: !prev.enabled }));
-      // If saving to server immediately:
-      if (isEditMode) {
-        const response = await updateAnnouncement({
-          id,
-          data: { ...formData, enabled: !formData.enabled },
-        });
-        if (response) {
-          setSnackbar({
-            open: true,
-            message: response.message,
-            severity: "success",
-          });
-          navigate("/app");
-        }
-      }
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "Failed to update status",
-        severity: "error",
-      });
-    }
-  };
+  // const handlePublishToggle = async () => {
+  //   try {
+  //     setFormData((prev) => ({ ...prev, enabled: !prev.enabled }));
+  //     // If saving to server immediately:
+  //     if (isEditMode) {
+  //       const response = await updateAnnouncement({
+  //         id,
+  //         data: { ...formData, enabled: !formData.enabled },
+  //       });
+  //       if (response) {
+  //         setSnackbar({
+  //           open: true,
+  //           message: response.message,
+  //           severity: "success",
+  //         });
+  //         navigate("/app");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     setSnackbar({
+  //       open: true,
+  //       message: "Failed to update status",
+  //       severity: "error",
+  //     });
+  //   }
+  // };
 
   const renderStepContent = (step) => {
     switch (step) {
@@ -353,11 +367,15 @@ const AnnouncementForm = ({ id, heading }) => {
     }
   };
 
+  const isSubmitting = isEditMode
+    ? updateMutation.isPending
+    : createMutation.isPending;
+
   React.useEffect(() => {
-    if (isEditMode) {
+    if (isEditMode && announcementDetail) {
       fetchData();
     }
-  }, [id, isEditMode]);
+  }, [id, isEditMode, announcementDetail]);
 
   return (
     <Box sx={{ maxWidth: "1200px", margin: "0 auto" }}>
@@ -380,13 +398,12 @@ const AnnouncementForm = ({ id, heading }) => {
           </Typography>
           <Box
             sx={{
-              bgcolor: formData.enabled ? "#e3f2fd" : "#f1f1f1",
-              color: formData.enabled ? "#1976d2" : "#757575",
+              bgcolor: formData.enabled ? "#affebf" : "#e2e2e2",
+              color: "black",
               px: 1,
-              py: 0.2,
-              borderRadius: "4px",
+              py: "5px",
+              borderRadius: "7px",
               fontSize: "12px",
-              fontWeight: 600,
             }}
           >
             {formData.enabled ? "Published" : "Not Publish"}
@@ -425,22 +442,28 @@ const AnnouncementForm = ({ id, heading }) => {
           <Button
             variant="contained"
             onClick={handleSave}
-            disabled={loading}
+            disabled={isSubmitting}
             size="small"
             sx={{
               bgcolor: "#202223",
               color: "white",
               textTransform: "none",
-              padding: "6px 23px",
+              padding: "4px 20px",
             }}
           >
-            {isEditMode ? "Save" : "Create"}
+            {isSubmitting ? (
+              <CircularProgress size={20} color="success" />
+            ) : isEditMode ? (
+              "Save"
+            ) : (
+              "Create"
+            )}
           </Button>
           <Button
             variant="outlined"
             onClick={handleNavigateBack}
             size="small"
-            sx={{ textTransform: "none", padding: "6px 23px" }}
+            sx={{ textTransform: "none", padding: "4px 20px" }}
           >
             Cancel
           </Button>
@@ -592,7 +615,12 @@ const AnnouncementForm = ({ id, heading }) => {
           disabled={activeStep === 0}
           onClick={handleBack}
           variant="outlined"
-          sx={{ borderRadius: "6px", textTransform: "none" }}
+          sx={{
+            borderRadius: "6px",
+            textTransform: "none",
+            fontSize: "14px",
+            p: "3px 14px",
+          }}
         >
           Pre Step
         </Button>
@@ -605,6 +633,8 @@ const AnnouncementForm = ({ id, heading }) => {
             color: "white",
             borderRadius: "6px",
             textTransform: "none",
+            fontSize: "14px",
+            p: "3px 14px",
           }}
         >
           Next Step

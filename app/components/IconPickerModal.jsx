@@ -52,6 +52,7 @@ const IconPickerModal = ({ open, onClose, onSelect, selectedIcon }) => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          fontSize: "18px",
         }}
       >
         Change Icon
@@ -92,6 +93,7 @@ const IconPickerModal = ({ open, onClose, onSelect, selectedIcon }) => {
                   fontWeight: 700,
                   color: "text.primary",
                   textTransform: "capitalize",
+                  fontSize: "13px",
                 }}
               >
                 {category.replace("_", " ")}

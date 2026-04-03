@@ -237,7 +237,7 @@ const LivePreview = ({ formData, viewMode }) => {
               <Button
                 variant="contained"
                 size={isMobile ? "extra-small" : "small"}
-                href={current_cta_link}
+                // href={current_cta_link}
                 target="_blank"
                 sx={{
                   bgcolor: formData.button_background_color || "#55c521",
@@ -271,15 +271,14 @@ const LivePreview = ({ formData, viewMode }) => {
     );
 
     if (
-      (current_cta_type === "clickable_bar" ||
-        formData.announcement_type === "multiple") &&
+      current_cta_type === "clickable_bar" &&
       current_cta_link &&
       current_cta_link.trim() !== ""
     ) {
       return (
         <Box
           component="a"
-          href={current_cta_link}
+          // href={current_cta_link}
           target="_blank"
           sx={{
             textDecoration: "none",
@@ -451,7 +450,7 @@ const LivePreview = ({ formData, viewMode }) => {
               <Button
                 variant="contained"
                 size={isMobile ? "extra-small" : "small"}
-                href={formData.cta_link}
+                // href={formData.cta_link}
                 target="_blank"
                 sx={{
                   bgcolor: formData.button_background_color || "#55c521",

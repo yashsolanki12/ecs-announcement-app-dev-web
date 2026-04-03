@@ -32,6 +32,520 @@
   {% if block.settings.custom_html != blank %}
     {{ block.settings.custom_html }}
   {% endif %}
+
+  <style id="ecs-announcement-styles">
+    #ecs-announcement-top-container *, 
+    #ecs-announcement-bottom-container * {
+      box-sizing: border-box;
+      line-height: 1.5 !important;
+     
+    }
+    #ecs-announcement-top-container p,
+    #ecs-announcement-bottom-container p,
+    #ecs-announcement-top-container div,
+    #ecs-announcement-bottom-container div {
+      margin: 0 !important;
+      display: inline;
+    }
+    #ecs-announcement-top-container strong,
+    #ecs-announcement-bottom-container strong,
+    #ecs-announcement-top-container b,
+    #ecs-announcement-bottom-container b,
+    #ecs-announcement-top-container span,
+    #ecs-announcement-bottom-container span {
+      font-weight: 800;
+      white-space: inherit;
+      display: inline;
+    }
+    {% comment %} .ecs-nav-btn {
+      background: rgba(255,255,255,0.4) !important;
+      border-radius: 50%;
+      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    } {% endcomment %}
+    {% comment %} .ecs-nav-btn:hover {
+      background: rgba(255,255,255,0.7) !important;
+    } {% endcomment %}
+    @media (max-width: 768px) {
+      .ecs-nav-btn {
+        padding: 2px !important;
+      }
+      .ecs-nav-btn svg {
+        width: 1.8rem !important;
+        height: 1.8rem !important;
+      }
+    }
+    @media (max-width: 480px) {
+      .ecs-nav-btn {
+        padding: 4px !important;
+      }
+      .ecs-nav-btn svg {
+        width: 1.8rem !important;
+        height: 1.8rem !important;
+      }
+    }
+    #ecs-announcement-top-container {
+      width: 100%;
+      position: relative;
+      background-color: transparent;
+      z-index: 999;
+    }
+    #ecs-announcement-top-container.ecs-sticky-top {
+      position: sticky;
+      top: 0;
+    }
+    /* Simple transition for sticky hiding */
+    .ecs-sticky-transition {
+      transition: transform 0.3s ease-in-out !important;
+    }
+    #ecs-announcement-top-container.ecs-sticky-hidden {
+      display: none; /* No longer used but keeping for safety if referenced elsewhere */
+    }
+    #ecs-announcement-bottom-container {
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 999;
+      overflow: hidden;
+    }
+  </style>
+
+  <div id="ecs-announcement-top-container"></div>
+  <div id="ecs-announcement-bottom-container"></div>
+
+  <script>
+    (function() {
+      const topContainer = document.getElementById('ecs-announcement-top-container');
+      const bottomContainer = document.getElementById('ecs-announcement-bottom-container');
+      const styleTag = document.getElementById('ecs-announcement-styles');
+      const shopDomain = Shopify.shop;
+      {% comment %} const api = "http://localhost:4000/api/" {% endcomment %}
+      const api = "https://ecs-announcement-app-dev-backend.onrender.com/api/"
+      const apiUrl = `${api}announcement/public/${shopDomain}`;
+
+      const assetImages = {
+        '/holiday_pink_pattern.png': {{ 'holiday_pink_pattern.png' | asset_url | json }},
+        '/sunset_orange.png': {{ 'sunset_orange.png' | asset_url | json }},
+        '/modern_abstract_pattern.png': {{ 'modern_abstract_pattern.png' | asset_url | json }},
+        '/winter_snowflake_pattern.png': {{ 'winter_snowflake_pattern.png' | asset_url | json }},
+        '/midnight_galaxy_pattern.png': {{ 'midnight_galaxy_pattern.png' | asset_url | json }},
+        '/lavender_floral_pattern.png': {{ 'lavender_floral_pattern.png' | asset_url | json }},
+        '/arctic_frost_crystal.png': {{ 'arctic_frost_crystal.png' | asset_url | json }},
+        '/royal_gold.png': {{ 'royal_gold.png' | asset_url | json }},
+      };
+
+      const resolveImageUrl = (imgPath) => {
+        if (!imgPath) return '';
+        if (imgPath.startsWith('data:')) return imgPath;
+        if (imgPath.startsWith('http://') || imgPath.startsWith('https://')) return imgPath;
+        if (assetImages[imgPath]) return assetImages[imgPath];
+        const filename = imgPath.split('/').pop();
+        if (assetImages['/' + filename]) return assetImages['/' + filename];
+        return imgPath;
+      };
+
+      const pageType = {{ request.page_type | json }};
+      
+      const shouldDisplayOnPage = (pageDisplayArray) => {
+        if (!pageDisplayArray || pageDisplayArray.length === 0) return false;
+        if (pageDisplayArray.includes("all")) return true;
+        if (pageDisplayArray.includes("home") && pageType === "index") return true;
+        if (pageDisplayArray.includes("products") && pageType === "product") return true;
+        if (pageDisplayArray.includes("catalog") && (pageType === "collection" || pageType === "list-collections")) return true;
+        if (pageDisplayArray.includes("contact") && (pageType === "page" || window.location.pathname.includes('contact'))) return true;
+        return false;
+      };
+
+      const getBackgroundStyle = (formData) => {
+        if (formData.background_type === "image") {
+          const bgImg = resolveImageUrl(formData.background_image);
+          return `background-image: url(${bgImg}); background-repeat: repeat; background-size: cover; background-position: center center; background-color: ${formData.background_color || "transparent"};`;
+        }
+        if (formData.background_type === "single") {
+          return `background-color: ${formData.background_color || '#fce1d0'};`;
+        }
+        if (formData.background_type === "gradient") {
+          return `background: linear-gradient(90deg, ${formData.gradient_colors?.[0] || "#ff7e5f"}, ${formData.gradient_colors?.[1] || "#feb47b"});`;
+        }
+        return `background-color: #fce1d0;`;
+      };
+
+      const createAnnouncementContent = (formData, data, isMobileContext) => {
+        const current_cta_type = data.cta_type && data.cta_type !== "none" ? data.cta_type : formData.cta_type;
+        const current_cta_link = data.cta_link || formData.cta_link || '#';
+        
+        let wrapperTag = 'div';
+        let wrapperProps = '';
+        const isClickableBar = current_cta_type === "clickable_bar" && current_cta_link && current_cta_link.trim() !== "";
+        if (isClickableBar) {
+          wrapperTag = 'a';
+          wrapperProps = `href="${current_cta_link}" target="_blank"`;
+        }
+        
+        let iconHtml = '';
+        const iconColor = (data && data.icon_color) || formData.icon_color || '#000';
+        if (formData.announcement_type !== "running") {
+           const rawIcon = data.icon || formData.icon;
+           if (rawIcon) {
+             if (rawIcon.startsWith("<svg")) {
+               iconHtml = `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: ${iconColor};">${rawIcon.replace(/<svg/, '<svg width="100%" height="100%"')}</div>`;
+             } else {
+               const resolvedIcon = resolveImageUrl(rawIcon);
+               // Use CSS mask to allow icon color to apply to monochrome images
+               iconHtml = `
+                 <div style="
+                   width: 100%; 
+                   height: 100%; 
+                   background-color: ${iconColor};
+                   mask-image: url('${resolvedIcon}');
+                   -webkit-mask-image: url('${resolvedIcon}');
+                   mask-size: contain;
+                   -webkit-mask-size: contain;
+                   mask-repeat: no-repeat;
+                   -webkit-mask-repeat: no-repeat;
+                   mask-position: center;
+                   -webkit-mask-position: center;
+                 "></div>
+               `;
+             }
+           } else {
+             iconHtml = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="14.31" y1="8" x2="20.05" y2="17.94"></line><line x1="9.69" y1="8" x2="21.17" y2="8"></line><line x1="7.38" y1="12" x2="13.12" y2="2.06"></line><line x1="9.69" y1="16" x2="3.95" y2="6.06"></line><line x1="14.31" y1="16" x2="2.83" y2="16"></line><line x1="16.62" y1="12" x2="10.88" y2="21.94"></line></svg>`;
+           }
+        }
+
+        let ctaBtnHtml = '';
+        if (formData.announcement_type !== "running" && current_cta_type === "button") {
+          const buttonBorderStyle = formData.button_border_style || "solid";
+          const buttonBorderWidth = (buttonBorderStyle && buttonBorderStyle !== "none") ? "3px" : "0px";
+          ctaBtnHtml = `
+            <div style="margin-left: var(--b-gap); flex-shrink: 0; z-index: 2;">
+              <a href="${current_cta_link}" target="_blank" style="
+                display: inline-block;
+                background-color: ${formData.button_background_color || '#55c521'};
+                color: ${formData.button_text_color || '#ffa8B6'};
+                text-decoration: none;
+                border-radius: 6px;
+                white-space: nowrap;
+                font-size: var(--b-btn-font);
+                padding: var(--b-btn-px);
+                border: ${buttonBorderWidth} ${buttonBorderStyle} ${formData.button_border_color || '#9dfc1f'};
+                cursor: pointer;
+              ">${data.cta_text || formData.cta_text || "Shop now!"}</a>
+            </div>
+          `;
+        }
+
+        return `
+          <${wrapperTag} ${wrapperProps} style="
+            text-decoration: none; color: inherit; display: flex; align-items: center; 
+            gap: var(--b-gap); flex-shrink: 1; padding: 0 var(--b-px); 
+            min-width: 0;
+            white-space: var(--b-whitespace, nowrap); cursor: ${isClickableBar ? 'pointer' : 'default'};
+          ">
+            ${formData.announcement_type !== "running" ? `
+              <div style="width: var(--b-icon-size); height: var(--b-icon-size); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: ${iconColor};">
+                ${iconHtml}
+              </div>
+            ` : ''}
+             {% comment %} simple announcement padding {% endcomment %}
+            <div style="display: flex; flex-direction: column; align-items: flex-start; flex-shrink: 1; min-width: 0; max-width: 100%; padding-top: 8px; padding-bottom: 8px;"> 
+              <div style="font-size: var(--b-title-size); color: ${formData.title_color || '#000'}; font-weight: 400; line-height: 1.1; font-family: ${formData.fontFamily || 'inherit'}; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
+                <span style="display: inline; white-space: nowrap !important;">${data.title || "Announcement"}</span>
+              </div>
+              ${(formData.announcement_type !== "running" && data.subheading) ? `
+                <div style="font-size: var(--b-sub-size); color: ${formData.subheading_color || '#888'}; font-weight: 500; margin-top: 1px; line-height: 1.1; font-family: ${formData.fontFamily || 'inherit'}; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
+                  <span style="display: inline; white-space: nowrap !important;">${data.subheading}</span>
+                </div>
+              ` : ''}
+            </div>
+            ${ctaBtnHtml}
+          </${wrapperTag}>
+        `;
+      };
+
+      const createBarDOM = (formData, index) => {
+        const items = formData.announcement_type === "multiple" && (formData.announcements || []).length > 0
+          ? formData.announcements : [formData];
+        
+        const outerDiv = document.createElement("div");
+        outerDiv.id = `ecs-b-${index}`;
+        
+        // Setup CSS Variables for responsive layout
+        const tSize = formData.title_size || 14;
+        const bSize = formData.button_font_size || 14;
+        const tSizeM = Math.min(14, Math.max(11, tSize - 4));
+        const bSizeM = Math.max(10, bSize - 2);
+
+        const subSize = formData.subheading_size || 12;
+        const subSizeM = Math.max(10, subSize - 2);
+
+        const bPx = formData.announcement_type === "multiple" ? 40 : 32;
+        const bPxM = formData.announcement_type === "multiple" ? 32 : 8;
+
+        styleTag.innerHTML += `
+          #ecs-b-${index} {
+            width: 100%; display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            --b-title-size: ${tSize}px;
+            --b-sub-size: ${subSize}px;
+            --b-btn-font: ${bSize}px;
+            --b-icon-size: 30px;
+            --b-gap: 12px;
+            --b-px: ${bPx}px;
+            --b-btn-px: 4px 12px;
+            --b-whitespace: nowrap;
+          }
+          @media (max-width: 768px) {
+            #ecs-b-${index} {
+              --b-title-size: ${tSizeM}px;
+              --b-sub-size: ${subSizeM}px;
+              --b-btn-font: ${bSizeM}px;
+              --b-icon-size: 28px;
+              --b-gap: 8px;
+              --b-px: ${Math.max(20, bPxM)}px;
+              --b-btn-px: 2px 8px;
+            }
+          }
+          @media (max-width: 480px) {
+            #ecs-b-${index} {
+              --b-title-size: ${Math.max(12, tSize - 2)}px;
+              --b-sub-size: ${Math.max(10, subSize - 2)}px;
+              --b-btn-font: ${Math.max(10, bSize - 3)}px;
+              --b-icon-size: 26px;
+              --b-gap: 8px;
+              --b-px: ${bPxM}px;
+              --b-btn-px: 2px 6px;
+              --b-inner-py: 4px;
+              --b-whitespace: normal;
+            }
+          }
+        `;
+
+        const innerDiv = document.createElement("div");
+        innerDiv.style.cssText = `
+          width: 100%; display: flex; align-items: center; justify-content: space-between;
+          position: relative; overflow: hidden; padding: var(--b-inner-py, 4px) 0;
+          transition: width 0.4s ease-in-out;
+          ${getBackgroundStyle(formData)}
+        `;
+
+        const contentBox = document.createElement("div");
+        contentBox.style.cssText = `display: flex; align-items: center; overflow: hidden; flex-grow: 1; height: 100%; position: relative;`;
+
+        if (formData.announcement_type === "running") {
+          const animId = `marquee-anim-${index}`;
+          const duration = (formData.marquee_speed || 20) * 3;
+          const direction = formData.marquee_direction === "left" ? "normal" : "reverse";
+          
+          styleTag.innerHTML += `
+            @keyframes ${animId} {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
+            }
+          `;
+
+          {% comment %} running announcement padding {% endcomment %}
+          const trackDiv = document.createElement("div");
+          trackDiv.style.cssText = `
+            display: flex; width: max-content; 
+            animation: ${animId} ${duration}s linear infinite ${direction};
+            padding-top: 8px;
+            padding-bottom: 8px;
+          `;
+
+          let repeatedItemsHtml = '';
+          items.forEach((ann) => {
+            repeatedItemsHtml += createAnnouncementContent(formData, ann, false);
+          });
+          
+          let fullTrackHtml = '';
+          for(let i=0; i<20; i++) {
+             fullTrackHtml += repeatedItemsHtml;
+          }
+          trackDiv.innerHTML = fullTrackHtml;
+          contentBox.appendChild(trackDiv);
+          innerDiv.appendChild(contentBox);
+
+          if (formData.cta_type === "button") {
+            const btnDiv = document.createElement("div");
+            btnDiv.style.cssText = `padding: 0 16px; flex-shrink: 0; z-index: 2;`;
+            const buttonBorderStyle = formData.button_border_style || "solid";
+            const buttonBorderWidth = (buttonBorderStyle && buttonBorderStyle !== "none") ? "2.5px" : "0px";
+
+            btnDiv.innerHTML = `
+              <a href="${formData.cta_link}" target="_blank" style="
+                display: inline-block;
+                background-color: ${formData.button_background_color || '#55c521'};
+                color: ${formData.button_text_color || '#ffffff'};
+                text-decoration: none;
+                border-radius: 6px;
+                white-space: nowrap;
+                font-size: var(--b-btn-font);
+                padding: var(--b-btn-px);
+                border: ${buttonBorderWidth} ${buttonBorderStyle} ${formData.button_border_color || '#9dfc1f'};
+                cursor: pointer;
+              ">${formData.cta_text || "Shop now"}</a>
+            `;
+            innerDiv.appendChild(btnDiv);
+          }
+        } 
+        else if (formData.announcement_type === "multiple" && items.length > 1) {
+          const arrowColor = formData.arrow_icon_color || "#3c9eff";
+          const leftArrow = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 2.5rem; height: 2.5rem;"><polyline points="15 18 9 12 15 6"></polyline></svg>`;
+          const rightArrow = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 2.5rem; height: 2.5rem;"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
+
+          const leftBtn = document.createElement("button");
+          leftBtn.innerHTML = leftArrow;
+          leftBtn.style.cssText = `
+            color: ${arrowColor}; z-index: 10; position: absolute; left: 4px;
+            padding: 4px; flex-shrink: 0; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+          `;
+
+          const rightBtn = document.createElement("button");
+          rightBtn.innerHTML = rightArrow;
+          rightBtn.style.cssText = `
+            color: ${arrowColor}; z-index: 10; position: absolute; right: 4px;
+            padding: 4px; flex-shrink: 0; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+          `;
+
+          leftBtn.classList.add('ecs-nav-btn');
+          rightBtn.classList.add('ecs-nav-btn');
+
+          const sliderWrapper = document.createElement("div");
+          sliderWrapper.style.cssText = `flex-grow: 1; display: flex; align-items: center; overflow: hidden; width: 100%; height: 100%;`;
+
+          const sliderTrack = document.createElement("div");
+          sliderTrack.style.cssText = `
+            display: flex; width: 100%; height: 100%;
+            transform: translateX(-100%);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+          `;
+
+          {% comment %} multiple announcement padding {% endcomment %}
+          const extendedItems = [items[items.length - 1], ...items, items[0]];
+          let trackHtml = '';
+          extendedItems.forEach((ann) => {
+             trackHtml += `<div style="width: 100%; flex-shrink: 0; display: flex; justify-content: center; align-items: center; padding-top: 1px; padding-bottom: 1px;">
+               ${createAnnouncementContent(formData, ann, false)}
+             </div>`;
+          });
+          sliderTrack.innerHTML = trackHtml;
+          
+          let currentIndex = 1;
+          let isTransitioning = true;
+          
+          const applyTransform = () => {
+            if(isTransitioning) {
+              sliderTrack.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+            } else {
+              sliderTrack.style.transition = 'none';
+            }
+            sliderTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
+          };
+
+          const handleNext = () => {
+            if(!isTransitioning) return;
+            currentIndex++;
+            applyTransform();
+            setTimeout(() => {
+              if(currentIndex === extendedItems.length - 1) {
+                isTransitioning = false;
+                currentIndex = 1;
+                applyTransform();
+                setTimeout(() => { isTransitioning = true; }, 50);
+              }
+            }, 500);
+          };
+
+          const handlePrev = () => {
+            if(!isTransitioning) return;
+            currentIndex--;
+            applyTransform();
+            setTimeout(() => {
+              if(currentIndex === 0) {
+                isTransitioning = false;
+                currentIndex = items.length;
+                applyTransform();
+                setTimeout(() => { isTransitioning = true; }, 50);
+              }
+            }, 500);
+          };
+
+          rightBtn.onclick = handleNext;
+          leftBtn.onclick = handlePrev;
+
+          setInterval(handleNext, 5000);
+
+          sliderWrapper.appendChild(sliderTrack);
+          contentBox.appendChild(leftBtn);
+          contentBox.appendChild(sliderWrapper);
+          contentBox.appendChild(rightBtn);
+          innerDiv.appendChild(contentBox);
+        } else {
+          // Single
+          const annDiv = document.createElement("div");
+          annDiv.style.cssText = `width: 100%; display: flex; justify-content: center; align-items: center; flex-shrink:1; min-width: 0; transition: all 0.3s ease;`;
+          annDiv.innerHTML = createAnnouncementContent(formData, items[0], false);
+          contentBox.appendChild(annDiv);
+          innerDiv.appendChild(contentBox);
+        }
+        
+        outerDiv.appendChild(innerDiv);
+        return outerDiv;
+      };
+
+      fetch(apiUrl)
+        .then(res => res.json())
+        .then(res => {
+          if(!res.success || !res.data) return;
+          const announcements = res.data.filter(a => a.enabled && shouldDisplayOnPage(a.page_display));
+          if(announcements.length === 0) return;
+          
+          // Render each bar into top or bottom container based on position
+          announcements.forEach((formData, index) => {
+            const barDom = createBarDOM(formData, index);
+            if (formData.position === 'bottom') {
+              bottomContainer.appendChild(barDom);
+            } else {
+              topContainer.appendChild(barDom);
+            }
+          });
+
+          // Move top container to very beginning of body
+          if (topContainer.children.length > 0) {
+            document.body.insertBefore(topContainer, document.body.firstChild);
+          }
+
+          // Function to update body padding based on container heights
+          const updateBodyPadding = () => {
+            const topHeight = topContainer.offsetHeight || 0;
+            const bottomHeight = bottomContainer.offsetHeight || 0;
+            
+            // For topContainer: if it's position:sticky it's fine 
+            // but if we were using fixed we'd need top padding.
+            // For bottomContainer: since it's position:fixed, we MUST have bottom padding.
+            document.body.style.paddingBottom = `${bottomHeight}px`;
+            
+            // If the top container is NOT sticky but fixed, we would set paddingTop too.
+            // Since it's currently sticky and at the top, it pushes content naturally. 
+          };
+
+          // Handle sticky behavior for announcements with sticky_bar enabled
+          const hasStickyAnnouncement = announcements.some(a => a.position === 'top' && a.sticky_bar === true);
+          if (hasStickyAnnouncement && topContainer.children.length > 0) {
+            topContainer.classList.add('ecs-sticky-top');
+          }
+
+          // Run once after render and update on window resize
+          setTimeout(updateBodyPadding, 100);
+          window.addEventListener('resize', updateBodyPadding);
+          
+          // Also useful to call on load just in case
+          window.addEventListener('load', updateBodyPadding);
+        })
+        .catch(err => console.error('ECS Announcement Fetch Error:', err));
+    })();
+  </script>
 {% endif %}
 
 {% schema %}
