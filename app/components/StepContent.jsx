@@ -716,7 +716,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                                   handleAnnouncementChange(index, "icon", "")
                                 }
                               >
-                                Delete
+                                Deletess
                               </Button>
                             )}
                           </Stack>
@@ -866,8 +866,9 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                       alignItems: "center",
                       justifyContent: "center",
                       overflow: "hidden",
-                      bgcolor: "#f6f6f7",
+                      bgcolor: "#ffffff",
                       flexShrink: 0,
+                      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
                     }}
                   >
                     {formData.icon ? (
@@ -902,11 +903,20 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                         />
                       )
                     ) : (
-                      <Box sx={{ color: "#919191" }}>
+                      <Box
+                        sx={{
+                          width: 28,
+                          height: 28,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: formData.icon_color || "#919191",
+                        }}
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          width="32"
-                          height="32"
+                          width="28"
+                          height="28"
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
@@ -998,17 +1008,19 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                         />
                       </Button>
                       {formData.icon && (
-                        <Button
-                          variant="text"
-                          color="error"
-                          size="small"
-                          sx={{ textTransform: "none" }}
-                          onClick={() =>
-                            setFormData((prev) => ({ ...prev, icon: "" }))
-                          }
-                        >
-                          Delete
-                        </Button>
+                        <Tooltip placement="top" title="Remove Icon" arrow>
+                          <Button
+                            variant="text"
+                            color="error"
+                            size="small"
+                            sx={{ textTransform: "none" }}
+                            onClick={() =>
+                              setFormData((prev) => ({ ...prev, icon: "" }))
+                            }
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </Button>
+                        </Tooltip>
                       )}
                     </Stack>
                   </Box>
@@ -1030,7 +1042,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
         <Stack spacing={3}>
           <Box>
             <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-              Start time
+              Start date time
             </Typography>
             <TextField
               type="datetime-local"
@@ -1038,6 +1050,15 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
               value={formData.start_datetime}
               onChange={handleChange}
               size="small"
+              sx={{
+                '& input[type="datetime-local"]': {
+                  cursor: "pointer",
+                },
+                '& input[type="datetime-local"]::-webkit-calendar-picker-indicator':
+                  {
+                    cursor: "pointer",
+                  },
+              }}
             />
           </Box>
           <Box>
@@ -1050,14 +1071,14 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                   size="small"
                 />
               }
-              label="Set end date"
+              label="Set end date time"
               componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
             />
           </Box>
           {formData.has_end_date && (
             <Box>
               <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                End date
+                End date time
               </Typography>
               <TextField
                 type="datetime-local"
@@ -1065,6 +1086,15 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                 value={formData.end_datetime || ""}
                 onChange={handleChange}
                 size="small"
+                sx={{
+                  '& input[type="datetime-local"]': {
+                    cursor: "pointer",
+                  },
+                  '& input[type="datetime-local"]::-webkit-calendar-picker-indicator':
+                    {
+                      cursor: "pointer",
+                    },
+                }}
               />
             </Box>
           )}

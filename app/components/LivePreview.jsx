@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import Divider from "@mui/material/Divider";
 
 const LivePreview = ({ formData, viewMode }) => {
   const isMobile = viewMode === "mobile";
@@ -296,191 +297,210 @@ const LivePreview = ({ formData, viewMode }) => {
   };
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        bgcolor: "#f4f6f8",
-        // p: 2,
-        borderRadius: "8px",
-        overflow: "hidden",
-      }}
-    >
+    <>
       <Box
         sx={{
-          width: getContainerWidth(),
-          minHeight: "50px",
+          width: "100%",
           display: "flex",
+          justifyContent: "center",
           alignItems: "center",
-          justifyContent: "space-between",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-          transition: "width 0.4s ease-in-out",
-          position: "relative",
+          bgcolor: "#f4f6f8",
+          // p: 2,
+          borderRadius: "8px",
           overflow: "hidden",
-          py: 1,
-          ...getBackgroundStyle(),
         }}
       >
         <Box
           sx={{
+            width: getContainerWidth(),
+            minHeight: "50px",
             display: "flex",
             alignItems: "center",
+            justifyContent: "space-between",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+            transition: "width 0.4s ease-in-out",
+            position: "relative",
             overflow: "hidden",
-            flexGrow: 1,
+            py: 1,
+            ...getBackgroundStyle(),
           }}
         >
-          {formData.announcement_type === "running" ? (
-            <Box
-              sx={{
-                display: "flex",
-                width: "max-content",
-                animation: `marquee ${(formData.marquee_speed || 20) * 3}s linear infinite`,
-                animationDirection:
-                  formData.marquee_direction === "left" ? "normal" : "reverse",
-                "@keyframes marquee": {
-                  "0%": { transform: "translateX(0)" },
-                  "100%": { transform: "translateX(-50%)" },
-                },
-              }}
-            >
-              {[...Array(20)].map((_, i) => (
-                <React.Fragment key={i}>
-                  {items.map((ann, j) => (
-                    <AnnouncementContent key={`${i}-${j}`} item={ann} />
-                  ))}
-                </React.Fragment>
-              ))}
-            </Box>
-          ) : (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                width: "100%",
-                // px: 1,
-                position: "relative",
-                height: "100%",
-              }}
-            >
-              {formData.announcement_type === "multiple" &&
-                (formData.announcements || []).length > 1 && (
-                  <IconButton
-                    size="small"
-                    onClick={handlePrev}
-                    sx={{
-                      color: formData.arrow_icon_color || "#3c9eff",
-                      zIndex: 3,
-                      position: "absolute",
-                      left: isMobile ? -4 : 0,
-                      padding: isMobile ? "4px" : "8px",
-                      "& svg": { fontSize: isMobile ? "1.2rem" : "1.5rem" },
-                      flexShrink: 0,
-                    }}
-                  >
-                    <ChevronLeftIcon />
-                  </IconButton>
-                )}
-
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              overflow: "hidden",
+              flexGrow: 1,
+            }}
+          >
+            {formData.announcement_type === "running" ? (
               <Box
                 sx={{
-                  flexGrow: 1,
                   display: "flex",
-                  alignItems: "center",
-                  overflow: "hidden",
-                  width: "100%",
-                  height: "100%",
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    width: "100%",
-                    height: "100%",
-                    transition: isTransitioning
-                      ? "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)"
-                      : "none",
-                    transform: `translateX(-${currentAnnouncementIndex * 100}%)`,
-                  }}
-                >
-                  {extendedItems.map((ann, idx) => (
-                    <Box
-                      key={idx}
-                      sx={{
-                        width: "100%",
-                        flexShrink: 0,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <AnnouncementContent item={ann} />
-                    </Box>
-                  ))}
-                </Box>
-              </Box>
-
-              {formData.announcement_type === "multiple" &&
-                (formData.announcements || []).length > 1 && (
-                  <IconButton
-                    size="small"
-                    onClick={handleNext}
-                    sx={{
-                      color: formData.arrow_icon_color || "#3c9eff",
-                      zIndex: 3,
-                      position: "absolute",
-                      right: isMobile ? -4 : 0,
-                      padding: isMobile ? "4px" : "8px",
-                      "& svg": { fontSize: isMobile ? "1.2rem" : "1.5rem" },
-                    }}
-                  >
-                    <ChevronRightIcon />
-                  </IconButton>
-                )}
-            </Box>
-          )}
-        </Box>
-
-        {/* Call to action button */}
-        {formData.announcement_type === "running" &&
-          formData.cta_type === "button" && (
-            <Box sx={{ px: 2, flexShrink: 0, zIndex: 2 }}>
-              <Button
-                variant="contained"
-                size={isMobile ? "extra-small" : "small"}
-                // href={formData.cta_link}
-                target="_blank"
-                sx={{
-                  bgcolor: formData.button_background_color || "#55c521",
-                  color: formData.button_text_color || "#ffffff",
-                  textTransform: "none",
-                  borderRadius: "6px",
-                  whiteSpace: "nowrap",
-                  fontSize: isMobile
-                    ? `${Math.max(10, (formData.button_font_size || 14) - 2)}px`
-                    : `${formData.button_font_size || 14}px`,
-                  padding: isMobile ? "2px 8px" : "4px 12px",
-                  borderStyle: formData.button_border_style || "solid",
-                  borderWidth:
-                    formData.button_border_style &&
-                    formData.button_border_style !== "none"
-                      ? "2.5px"
-                      : "0px",
-                  borderColor: formData.button_border_color || "#9dfc1f",
-                  "&:hover": {
-                    bgcolor: formData.button_background_color || "#55c521",
-                    filter: "brightness(0.9)",
+                  width: "max-content",
+                  animation: `marquee ${(formData.marquee_speed || 20) * 3}s linear infinite`,
+                  animationDirection:
+                    formData.marquee_direction === "left"
+                      ? "normal"
+                      : "reverse",
+                  "@keyframes marquee": {
+                    "0%": { transform: "translateX(0)" },
+                    "100%": { transform: "translateX(-50%)" },
                   },
                 }}
               >
-                {formData.cta_text || "Shop now"}
-              </Button>
-            </Box>
-          )}
+                {[...Array(20)].map((_, i) => (
+                  <React.Fragment key={i}>
+                    {items.map((ann, j) => (
+                      <AnnouncementContent key={`${i}-${j}`} item={ann} />
+                    ))}
+                  </React.Fragment>
+                ))}
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  // px: 1,
+                  position: "relative",
+                  height: "100%",
+                }}
+              >
+                {formData.announcement_type === "multiple" &&
+                  (formData.announcements || []).length > 1 && (
+                    <IconButton
+                      size="small"
+                      onClick={handlePrev}
+                      sx={{
+                        color: formData.arrow_icon_color || "#3c9eff",
+                        zIndex: 3,
+                        position: "absolute",
+                        left: isMobile ? -4 : 0,
+                        padding: isMobile ? "4px" : "8px",
+                        "& svg": { fontSize: isMobile ? "1.2rem" : "1.5rem" },
+                        flexShrink: 0,
+                      }}
+                    >
+                      <ChevronLeftIcon />
+                    </IconButton>
+                  )}
+
+                <Box
+                  sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    overflow: "hidden",
+                    width: "100%",
+                    height: "100%",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      width: "100%",
+                      height: "100%",
+                      transition: isTransitioning
+                        ? "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)"
+                        : "none",
+                      transform: `translateX(-${currentAnnouncementIndex * 100}%)`,
+                    }}
+                  >
+                    {extendedItems.map((ann, idx) => (
+                      <Box
+                        key={idx}
+                        sx={{
+                          width: "100%",
+                          flexShrink: 0,
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <AnnouncementContent item={ann} />
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+
+                {formData.announcement_type === "multiple" &&
+                  (formData.announcements || []).length > 1 && (
+                    <IconButton
+                      size="small"
+                      onClick={handleNext}
+                      sx={{
+                        color: formData.arrow_icon_color || "#3c9eff",
+                        zIndex: 3,
+                        position: "absolute",
+                        right: isMobile ? -4 : 0,
+                        padding: isMobile ? "4px" : "8px",
+                        "& svg": { fontSize: isMobile ? "1.2rem" : "1.5rem" },
+                      }}
+                    >
+                      <ChevronRightIcon />
+                    </IconButton>
+                  )}
+              </Box>
+            )}
+          </Box>
+
+          {/* Call to action button */}
+          {formData.announcement_type === "running" &&
+            formData.cta_type === "button" && (
+              <Box sx={{ px: 2, flexShrink: 0, zIndex: 2 }}>
+                <Button
+                  variant="contained"
+                  size={isMobile ? "extra-small" : "small"}
+                  // href={formData.cta_link}
+                  target="_blank"
+                  sx={{
+                    bgcolor: formData.button_background_color || "#55c521",
+                    color: formData.button_text_color || "#ffffff",
+                    textTransform: "none",
+                    borderRadius: "6px",
+                    whiteSpace: "nowrap",
+                    fontSize: isMobile
+                      ? `${Math.max(10, (formData.button_font_size || 14) - 2)}px`
+                      : `${formData.button_font_size || 14}px`,
+                    padding: isMobile ? "2px 8px" : "4px 12px",
+                    borderStyle: formData.button_border_style || "solid",
+                    borderWidth:
+                      formData.button_border_style &&
+                      formData.button_border_style !== "none"
+                        ? "2.5px"
+                        : "0px",
+                    borderColor: formData.button_border_color || "#9dfc1f",
+                    "&:hover": {
+                      bgcolor: formData.button_background_color || "#55c521",
+                      filter: "brightness(0.9)",
+                    },
+                  }}
+                >
+                  {formData.cta_text || "Shop now"}
+                </Button>
+              </Box>
+            )}
+        </Box>
       </Box>
-    </Box>
+      <Box sx={{ mt: 1 }}>
+        <Divider sx={{ mb: 1.5 }} />
+        <Typography
+          variant="caption"
+          sx={{
+            color: "#6b7280",
+            fontSize: "11px",
+            display: "block",
+            textAlign: "center",
+          }}
+        >
+          This is a live preview. The actual appearance may vary slightly based
+          on your theme.
+        </Typography>
+      </Box>
+    </>
   );
 };
 

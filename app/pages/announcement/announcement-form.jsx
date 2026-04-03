@@ -30,6 +30,7 @@ import { getCurrentShopSession } from "../../api/current-shop-session";
 import useAnnouncementData from "../../hooks/useAnnouncementData";
 import useAnnouncementSubmit from "../../hooks/useAnnouncementSubmit";
 import CircularProgress from "@mui/material/CircularProgress";
+import Loader from "../../ui/loader";
 
 const steps = ["Content", "Design", "Placement"];
 
@@ -38,7 +39,6 @@ const AnnouncementForm = ({ id, heading }) => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = React.useState(0);
   const [viewMode, setViewMode] = React.useState("desktop");
-  const [loading, setLoading] = React.useState(false);
   const [snackbar, setSnackbar] = React.useState({
     open: false,
     message: "",
@@ -48,8 +48,8 @@ const AnnouncementForm = ({ id, heading }) => {
   const [formData, setFormData] = React.useState({
     announcement_name: "Quick Announcement Bar",
     announcement_type: "simple",
-    title: "Free shipping over $ 100🎁",
-    subheading: "Subheading",
+    title: "🎁Free shipping over $ 100🎁",
+    subheading: "Limited time offer",
     icon: "",
     icon_color: "#e14749",
     start_datetime: new Date().toISOString().slice(0, 16),
@@ -207,7 +207,6 @@ const AnnouncementForm = ({ id, heading }) => {
   };
 
   const handleSave = async () => {
-    setLoading(true);
     const createPayload = {
       ...formData,
       shopify_session_id: announcementSessionData?.data?._id || null,
@@ -228,8 +227,6 @@ const AnnouncementForm = ({ id, heading }) => {
         message: error.message || "Something went wrong",
         severity: "error",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -377,6 +374,10 @@ const AnnouncementForm = ({ id, heading }) => {
     }
   }, [id, isEditMode, announcementDetail]);
 
+  if (announcementDetailLoading) {
+    return <Loader />;
+  }
+
   return (
     <Box sx={{ maxWidth: "1200px", margin: "0 auto" }}>
       {/* Header */}
@@ -398,15 +399,15 @@ const AnnouncementForm = ({ id, heading }) => {
           </Typography>
           <Box
             sx={{
-              bgcolor: formData.enabled ? "#affebf" : "#e2e2e2",
-              color: "black",
+              bgcolor: formData.enabled ? "#dcfce7" : "#feeded",
+              color: formData.enabled ? "#44895e" : "#d17688",
               px: 1,
               py: "5px",
               borderRadius: "7px",
               fontSize: "12px",
             }}
           >
-            {formData.enabled ? "Published" : "Not Publish"}
+            {formData.enabled ? "Active" : "Inactive"}
           </Box>
         </Box>
         <Stack direction="row" spacing={1}>
