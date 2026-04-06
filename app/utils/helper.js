@@ -167,3 +167,11 @@ export const convertToUTC = (localDateTime) => {
   const date = new Date(localDateTime);
   return date.toISOString();
 };
+
+export const convertToLocalDateTime = (isoString) => {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  const offset = date.getTimezoneOffset() * 60000;
+  const localDate = new Date(date.getTime() - offset);
+  return localDate.toISOString().slice(0, 16);
+};
