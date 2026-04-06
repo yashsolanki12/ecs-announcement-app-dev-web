@@ -631,6 +631,18 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                                 gap: 1.5,
                               }}
                             >
+                              <TextField
+                                value={announcement.icon_color}
+                                onChange={(e) =>
+                                  handleAnnouncementChange(
+                                    index,
+                                    "icon_color",
+                                    e.target.value,
+                                  )
+                                }
+                                size="small"
+                                sx={{ width: "100px" }}
+                              />
                               <input
                                 type="color"
                                 value={announcement.icon_color}
@@ -649,18 +661,6 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                                   cursor: "pointer",
                                   padding: "0",
                                 }}
-                              />
-                              <TextField
-                                value={announcement.icon_color}
-                                onChange={(e) =>
-                                  handleAnnouncementChange(
-                                    index,
-                                    "icon_color",
-                                    e.target.value,
-                                  )
-                                }
-                                size="small"
-                                sx={{ width: "100px" }}
                               />
                             </Box>
                           </Box>
@@ -707,17 +707,23 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                               />
                             </Button>
                             {announcement.icon && (
-                              <Button
-                                variant="text"
-                                color="error"
-                                size="small"
-                                sx={{ textTransform: "none" }}
-                                onClick={() =>
-                                  handleAnnouncementChange(index, "icon", "")
-                                }
+                              <Tooltip
+                                placement="top"
+                                title="Remove Icon"
+                                arrow
                               >
-                                Deletess
-                              </Button>
+                                <Button
+                                  variant="text"
+                                  color="error"
+                                  size="small"
+                                  sx={{ textTransform: "none" }}
+                                  onClick={() =>
+                                    handleAnnouncementChange(index, "icon", "")
+                                  }
+                                >
+                                  <DeleteIcon fontSize="small" />
+                                </Button>
+                              </Tooltip>
                             )}
                           </Stack>
                         </Box>
@@ -955,6 +961,13 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                       <Box
                         sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
                       >
+                        <TextField
+                          name="icon_color"
+                          value={formData.icon_color}
+                          onChange={handleChange}
+                          size="small"
+                          sx={{ width: "100px" }}
+                        />
                         <input
                           type="color"
                           name="icon_color"
@@ -968,13 +981,6 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                             cursor: "pointer",
                             padding: "0",
                           }}
-                        />
-                        <TextField
-                          name="icon_color"
-                          value={formData.icon_color}
-                          onChange={handleChange}
-                          size="small"
-                          sx={{ width: "100px" }}
                         />
                       </Box>
                     </Box>

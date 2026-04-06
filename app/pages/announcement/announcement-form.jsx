@@ -31,6 +31,7 @@ import useAnnouncementData from "../../hooks/useAnnouncementData";
 import useAnnouncementSubmit from "../../hooks/useAnnouncementSubmit";
 import CircularProgress from "@mui/material/CircularProgress";
 import Loader from "../../ui/loader";
+import { convertToUTC } from "../../utils/helper";
 
 const steps = ["Content", "Design", "Placement"];
 
@@ -207,13 +208,19 @@ const AnnouncementForm = ({ id, heading }) => {
   };
 
   const handleSave = async () => {
+    const preparePayload = (data) => ({
+      ...data,
+      start_datetime: convertToUTC(data.start_datetime),
+      end_datetime: data.has_end_date ? convertToUTC(data.end_datetime) : "",
+    });
+
     const createPayload = {
-      ...formData,
+      ...preparePayload(formData),
       shopify_session_id: announcementSessionData?.data?._id || null,
     };
     try {
       if (isEditMode) {
-        updateMutation.mutate(formData, {
+        updateMutation.mutate(preparePayload(formData), {
           onError: handleApiError,
         });
       } else {
