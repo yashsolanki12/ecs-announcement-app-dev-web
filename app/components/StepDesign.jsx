@@ -186,12 +186,19 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
           {formData.background_type === "single" && (
             <Box
               sx={{
+                ml: 3,
                 mb: 1,
                 display: "flex",
                 alignItems: "center",
                 gap: 1,
               }}
             >
+              <TextField
+                name="background_color"
+                value={formData.background_color}
+                onChange={handleChange}
+                size="small"
+              />
               <input
                 type="color"
                 name="background_color"
@@ -203,12 +210,6 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   border: "none",
                   cursor: "pointer",
                 }}
-              />
-              <TextField
-                name="background_color"
-                value={formData.background_color}
-                onChange={handleChange}
-                size="small"
               />
             </Box>
           )}
@@ -220,7 +221,13 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
           />
           {formData.background_type === "gradient" && (
-            <Box sx={{ mb: 2, display: "flex", gap: 2 }}>
+            <Box sx={{ ml: 3, mb: 2, display: "flex", gap: 2 }}>
+              <TextField
+                name="background_color"
+                value={formData.background_color}
+                onChange={handleChange}
+                size="small"
+              />
               <input
                 type="color"
                 value={formData.gradient_colors?.[0] || "#ff7e5f"}
@@ -232,18 +239,19 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   cursor: "pointer",
                 }}
               />
-              <TextField
-                name="background_color"
-                value={formData.background_color}
-                onChange={handleChange}
-                size="small"
-              />
               {/* <TextField
                 name="gradient_colors"
                 value={formData.gradient_colors[0]}
                 onChange={handleChange}
                 size="small"
               /> */}
+
+              <TextField
+                name="background_color"
+                value={formData.background_color}
+                onChange={handleChange}
+                size="small"
+              />
               <input
                 type="color"
                 value={formData.gradient_colors?.[1] || "#feb47b"}
@@ -254,12 +262,6 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   border: "none",
                   cursor: "pointer",
                 }}
-              />
-              <TextField
-                name="background_color"
-                value={formData.background_color}
-                onChange={handleChange}
-                size="small"
               />
               {/* <TextField
                 name="gradient_colors"
@@ -277,7 +279,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             componentsProps={{ typography: { sx: { fontSize: "14px" } } }}
           />
           {formData.background_type === "image" && (
-            <Box sx={{ ml: 1, mb: 2 }}>
+            <Box sx={{ ml: 3, mb: 2 }}>
               <Box
                 sx={{
                   display: "flex",
@@ -476,6 +478,13 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
               Title color
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <TextField
+                name="title_color"
+                value={formData.title_color}
+                onChange={handleChange}
+                size="small"
+                fullWidth
+              />
               <input
                 type="color"
                 name="title_color"
@@ -487,13 +496,6 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   border: "none",
                   cursor: "pointer",
                 }}
-              />
-              <TextField
-                name="title_color"
-                value={formData.title_color}
-                onChange={handleChange}
-                size="small"
-                fullWidth
               />
             </Box>
           </Grid>
@@ -534,6 +536,13 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   Subheading color
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <TextField
+                    name="subheading_color"
+                    value={formData.subheading_color}
+                    onChange={handleChange}
+                    size="small"
+                    fullWidth
+                  />
                   <input
                     type="color"
                     name="subheading_color"
@@ -545,13 +554,6 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                       border: "none",
                       cursor: "pointer",
                     }}
-                  />
-                  <TextField
-                    name="subheading_color"
-                    value={formData.subheading_color}
-                    onChange={handleChange}
-                    size="small"
-                    fullWidth
                   />
                 </Box>
               </Grid>
@@ -615,6 +617,13 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   Text color
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <TextField
+                    name="button_text_color"
+                    value={formData.button_text_color || "#ffffff"}
+                    onChange={handleChange}
+                    size="small"
+                    fullWidth
+                  />
                   <input
                     type="color"
                     name="button_text_color"
@@ -626,13 +635,6 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                       border: "none",
                       cursor: "pointer",
                     }}
-                  />
-                  <TextField
-                    name="button_text_color"
-                    value={formData.button_text_color || "#ffffff"}
-                    onChange={handleChange}
-                    size="small"
-                    fullWidth
                   />
                 </Box>
               </Grid>
@@ -662,6 +664,13 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   Border color
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <TextField
+                    name="button_border_color"
+                    value={formData.button_border_color || "#9dfc1f"}
+                    onChange={handleChange}
+                    size="small"
+                    fullWidth
+                  />
                   <input
                     type="color"
                     name="button_border_color"
@@ -673,13 +682,6 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                       border: "none",
                       cursor: "pointer",
                     }}
-                  />
-                  <TextField
-                    name="button_border_color"
-                    value={formData.button_border_color || "#9dfc1f"}
-                    onChange={handleChange}
-                    size="small"
-                    fullWidth
                   />
                 </Box>
               </Grid>
@@ -690,6 +692,13 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                   Background
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <TextField
+                    name="button_background_color"
+                    value={formData.button_background_color || "#55c521"}
+                    onChange={handleChange}
+                    size="small"
+                    fullWidth
+                  />
                   <input
                     type="color"
                     name="button_background_color"
@@ -701,13 +710,6 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
                       border: "none",
                       cursor: "pointer",
                     }}
-                  />
-                  <TextField
-                    name="button_background_color"
-                    value={formData.button_background_color || "#55c521"}
-                    onChange={handleChange}
-                    size="small"
-                    fullWidth
                   />
                 </Box>
               </Grid>
