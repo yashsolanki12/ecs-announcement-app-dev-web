@@ -31,7 +31,7 @@ import useAnnouncementData from "../../hooks/useAnnouncementData";
 import useAnnouncementSubmit from "../../hooks/useAnnouncementSubmit";
 import CircularProgress from "@mui/material/CircularProgress";
 import Loader from "../../ui/loader";
-import { convertToUTC } from "../../utils/helper";
+import { convertToLocalDateTime, convertToUTC } from "../../utils/helper";
 
 const steps = ["Content", "Design", "Placement"];
 
@@ -166,6 +166,8 @@ const AnnouncementForm = ({ id, heading }) => {
             ...data,
             sticky_bar: data.sticky_bar === true,
             announcements,
+            start_datetime: convertToLocalDateTime(data.start_datetime),
+            end_datetime: convertToLocalDateTime(data.end_datetime),
           });
         } else {
           // For simple type, keep the flat structure
@@ -182,6 +184,8 @@ const AnnouncementForm = ({ id, heading }) => {
                 icon_color: data.icon_color || "#e14749",
               },
             ],
+            start_datetime: convertToLocalDateTime(data.start_datetime),
+            end_datetime: convertToLocalDateTime(data.end_datetime),
           });
         }
       }
