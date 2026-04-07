@@ -22,6 +22,7 @@ import {
   getAnnouncementById,
   createAnnouncement,
   updateAnnouncement,
+  getAllAnnouncement,
   // deleteAnnouncement,
   // duplicateAnnouncement,
 } from "../../api/announcement";
@@ -45,6 +46,22 @@ const AnnouncementForm = ({ id, heading }) => {
     message: "",
     severity: "success",
   });
+
+  // Search and sort state - default is "desc" (oldest first)
+  const [searchQuery, _setSearchQuery] = React.useState("");
+  const [sortOrder, _setSortOrder] = React.useState("desc");
+
+  // Build query params for API
+  const getQueryParams = () => {
+    const params = {};
+    if (searchQuery) {
+      params.search = searchQuery;
+    }
+    if (sortOrder) {
+      params.sortOrder = sortOrder;
+    }
+    return params;
+  };
 
   const [formData, setFormData] = React.useState({
     announcement_name: "Quick Announcement Bar",
@@ -132,6 +149,14 @@ const AnnouncementForm = ({ id, heading }) => {
     useAnnouncementData(
       ["announcement-detail"],
       () => getAnnouncementById(id),
+      null,
+    );
+
+  // List API with search and sort params
+  const { data: announcementListData, isLoading: announcementListLoading } =
+    useAnnouncementData(
+      ["announcement", searchQuery, sortOrder],
+      () => getAllAnnouncement(getQueryParams()),
       null,
     );
 
@@ -385,6 +410,17 @@ const AnnouncementForm = ({ id, heading }) => {
     }
   }, [id, isEditMode, announcementDetail]);
 
+  React.useEffect(() => {
+    if (announcementListData?.data.length >= 10) {
+      setSnackbar({
+        open: true,
+        message:
+          "Cannot create more than 10 Announcement. Please delete an existing one to create a new one.",
+        severity: "info",
+      });
+    }
+  }, [announcementListData]);
+
   if (announcementDetailLoading) {
     return <Loader />;
   }
@@ -454,7 +490,7 @@ const AnnouncementForm = ({ id, heading }) => {
           <Button
             variant="contained"
             onClick={handleSave}
-            disabled={isSubmitting}
+            disabled={isSubmitting || announcementListData?.data.length >= 10}
             size="small"
             sx={{
               bgcolor: "#202223",
@@ -473,6 +509,7 @@ const AnnouncementForm = ({ id, heading }) => {
           </Button>
           <Button
             variant="outlined"
+            disabled={isSubmitting}
             onClick={handleNavigateBack}
             size="small"
             sx={{ textTransform: "none", padding: "4px 20px" }}
