@@ -119,7 +119,7 @@ const PlansPage = ({ shop, submit, actionData }) => {
                 mb: 3,
                 p: 2,
                 border: "1px solid #e0e0e0",
-                borderRadius: "8px",
+                borderRadius: "10px",
                 backgroundColor: "#fff",
               }}
             >
@@ -265,28 +265,45 @@ const PlansPage = ({ shop, submit, actionData }) => {
             </Card>
           </>
         ) : (
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#202223",
-              color: "white",
-              textTransform: "none",
-              borderRadius: "6px",
-              fontWeight: 600,
-              padding: { xs: "12px 18px", sm: "12px 24px" },
-              textDecoration: "none",
-              width: "100%",
-              maxWidth: 500,
-              mx: "auto",
-              display: "block",
-              "&:hover": {
-                backgroundColor: "#303030",
-              },
-            }}
-            onClick={handleViewPlan}
-          >
-            View Plans
-          </Button>
+          <>
+            <Card sx={{ borderRadius: "10px" }}>
+              <CardContent>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "#6a6f6f",
+                    fontSize: "14px",
+                    mb: "10px",
+                    fontWeight: 500,
+                  }}
+                >
+                  Click 'View Plans' and select your preferred plan.
+                </Typography>
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#202223",
+                    color: "white",
+                    textTransform: "none",
+                    borderRadius: "6px",
+                    fontWeight: 600,
+                    padding: { xs: "12px 18px", sm: "5px 10px" },
+                    textDecoration: "none",
+                    // width: "100%",
+                    maxWidth: 500,
+                    // mx: "auto",
+                    display: "block",
+                    "&:hover": {
+                      backgroundColor: "#303030",
+                    },
+                  }}
+                  onClick={handleViewPlan}
+                >
+                  View Plans
+                </Button>
+              </CardContent>
+            </Card>
+          </>
         )}
 
         {/* Delete Cancel Plan Confirmation */}
