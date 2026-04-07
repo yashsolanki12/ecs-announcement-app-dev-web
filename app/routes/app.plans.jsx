@@ -1,9 +1,11 @@
-import { useLoaderData, Form } from "react-router";
+import React from "react";
 import { authenticate } from "../shopify.server";
-import shopify from "../shopify.server";
+import { useLoaderData, useSubmit, useActionData } from "react-router";
+const PlansPageView = React.lazy(() => import("../pages/plans/plans-page"));
 
 export const loader = async ({ request }) => {
-  const { admin, session } = await authenticate.admin(request);
+  const { admin, session, billing } = await authenticate.admin(request);
+  const { appSubscriptions } = await billing.check();
   try {
     // Fetch main theme using raw fetch
     const themesResponse = await fetch(
@@ -19,9 +21,12 @@ export const loader = async ({ request }) => {
     if (!themesResponse.ok) {
       const errorText = await themesResponse.text();
       return {
+        appEmbedEnabled: false,
+        session: session,
         error: "Theme fetch failed",
         status: themesResponse.status,
         details: errorText,
+        subscription: appSubscriptions?.[0],
         sessionDebug: {
           shop: session?.shop,
           scopes: session?.scope,
@@ -40,6 +45,7 @@ export const loader = async ({ request }) => {
       return {
         appEmbedEnabled: false,
         session: session,
+        subscription: appSubscriptions?.[0],
         error: "No main theme found in response",
         response: themesData,
       };
@@ -62,7 +68,12 @@ export const loader = async ({ request }) => {
     const asset = assetData.asset;
 
     if (!asset || !asset.value) {
-      return { error: "No settings_data.json found" };
+      return {
+        appEmbedEnabled: false,
+        session: session,
+        subscription: appSubscriptions?.[0],
+        error: "No settings_data.json found",
+      };
     }
 
     const settings = JSON.parse(asset.value);
@@ -83,7 +94,7 @@ export const loader = async ({ request }) => {
       const uspBarBlocks = Object.keys(rawBlocks)
         .filter((key) => {
           const block = rawBlocks[key];
-          const isMatch = block.type && block.type.includes("announcement_app");
+          const isMatch = block.type && block.type.includes("usp_bar");
           if (isMatch)
             simulation.logs.push(
               `Found matching block: ${key} (${block.type})`,
@@ -105,18 +116,24 @@ export const loader = async ({ request }) => {
         });
         simulation.finalDecision = isAnyEnabled;
       } else {
-        simulation.logs.push("No blocks matching 'announcement_app' found.");
+        simulation.logs.push("No blocks matching 'usp_bar' found.");
       }
     }
 
     return {
+      appEmbedEnabled: simulation.finalDecision,
+      session: session,
       shop: session?.shop,
       settings: settings,
       raw: asset.value,
       simulation,
+      subscription: appSubscriptions?.[0],
     };
   } catch (error) {
     return {
+      appEmbedEnabled: false,
+      session: session,
+      subscription: appSubscriptions?.[0],
       error: error.message,
       stack: error.stack,
       sessionDebug: {
@@ -131,102 +148,40 @@ export const loader = async ({ request }) => {
   }
 };
 
-export const action = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
-  await shopify.sessionStorage.deleteSession(session.id);
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: `/auth/login?shop=${session.shop}`,
-    },
-  });
-};
+export async function action({ request }) {
+  const { billing } = await authenticate.admin(request);
+  const { appSubscriptions } = await billing.check();
+  try {
+    if (appSubscriptions && appSubscriptions.length > 0) {
+      const subscriptionId = appSubscriptions[0].id;
+      await billing.cancel({
+        subscriptionId,
+      });
+      return {
+        success: true,
+        message: "Plan successfully cancelled.",
+      };
+    }
+    return {
+      success: false,
+      message: "No active subscription found.",
+    };
+  } catch (error) {
+    console.error("Action error:", error);
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+}
 
-export default function Debug() {
+export default function PlansPage() {
   const data = useLoaderData();
+  const submit = useSubmit();
+  const actionData = useActionData();
   return (
-    <div style={{ padding: "20px", fontFamily: "monospace" }}>
-      <h1>Debug Settings Data</h1>
-
-      <div
-        style={{
-          padding: "15px",
-          background: "#f0f0f0",
-          marginBottom: "20px",
-          borderRadius: "5px",
-        }}
-      >
-        <h2>Logic Simulation</h2>
-        <p>
-          <strong>Should Icon Be Visible?</strong>:{" "}
-          <span
-            style={{
-              color: data.simulation?.finalDecision ? "green" : "red",
-              fontWeight: "bold",
-              fontSize: "1.2em",
-            }}
-          >
-            {data.simulation?.finalDecision ? "YES" : "NO"}
-          </span>
-        </p>
-
-        <h4>Details:</h4>
-        <ul>
-          {data.simulation?.logs.map((log, i) => (
-            <li key={i}>{log}</li>
-          ))}
-        </ul>
-
-        <h4>Found Blocks:</h4>
-        <pre>{JSON.stringify(data.simulation?.foundBlocks, null, 2)}</pre>
-      </div>
-      {data.error && (
-        <div
-          style={{
-            color: "red",
-            border: "1px solid red",
-            padding: "10px",
-            marginBottom: "20px",
-          }}
-        >
-          <h3>Error: {data.error}</h3>
-          {data.details && <pre>{data.details}</pre>}
-          {data.sessionDebug && (
-            <div>
-              <h4>Session Debug:</h4>
-              <pre>{JSON.stringify(data.sessionDebug, null, 2)}</pre>
-              {JSON.stringify(data.sessionDebug.scopes) !==
-                JSON.stringify(data.sessionDebug.configuredScopes) && (
-                <div style={{ marginTop: "10px" }}>
-                  <p>
-                    <strong>Permissions Mismatch Detected!</strong>
-                  </p>
-                  <p>
-                    <strong>Permissions Mismatch Detected!</strong>
-                  </p>
-                  <Form method="post">
-                    <button
-                      type="submit"
-                      style={{
-                        display: "inline-block",
-                        backgroundColor: "red",
-                        color: "white",
-                        padding: "10px 20px",
-                        border: "none",
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      Force Reset Session & Permissions
-                    </button>
-                  </Form>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </div>
+    <React.Suspense fallback={""}>
+      <PlansPageView shop={data} submit={submit} actionData={actionData} />
+    </React.Suspense>
   );
 }

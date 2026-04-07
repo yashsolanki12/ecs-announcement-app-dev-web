@@ -27,9 +27,11 @@ import {
 } from "../../api/bulk-operation";
 import ConfirmDialog from "../../ui/confirmation-dialog";
 import SearchSortControls from "../../components/search-sort-controls";
+import { syncStoreMetrics } from "../../api/store-metrics";
+import LinearProgress from "@mui/material/LinearProgress";
 // import TableShimmerLoader from "../../components/table/table-shimmer-loader";
 
-const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
+const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
   const [snackbar, setSnackbar] = React.useState({
     open: false,
     message: "",
@@ -83,6 +85,21 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
     ["announcement-session"],
     getCurrentShopSession,
     null,
+  );
+
+  const planName = subscription?.name || "Free";
+  const {
+    data: announcementStoreMetricsData,
+    isLoading: announcementStoreMetricsLoading,
+    error: announcementStoreMetricsError,
+  } = useAnnouncementData(
+    ["announcement-store-metrics"],
+    () => syncStoreMetrics(planName),
+    null,
+  );
+
+  const isLimitExceeded = String(announcementStoreMetricsError).includes(
+    "limit",
   );
 
   // Toggle enable mutation
@@ -212,6 +229,16 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
     }
   };
 
+  React.useEffect(() => {
+    if (isLimitExceeded) {
+      setSnackbar({
+        open: true,
+        message: String(announcementStoreMetricsError),
+        severity: "error",
+      });
+    }
+  }, [isLimitExceeded]);
+
   return (
     <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
       {!appEmbedEnabled && (
@@ -308,30 +335,76 @@ const AnnouncementListPage = ({ appEmbedEnabled, session }) => {
             Announcement List
           </Typography>
 
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-            <Button
-              variant="contained"
-              component={SafeLink}
-              to="/app/ecs-announcement/create"
-              sx={{
-                backgroundColor: "#202223",
-                color: "white",
-                textTransform: "none",
-                borderRadius: "6px",
-                fontWeight: 600,
-                padding: "7px 18px",
-                textDecoration: "none",
-                "&:hover": {
-                  backgroundColor: "#303030",
-                },
-              }}
-            >
-              New Announcement
-            </Button>
-          </Stack>
+          {announcementListData?.data.length < 10 && (
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+              <Button
+                variant="contained"
+                component={SafeLink}
+                to="/app/ecs-announcement/create"
+                sx={{
+                  backgroundColor: "#202223",
+                  color: "white",
+                  textTransform: "none",
+                  borderRadius: "6px",
+                  fontWeight: 600,
+                  padding: "7px 18px",
+                  textDecoration: "none",
+                  "&:hover": {
+                    backgroundColor: "#303030",
+                  },
+                }}
+              >
+                New Announcement
+              </Button>
+            </Stack>
+          )}
         </Stack>
       </Box>
 
+      {true === announcementStoreMetricsData?.success && (
+        <Box
+          sx={{
+            mb: 3,
+            p: 2,
+            border: "1px solid #e0e0e0",
+            borderRadius: "8px",
+            backgroundColor: "#fff",
+          }}
+        >
+          <Typography variant="body2" sx={{ mb: 1, color: "#202223" }}>
+            You're currently on{" "}
+            <strong>"{announcementStoreMetricsData.data.plan_name}"</strong> (
+            {announcementStoreMetricsData.data.views_count} /{" "}
+            {announcementStoreMetricsData.data.limit === -1
+              ? "Unlimited"
+              : announcementStoreMetricsData.data.limit}{" "}
+            monthly views). One visitor can have multiple views per session.
+          </Typography>
+          <LinearProgress
+            variant="determinate"
+            value={
+              announcementStoreMetricsData.data.limit === -1
+                ? 0
+                : Math.min(
+                    (announcementStoreMetricsData.data.views_count /
+                      announcementStoreMetricsData.data.limit) *
+                      100,
+                    100,
+                  )
+            }
+            sx={{
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: "#e0e0e0",
+              "& .MuiLinearProgress-bar": {
+                backgroundColor: "#202223",
+              },
+            }}
+          />
+        </Box>
+      )}
+
+      {/* Filter Tabs */}
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
         <Tabs
           value={filter}

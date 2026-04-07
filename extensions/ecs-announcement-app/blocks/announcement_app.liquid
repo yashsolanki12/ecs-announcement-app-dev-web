@@ -57,6 +57,13 @@
       white-space: inherit;
       display: inline;
     }
+
+    .announcement-empty {
+      text-align: center;
+      color: #333333;
+      padding: 10px;
+      width: 100%;
+    }
     {% comment %} .ecs-nav-btn {
       background: rgba(255,255,255,0.4) !important;
       border-radius: 50%;
@@ -155,6 +162,22 @@
         if (pageDisplayArray.includes("contact") && (pageType === "page" || window.location.pathname.includes('contact'))) return true;
         return false;
       };
+
+      function showToast(message) {
+         const toast = document.createElement('div');
+         toast.textContent = message;
+         toast.style.cssText = 'position: fixed; top: 60px; right: 20px; background: #f36060; color: white; padding: 12px 20px; border-radius: 6px; z-index: 2147483647; font-family: sans-serif; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); opacity: 0; transition: opacity 0.3s ease-in-out; pointer-events: none;';
+         document.body.appendChild(toast);
+         
+         requestAnimationFrame(() => {
+           toast.style.opacity = '1';
+         });
+         
+         setTimeout(() => {
+           toast.style.opacity = '0';
+           setTimeout(() => toast.remove(), 300);
+         }, 4000);
+       }
 
       const getBackgroundStyle = (formData) => {
         if (formData.background_type === "image") {
@@ -497,9 +520,15 @@
       fetch(apiUrl)
         .then(res => res.json())
         .then(res => {
-          if(!res.success || !res.data) return;
+          if(!res.success || !res.data) {
+            showToast(res.message || 'Failed to load announcements');
+            return;
+          }
           const announcements = res.data.filter(a => a.enabled && shouldDisplayOnPage(a.page_display));
-          if(announcements.length === 0) return;
+          if(announcements.length === 0) {
+            showToast(res.message);
+            return;
+          }
           
           // Render each bar into top or bottom container based on position
           announcements.forEach((formData, index) => {
@@ -543,7 +572,11 @@
           // Also useful to call on load just in case
           window.addEventListener('load', updateBodyPadding);
         })
-        .catch(err => console.error('ECS Announcement Fetch Error:', err));
+          
+        .catch(err => {
+          console.error('ECS Announcement Fetch Error:', err);
+          showToast('Failed to load announcements');
+        });
     })();
   </script>
 {% endif %}

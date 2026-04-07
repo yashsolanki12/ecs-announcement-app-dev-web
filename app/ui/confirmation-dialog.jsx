@@ -41,7 +41,11 @@ const ConfirmationDialog = (props) => {
         <Button
           onClick={onClose}
           color="inherit"
-          sx={{ backgroundColor: "#e0e0e0", borderRadius: "6px" }}
+          sx={{
+            backgroundColor: "#e0e0e0",
+            borderRadius: "6px",
+            textTransform: "none",
+          }}
           disabled={loading}
         >
           {cancelText}
@@ -52,7 +56,7 @@ const ConfirmationDialog = (props) => {
           variant="contained"
           autoFocus
           disabled={loading}
-          sx={{ borderRadius: "6px" }}
+          sx={{ borderRadius: "6px", textTransform: "none" }}
         >
           {loading ? (
             <CircularProgress size={24} color="success" />
