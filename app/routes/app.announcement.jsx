@@ -160,6 +160,7 @@ export default function AnnouncementPage() {
       <AnnouncementListPage
         appEmbedEnabled={appEmbedEnabled}
         session={data?.session}
+        subscription={data?.subscription}
       />
     </React.Suspense>
   );
