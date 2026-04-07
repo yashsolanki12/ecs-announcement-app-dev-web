@@ -361,48 +361,49 @@ const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
         </Stack>
       </Box>
 
-      {true === announcementStoreMetricsData?.success && (
-        <Box
-          sx={{
-            mb: 3,
-            p: 2,
-            border: "1px solid #e0e0e0",
-            borderRadius: "8px",
-            backgroundColor: "#fff",
-          }}
-        >
-          <Typography variant="body2" sx={{ mb: 1, color: "#202223" }}>
-            You're currently on{" "}
-            <strong>"{announcementStoreMetricsData.data.plan_name}"</strong> (
-            {announcementStoreMetricsData.data.views_count} /{" "}
-            {announcementStoreMetricsData.data.limit === -1
-              ? "Unlimited"
-              : announcementStoreMetricsData.data.limit}{" "}
-            monthly views). One visitor can have multiple views per session.
-          </Typography>
-          <LinearProgress
-            variant="determinate"
-            value={
-              announcementStoreMetricsData.data.limit === -1
-                ? 0
-                : Math.min(
-                    (announcementStoreMetricsData.data.views_count /
-                      announcementStoreMetricsData.data.limit) *
-                      100,
-                    100,
-                  )
-            }
+      {true === announcementStoreMetricsData?.success &&
+        subscription !== undefined && (
+          <Box
             sx={{
-              height: 8,
-              borderRadius: 4,
-              backgroundColor: "#e0e0e0",
-              "& .MuiLinearProgress-bar": {
-                backgroundColor: "#202223",
-              },
+              mb: 3,
+              p: 2,
+              border: "1px solid #e0e0e0",
+              borderRadius: "8px",
+              backgroundColor: "#fff",
             }}
-          />
-        </Box>
-      )}
+          >
+            <Typography variant="body2" sx={{ mb: 1, color: "#202223" }}>
+              You're currently on{" "}
+              <strong>"{announcementStoreMetricsData.data.plan_name}"</strong> (
+              {announcementStoreMetricsData.data.views_count} /{" "}
+              {announcementStoreMetricsData.data.limit === -1
+                ? "Unlimited"
+                : announcementStoreMetricsData.data.limit}{" "}
+              monthly views). One visitor can have multiple views per session.
+            </Typography>
+            <LinearProgress
+              variant="determinate"
+              value={
+                announcementStoreMetricsData.data.limit === -1
+                  ? 0
+                  : Math.min(
+                      (announcementStoreMetricsData.data.views_count /
+                        announcementStoreMetricsData.data.limit) *
+                        100,
+                      100,
+                    )
+              }
+              sx={{
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: "#e0e0e0",
+                "& .MuiLinearProgress-bar": {
+                  backgroundColor: "#202223",
+                },
+              }}
+            />
+          </Box>
+        )}
 
       {/* Filter Tabs */}
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
