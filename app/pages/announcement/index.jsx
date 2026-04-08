@@ -87,7 +87,7 @@ const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
     null,
   );
 
-  const planName = subscription?.name || "Free";
+  const planName = subscription ? (subscription.name || "Free") : "No Plan";
   const {
     data: announcementStoreMetricsData,
     isLoading: announcementStoreMetricsLoading,
@@ -230,7 +230,7 @@ const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
   };
 
   React.useEffect(() => {
-    if (isLimitExceeded) {
+    if (isLimitExceeded && subscription !== undefined) {
       setSnackbar({
         open: true,
         message: String(announcementStoreMetricsError),
@@ -283,7 +283,10 @@ const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
               <span style={{ fontSize: "14px" }}>
                 Please activate the app by clicking{" "}
               </span>
-              <Box component="span" sx={{ fontWeight: 700, color: "black" }}>
+              <Box
+                component="span"
+                sx={{ fontWeight: 700, color: "black", fontSize: "14px" }}
+              >
                 'Activate'
               </Box>{" "}
               button.
@@ -299,9 +302,8 @@ const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
                 textTransform: "none",
                 borderRadius: "6px",
                 fontWeight: 600,
-                px: 2,
+                p: "5px 10px",
                 fontSize: "13px",
-                py: { xs: 1.5, sm: 1 },
                 "&:hover": {
                   backgroundColor: "#303030",
                 },
