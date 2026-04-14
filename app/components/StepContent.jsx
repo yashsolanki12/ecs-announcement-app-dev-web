@@ -170,7 +170,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Configuration Section */}
-      <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: "8px" }}>
         <Typography
           variant="h6"
           sx={{ fontWeight: 600, mb: 2, fontSize: "16px" }}
@@ -293,7 +293,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
       </Paper>
 
       {/* Content Details Section */}
-      <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: "8px" }}>
         <Typography
           variant="h6"
           sx={{ fontWeight: 600, mb: 2, fontSize: "16px" }}
@@ -1038,7 +1038,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
       </Paper>
 
       {/* Scheduling Section */}
-      <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: "8px" }}>
         <Typography
           variant="h6"
           sx={{ fontWeight: 600, mb: 2, fontSize: "16px" }}

@@ -13,7 +13,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 const StepPlacement = ({ formData, setFormData }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: "8px" }}>
         {/* <Typography
           variant="h6"
           sx={{ fontWeight: 600, mb: 2, fontSize: "16px" }}

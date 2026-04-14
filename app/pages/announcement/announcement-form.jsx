@@ -433,7 +433,7 @@ const AnnouncementForm = ({ id, heading }) => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mb: 3,
+          mb: 2,
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -528,7 +528,7 @@ const AnnouncementForm = ({ id, heading }) => {
           bgcolor: "#f6f6f7", // Match the app background color
           pt: 1,
           mb: 2,
-          p: 3,
+          p: 2,
         }}
       >
         {/* Custom Navigation Bar */}
