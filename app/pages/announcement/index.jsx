@@ -240,7 +240,7 @@ const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
   }, [isLimitExceeded]);
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+    <Box sx={{ p: { xs: 2, sm: 3, md: 2 } }}>
       {!appEmbedEnabled && (
         <Card sx={{ borderRadius: "10px", boxShadow: 2 }}>
           <CardContent sx={{ p: { xs: 2, sm: 2 } }}>
@@ -323,7 +323,7 @@ const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
           justifyContent="space-between"
           alignItems={{ xs: "stretch", sm: "center" }}
           spacing={2}
-          sx={{ mb: 4 }}
+          sx={{ mb: 1 }}
         >
           <Typography
             variant="h5"
@@ -445,7 +445,7 @@ const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
             gap: 1,
             mb: 2,
             p: 1.5,
-            bgcolor: "#f5f5f5",
+            bgcolor: "#ffffff",
             borderRadius: 1,
             justifyContent: "space-between",
           }}

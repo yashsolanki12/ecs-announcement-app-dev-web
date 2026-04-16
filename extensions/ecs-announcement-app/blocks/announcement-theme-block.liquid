@@ -46,8 +46,8 @@
       padding: 4px !important;
     }
     #ecs-announcement-top-container-{{ block.id }} .ecs-nav-btn svg {
-      width: 2.5rem !important;
-      height: 2.5rem !important;
+      width: 1.9rem !important;
+      height: 1.9rem !important;
     }
   </style>
 
@@ -110,8 +110,9 @@
       };
 
       const createAnnouncementContent = (formData, data) => {
-        const current_cta_type = data.cta_type && data.cta_type !== "none" ? data.cta_type : formData.cta_type;
-        const current_cta_link = data.cta_link || formData.cta_link || '#';
+        const current_cta_type = (data && typeof data.cta_type !== 'undefined') ? data.cta_type : formData.cta_type;
+        const current_cta_link = (data && typeof data.cta_link !== 'undefined') ? data.cta_link : formData.cta_link || '#';
+        
         
         let wrapperTag = 'div';
         let wrapperProps = '';
@@ -173,7 +174,7 @@
           `;
         }
 
-        return `
+          return `
           <${wrapperTag} ${wrapperProps} style="
             text-decoration: none; color: inherit; display: flex; align-items: center; 
             gap: var(--b-gap); flex-shrink: 1; padding: 0 var(--b-px); 
@@ -185,7 +186,7 @@
                 ${iconHtml}
               </div>
             ` : ''}
-            <div style="display: flex; flex-direction: column; align-items: flex-start; flex-shrink: 1; min-width: 0; max-width: 100%; padding-top: 8px; padding-bottom: 8px;"> 
+            <div style="display: flex; flex-direction: column; align-items: flex-start; flex-shrink: 1; min-width: 0; max-width: 100%; padding: 5px 0px;"> 
               <div style="font-size: var(--b-title-size); color: ${formData.title_color || '#000'}; font-weight: 400; line-height: 1.1; font-family: ${formData.fontFamily || 'inherit'}; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
                 <span style="display: inline; white-space: nowrap !important;">${data.title || "Announcement"}</span>
               </div>

@@ -107,10 +107,13 @@ const LivePreview = ({ formData, viewMode }) => {
   const AnnouncementContent = ({ item }) => {
     const data = item || formData;
     const current_cta_type =
-      data.cta_type && data.cta_type !== "none"
+      typeof data.cta_type !== 'undefined'
         ? data.cta_type
         : formData.cta_type;
-    const current_cta_link = data.cta_link || formData.cta_link;
+    const current_cta_link =
+      typeof data.cta_link !== 'undefined'
+        ? data.cta_link
+        : formData.cta_link;
     const content = (
       <Box
         sx={{

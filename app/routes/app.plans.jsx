@@ -26,7 +26,7 @@ export const loader = async ({ request }) => {
         error: "Theme fetch failed",
         status: themesResponse.status,
         details: errorText,
-        subscription: appSubscriptions?.[0],
+        subscription: appSubscriptions?.[0] || {name: "Free"},
         sessionDebug: {
           shop: session?.shop,
           scopes: session?.scope,
@@ -45,7 +45,7 @@ export const loader = async ({ request }) => {
       return {
         appEmbedEnabled: false,
         session: session,
-        subscription: appSubscriptions?.[0],
+        subscription: appSubscriptions?.[0] || { name: "Free" },
         error: "No main theme found in response",
         response: themesData,
       };
@@ -71,7 +71,7 @@ export const loader = async ({ request }) => {
       return {
         appEmbedEnabled: false,
         session: session,
-        subscription: appSubscriptions?.[0],
+        subscription: appSubscriptions?.[0] || { name: "Free" },
         error: "No settings_data.json found",
       };
     }
@@ -127,13 +127,13 @@ export const loader = async ({ request }) => {
       settings: settings,
       raw: asset.value,
       simulation,
-      subscription: appSubscriptions?.[0],
+      subscription: appSubscriptions?.[0] || { name: "Free" },
     };
   } catch (error) {
     return {
       appEmbedEnabled: false,
       session: session,
-      subscription: appSubscriptions?.[0],
+      subscription: appSubscriptions?.[0] || { name: "Free" },
       error: error.message,
       stack: error.stack,
       sessionDebug: {

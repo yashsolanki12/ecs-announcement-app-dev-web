@@ -237,28 +237,29 @@ const PlansPage = ({ shop, submit, actionData }) => {
               >
                 Change plan
               </Button>
-
-              <Button
-                variant="outlined"
-                onClick={() => setCancelPlanDialogOpen(true)}
-                sx={{
-                  backgroundColor: "#ffffff",
-                  color: "black",
-                  textTransform: "none",
-                  borderRadius: "6px",
-                  fontWeight: 600,
-                  fontSize: "13px",
-                  padding: { xs: "10px 18px", sm: "5px 10px" },
-                  textDecoration: "none",
-                  width: { xs: "100%", sm: "auto" },
-                  border: "1px solid #ddd",
-                  "&:hover": {
-                    backgroundColor: "#f5f5f5",
-                  },
-                }}
-              >
-                Cancel plan
-              </Button>
+              {shop.subscription.name !== "Free" && (
+                <Button
+                  variant="outlined"
+                  onClick={() => setCancelPlanDialogOpen(true)}
+                  sx={{
+                    backgroundColor: "#ffffff",
+                    color: "black",
+                    textTransform: "none",
+                    borderRadius: "6px",
+                    fontWeight: 600,
+                    fontSize: "13px",
+                    padding: { xs: "10px 18px", sm: "5px 10px" },
+                    textDecoration: "none",
+                    width: { xs: "100%", sm: "auto" },
+                    border: "1px solid #ddd",
+                    "&:hover": {
+                      backgroundColor: "#f5f5f5",
+                    },
+                  }}
+                >
+                  Cancel plan
+                </Button>
+              )}
             </Box>
           </CardContent>
         </Card>

@@ -283,7 +283,7 @@ const DataTable = ({
             backgroundColor: "white",
             borderRadius: "8px",
             boxShadow: 1,
-            maxHeight: 450,
+            maxHeight: 290,
             overflowY: "auto",
             "&::-webkit-scrollbar": { width: "8px" },
             "&::-webkit-scrollbar-thumb": {
@@ -302,6 +302,7 @@ const DataTable = ({
                       fontWeight: 600,
                       fontSize: 13,
                       backgroundColor: "#f7f7f7",
+                      p: 0
                     }}
                   >
                     <Checkbox
@@ -367,7 +368,7 @@ const DataTable = ({
                       }}
                     >
                       {showCheckbox && (
-                        <TableCell>
+                        <TableCell sx={{ p: 0 }}>
                           <Checkbox
                             checked={isSelected}
                             onChange={() => onSelectOne(rowId)}

@@ -3,7 +3,7 @@ import AnnouncementForm from "../pages/announcement/announcement-form";
 
 const AnnouncementCreatePage = () => {
   return (
-    <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+    <Box sx={{ p: { xs: 2, sm: 3, md: 2 } }}>
       <AnnouncementForm heading="Create Announcement" />
     </Box>
   );
