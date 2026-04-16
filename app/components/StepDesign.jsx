@@ -58,7 +58,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: "8px" }}>
         <Typography
           variant="h6"
           sx={{ fontWeight: 600, mb: 2, fontSize: "16px" }}
@@ -165,7 +165,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
           )}
       </Paper>
 
-      <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: "8px" }}>
         <Typography
           variant="h6"
           sx={{ fontWeight: 600, mb: 2, fontSize: "16px" }}
@@ -423,7 +423,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
         </RadioGroup>
       </Paper>
 
-      <Paper variant="outlined" sx={{ p: 3, borderRadius: "8px" }}>
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: "8px" }}>
         <Typography
           variant="h6"
           sx={{ fontWeight: 650, mb: 2, fontSize: "16px" }}

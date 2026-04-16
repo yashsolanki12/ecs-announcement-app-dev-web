@@ -5,7 +5,7 @@ import { useParams } from "react-router";
 const AnnouncementUpdatePage = () => {
   const { id } = useParams();
   return (
-    <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+    <Box sx={{ p: { xs: 2, sm: 3, md: 2 } }}>
       <AnnouncementForm id={id} heading="Update Announcement" />
     </Box>
   );
