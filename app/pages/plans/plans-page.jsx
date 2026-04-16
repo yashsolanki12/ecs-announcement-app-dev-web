@@ -306,7 +306,7 @@ const PlansPage = ({ shop, submit, actionData }) => {
         message={`This action cannot be undone. This will cancel your "${shop.subscription?.name}" plan.`}
         onClose={() => setCancelPlanDialogOpen(false)}
         onConfirm={() =>
-          submit({}, { method: "POST" }, setCancelPlanDialogOpen(false))
+          submit({}, { method: "POST" }, setCancelPlanDialogOpen(false),handleViewPlan)
         }
       />
 
