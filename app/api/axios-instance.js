@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const getBaseURL = () => {
-  const backendDomain = "https://ecs-announcement-app-dev-backend.onrender.com";
-  // const backendDomain = "http://localhost:4000";
+  // const backendDomain = "https://ecs-announcement-app-dev-backend.onrender.com";
+  const backendDomain = "http://localhost:4000";
 
   return `${backendDomain}/api/`;
 };
