@@ -22,6 +22,7 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
     (formData.announcement_type !== "simple" &&
       formData.cta_type === "button" &&
       formData.announcement_type === "multiple") ||
+    formData.cta_type === "button" ||
     (formData.announcement_type === "running" &&
       formData.cta_type === "button");
 
@@ -500,65 +501,63 @@ const StepDesign = ({ formData, setFormData, setSnackbar }) => {
             </Box>
           </Grid>
 
-          {formData.announcement_type !== "running" && (
-            <>
-              {/* Subheading Size  */}
-              <Grid item xs={12} sm={6}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                  Subheading size
-                </Typography>
-                <Select
-                  fullWidth
-                  name="subheading_size"
-                  value={formData.subheading_size}
+          <>
+            {/* Subheading Size  */}
+            <Grid item xs={12} sm={6}>
+              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                Subheading size
+              </Typography>
+              <Select
+                fullWidth
+                name="subheading_size"
+                value={formData.subheading_size}
+                onChange={handleChange}
+                size="small"
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      maxHeight: 200,
+                      width: 250,
+                    },
+                  },
+                }}
+              >
+                {[10, 11, 12, 13, 14, 15, 16, 17, 18].map((size) => (
+                  <MenuItem key={size} value={size}>
+                    {size}px
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+
+            {/* Subheading Color */}
+            <Grid item xs={12} sm={6}>
+              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                Subheading color
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <TextField
+                  name="subheading_color"
+                  value={formData.subheading_color}
                   onChange={handleChange}
                   size="small"
-                  MenuProps={{
-                    PaperProps: {
-                      sx: {
-                        maxHeight: 200,
-                        width: 250,
-                      },
-                    },
+                  fullWidth
+                />
+                <input
+                  type="color"
+                  name="subheading_color"
+                  value={formData.subheading_color ?? "#a28089"}
+                  onChange={handleChange}
+                  style={{
+                    width: "32px",
+                    height: "32px",
+                    border: "none",
+                    cursor: "pointer",
                   }}
-                >
-                  {[10, 11, 12, 13, 14, 15, 16, 17, 18].map((size) => (
-                    <MenuItem key={size} value={size}>
-                      {size}px
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Grid>
-
-              {/* Subheading Color */}
-              <Grid item xs={12} sm={6}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                  Subheading color
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <TextField
-                    name="subheading_color"
-                    value={formData.subheading_color}
-                    onChange={handleChange}
-                    size="small"
-                    fullWidth
-                  />
-                  <input
-                    type="color"
-                    name="subheading_color"
-                    value={formData.subheading_color ?? "#a28089"}
-                    onChange={handleChange}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                  />
-                </Box>
-              </Grid>
-            </>
-          )}
+                />
+              </Box>
+            </Grid>
+          </>
         </Box>
         {/* Button Settings */}
         {showButton && (
