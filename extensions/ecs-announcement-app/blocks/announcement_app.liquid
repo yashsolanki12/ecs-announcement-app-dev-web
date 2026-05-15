@@ -41,11 +41,8 @@
      
     }
     #ecs-announcement-top-container p,
-    #ecs-announcement-bottom-container p,
-    #ecs-announcement-top-container div,
-    #ecs-announcement-bottom-container div {
+    #ecs-announcement-bottom-container p {
       margin: 0 !important;
-      display: inline;
     }
     #ecs-announcement-top-container strong,
     #ecs-announcement-bottom-container strong,
@@ -54,8 +51,6 @@
     #ecs-announcement-top-container span,
     #ecs-announcement-bottom-container span {
       font-weight: 800;
-      white-space: inherit;
-      display: inline;
     }
 
     .announcement-empty {
@@ -179,7 +174,7 @@
       function showToast(message) {
          const toast = document.createElement('div');
          toast.textContent = message;
-         toast.style.cssText = 'position: fixed; top: 60px; right: 20px; background: #f36060; color: white; padding: 12px 20px; border-radius: 6px; z-index: 2147483647; font-family: sans-serif; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); opacity: 0; transition: opacity 0.3s ease-in-out; pointer-events: none;';
+         toast.style.cssText = 'position: fixed; top: 60px; right: 20px; background: #f36060; color: white; padding: 12px 20px; border-radius: 6px; z-index: 2147483647; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); opacity: 0; transition: opacity 0.3s ease-in-out; pointer-events: none;';
          document.body.appendChild(toast);
          
          requestAnimationFrame(() => {
@@ -261,7 +256,6 @@
                 color: ${formData.button_text_color || '#ffa8B6'};
                 text-decoration: none;
                 border-radius: 6px;
-                white-space: nowrap;
                 font-size: var(--b-btn-font);
                 padding: var(--b-btn-px);
                 border: ${buttonBorderWidth} ${buttonBorderStyle} ${formData.button_border_color || '#9dfc1f'};
@@ -273,7 +267,7 @@
 
         return `
           <${wrapperTag} ${wrapperProps} style="
-            text-decoration: none; color: inherit; display: flex; align-items: center; 
+            text-decoration: none; color: inherit; display: flex; ${formData.announcement_type === "multiple" ? 'flex-direction: var(--b-fd)' : ""}; align-items: center; 
             gap: var(--b-gap); flex-shrink: 1; padding: 0 var(--b-px); 
             min-width: 0;
             white-space: var(--b-whitespace, nowrap); cursor: ${isClickableBar ? 'pointer' : 'default'};
@@ -285,12 +279,12 @@
             ` : ''}
              {% comment %} simple announcement padding {% endcomment %}
             <div style="display: flex; flex-direction: column; align-items: flex-start; flex-shrink: 1; min-width: 0; max-width: 100%; padding: 5px 0px;"> 
-              <div style="font-size: var(--b-title-size); color: ${formData.title_color || '#000'}; font-weight: 400; line-height: 1.1; font-family: ${formData.fontFamily || 'inherit'}; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
-                <span style="display: inline; white-space: nowrap !important;">${data.title || "Announcement"}</span>
+              <div style="font-size: var(--b-title-size); color: ${formData.title_color || '#000'}; font-weight: 400; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
+                <span style="display: inline;">${data.title || "Announcement"}</span>
               </div>
               ${(formData.announcement_type !== "running" && data.subheading) ? `
-                <div style="font-size: var(--b-sub-size); color: ${formData.subheading_color || '#888'}; font-weight: 500; margin-top: 1px; line-height: 1.1; font-family: ${formData.fontFamily || 'inherit'}; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
-                  <span style="display: inline; white-space: nowrap !important;">${data.subheading}</span>
+                <div style="font-size: var(--b-sub-size); color: ${formData.subheading_color || '#888'}; font-weight: 500; margin-top: 1px; line-height: 1.1; width: 100%;">
+                  <span style="display: inline;">${data.subheading}</span>
                 </div>
               ` : ''}
             </div>
@@ -316,7 +310,7 @@
         const subSizeM = Math.max(10, subSize - 2);
 
         const bPx = formData.announcement_type === "multiple" ? 40 : 32;
-        const bPxM = formData.announcement_type === "multiple" ? 32 : 8;
+        const bPxM = formData.announcement_type === "multiple" ? 11 : 8;
 
         styleTag.innerHTML += `
           #ecs-b-${index} {
@@ -349,10 +343,11 @@
               --b-btn-font: ${Math.max(10, bSize - 3)}px;
               --b-icon-size: 26px;
               --b-gap: 8px;
-              --b-px: ${bPxM}px;
+              {% comment %} --b-px: ${bPxM}px; {% endcomment %}
               --b-btn-px: 2px 6px;
               --b-inner-py: 4px;
               --b-whitespace: normal;
+              --b-fd: column;
             }
           }
         `;
@@ -414,7 +409,7 @@
                 color: ${formData.button_text_color || '#ffffff'};
                 text-decoration: none;
                 border-radius: 6px;
-                white-space: nowrap;
+                {% comment %} white-space: nowrap; {% endcomment %}
                 font-size: var(--b-btn-font);
                 padding: var(--b-btn-px);
                 border: ${buttonBorderWidth} ${buttonBorderStyle} ${formData.button_border_color || '#9dfc1f'};
@@ -447,69 +442,120 @@
           rightBtn.classList.add('ecs-nav-btn');
 
           const sliderWrapper = document.createElement("div");
-          sliderWrapper.style.cssText = `flex-grow: 1; display: flex; align-items: center; overflow: hidden; width: 100%; height: 100%;`;
+          sliderWrapper.style.cssText = `flex-grow: 1; display: flex; align-items: center; overflow: hidden; width: 100%; height: 100%; position: relative;`;
+
+          // Build extended list: [dup-last, item0, item1, ..., itemN, dup-first]
+          let extendedItems = [items[items.length - 1]];
+          for (let _k = 0; _k < items.length; _k++) { extendedItems[_k + 1] = items[_k]; }
+          extendedItems[items.length + 1] = items[0];
+          let totalSlides = extendedItems.length; // items.length + 2
 
           const sliderTrack = document.createElement("div");
+          // Track is totalSlides*100% wide; each slide is (100/totalSlides)% of track.
+          // Initial transform is set HERE (element not yet painted) so no animation fires
+          // on first paint, but transition is kept active for all subsequent moves.
+          // flex-shrink:0 prevents the flex parent from collapsing the track.
           sliderTrack.style.cssText = `
-            display: flex; width: 100%; height: 100%;
-            transform: translateX(-100%);
+            display: flex; width: ${totalSlides * 100}%; height: 100%;
+            flex-shrink: 0;
+            transform: translateX(-${(1 / totalSlides) * 100}%);
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
           `;
 
-          {% comment %} multiple announcement padding {% endcomment %}
-          const extendedItems = [items[items.length - 1], ...items, items[0]];
-          let trackHtml = '';
-          extendedItems.forEach((ann) => {
-             trackHtml += `<div style="width: 100%; flex-shrink: 0; display: flex; justify-content: center; align-items: center; padding-top: 1px; padding-bottom: 1px;">
-               ${createAnnouncementContent(formData, ann, false)}
-             </div>`;
-          });
+         let trackHtml = '';
+          for (let _k2 = 0; _k2 < extendedItems.length; _k2++) {
+            trackHtml += `<div style="width: ${100 / totalSlides}%; flex-shrink: 0; display: flex; justify-content: center; align-items: center; padding-top: 1px; padding-bottom: 1px;">
+              ${createAnnouncementContent(formData, extendedItems[_k2])}
+            </div>`;
+          }
           sliderTrack.innerHTML = trackHtml;
-          
-          let currentIndex = 1;
-          let isTransitioning = true;
-          
-          const applyTransform = () => {
-            if(isTransitioning) {
-              sliderTrack.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-            } else {
-              sliderTrack.style.transition = 'none';
-            }
-            sliderTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+          let currentIndex = 1;    // 1-based: 1..items.length are the real slides
+          let isSliding   = false; // blocks user input during the animation window
+          let boundaryTimer = null;
+          let autoplayTimer = null;
+
+          // ── helpers ────────────────────────────────────────────────────
+
+          // Animated slide — transition is always active so cubic easing always plays
+          let slideTo = function(idx) {
+            let pct = (idx / totalSlides) * 100;
+            sliderTrack.style.transform = 'translateX(-' + pct + '%)';
           };
 
-          const handleNext = () => {
-            if(!isTransitioning) return;
-            currentIndex++;
-            applyTransform();
-            setTimeout(() => {
-              if(currentIndex === extendedItems.length - 1) {
-                isTransitioning = false;
-                currentIndex = 1;
-                applyTransform();
-                setTimeout(() => { isTransitioning = true; }, 50);
-              }
-            }, 500);
+          // Instant snap (no animation) for invisible boundary recycling
+          let snapTo = function(idx) {
+            sliderTrack.style.transition = 'none';
+            let pct = (idx / totalSlides) * 100;
+            sliderTrack.style.transform = 'translateX(-' + pct + '%)';
+            sliderTrack.offsetHeight; // force reflow so transition:none frame is committed
+            sliderTrack.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
           };
 
-          const handlePrev = () => {
-            if(!isTransitioning) return;
-            currentIndex--;
-            applyTransform();
-            setTimeout(() => {
-              if(currentIndex === 0) {
-                isTransitioning = false;
+          // ── boundary cycling ─────────────────────────────────────────────
+          let scheduleBoundarySnap = function() {
+            isSliding = true;
+            clearTimeout(boundaryTimer);
+            boundaryTimer = setTimeout(function() {
+              boundaryTimer = null;
+              if (currentIndex <= 0) {
                 currentIndex = items.length;
-                applyTransform();
-                setTimeout(() => { isTransitioning = true; }, 50);
+              } else {
+                currentIndex = 1;
               }
+              snapTo(currentIndex);
+              requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                  isSliding = false;
+                });
+              });
             }, 500);
+          };
+
+          // ── autoplay (setTimeout so each slide always gets a full 3 s) ─────────
+          let resetAutoplay = function() {
+            clearTimeout(autoplayTimer);
+            autoplayTimer = setTimeout(function() {
+              if (!isSliding) {
+                handleNext();
+              } else {
+                resetAutoplay(); // still sliding — retry in another 3 s
+              }
+            }, 3000);
+          };
+
+          // ── public handlers ──────────────────────────────────────────────
+          let handleNext = function() {
+            if (isSliding) return;
+            isSliding = true;
+            resetAutoplay(); // every navigation resets the 3-s countdown
+            currentIndex++;
+            slideTo(currentIndex);
+            if (currentIndex > items.length) {
+              scheduleBoundarySnap();
+            } else {
+              setTimeout(function() { isSliding = false; }, 520);
+            }
+          };
+
+          let handlePrev = function() {
+            if (isSliding) return;
+            isSliding = true;
+            resetAutoplay(); // every navigation resets the 3-s countdown
+            currentIndex--;
+            slideTo(currentIndex);
+            if (currentIndex <= 0) {
+              scheduleBoundarySnap();
+            } else {
+              setTimeout(function() { isSliding = false; }, 520);
+            }
           };
 
           rightBtn.onclick = handleNext;
-          leftBtn.onclick = handlePrev;
+          leftBtn.onclick  = handlePrev;
 
-          setInterval(handleNext, 5000);
+          // kick off the first autoplay tick
+          resetAutoplay();
 
           sliderWrapper.appendChild(sliderTrack);
           contentBox.appendChild(leftBtn);
@@ -517,7 +563,7 @@
           contentBox.appendChild(rightBtn);
           innerDiv.appendChild(contentBox);
         } else {
-          // Single
+          // Single announcement (non-multiple type)
           const annDiv = document.createElement("div");
           annDiv.style.cssText = `width: 100%; display: flex; justify-content: center; align-items: center; flex-shrink:1; min-width: 0; transition: all 0.3s ease;`;
           annDiv.innerHTML = createAnnouncementContent(formData, items[0], false);

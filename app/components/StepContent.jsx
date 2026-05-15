@@ -165,6 +165,18 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
     if (formData.announcement_type === "simple") {
       setFormData((prev) => ({ ...prev, cta_type: "none" }));
     }
+    if (formData.announcement_type === "multiple") {
+      setFormData((prev) => {
+        const announcements = [...(prev.announcements || [])];
+        if (announcements.length > 0) {
+          announcements[0] = {
+            ...announcements[0],
+            subheading: announcements[0].subheading || prev.subheading || "",
+          };
+        }
+        return { ...prev, announcements };
+      });
+    }
   }, [formData.announcement_type]);
 
   return (
@@ -400,8 +412,9 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                         Subheading
                       </Typography>
                       <TextField
+                        name="subheading"
                         fullWidth
-                        value={announcement.subheading || "Subheading"}
+                        value={announcement.subheading || ""}
                         onChange={(e) =>
                           handleAnnouncementChange(
                             index,
@@ -412,6 +425,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                         inputProps={{ maxLength: 30 }}
                         helperText={`${(announcement.subheading || "").length}/30`}
                         size="small"
+                        placeholder="Subheading"
                       />
                     </Box>
 
@@ -767,22 +781,20 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
               />
             </Box>
 
-            {formData.announcement_type !== "running" && (
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
-                  Subheading
-                </Typography>
-                <TextField
-                  fullWidth
-                  name="subheading"
-                  value={formData.subheading || ""}
-                  onChange={handleChange}
-                  inputProps={{ maxLength: 30 }}
-                  helperText={`${(formData.subheading || "").length}/30`}
-                  size="small"
-                />
-              </Box>
-            )}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                Subheading
+              </Typography>
+              <TextField
+                fullWidth
+                name="subheading"
+                value={formData.subheading || ""}
+                onChange={handleChange}
+                inputProps={{ maxLength: 30 }}
+                helperText={`${(formData.subheading || "").length}/30`}
+                size="small"
+              />
+            </Box>
 
             {formData.announcement_type === "running" && (
               <>
