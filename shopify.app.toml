@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "bd6d6ca602b0833023a4dd1f6fc6fe5d"
-name = "Ecs Announcement App Dev"
+name = "ECS Announcement"
 application_url = "https://ecs-announcement-app-dev-web.onrender.com"
 embedded = true
 
