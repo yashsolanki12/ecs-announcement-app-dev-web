@@ -267,7 +267,7 @@
 
         return `
           <${wrapperTag} ${wrapperProps} style="
-            text-decoration: none; color: inherit; display: flex; ${formData.announcement_type === "multiple" ? 'flex-direction: var(--b-fd)' : ""}; align-items: center; 
+            text-decoration: none; color: inherit; display: flex; align-items: center; 
             gap: var(--b-gap); flex-shrink: 1; padding: 0 var(--b-px); 
             min-width: 0;
             white-space: var(--b-whitespace, nowrap); cursor: ${isClickableBar ? 'pointer' : 'default'};
@@ -278,17 +278,20 @@
               </div>
             ` : ''}
              {% comment %} simple announcement padding {% endcomment %}
-            <div style="display: flex; flex-direction: column; align-items: flex-start; flex-shrink: 1; min-width: 0; max-width: 100%; padding: 5px 0px;"> 
-              <div style="font-size: var(--b-title-size); color: ${formData.title_color || '#000'}; font-weight: 400; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
-                <span style="display: inline;">${data.title || "Announcement"}</span>
-              </div>
-              ${(formData.announcement_type !== "running" && data.subheading) ? `
-                <div style="font-size: var(--b-sub-size); color: ${formData.subheading_color || '#888'}; font-weight: 500; margin-top: 1px; line-height: 1.1; width: 100%;">
-                  <span style="display: inline;">${data.subheading}</span>
+            <div style="display: flex; ${formData.announcement_type === "multiple" ? 'flex-direction: var(--b-fd)' : ""};" >
+              <div style="display: flex; flex-direction: column; align-items: flex-start; flex-shrink: 1; min-width: 0; max-width: 100%; padding: 5px 0px;"> 
+           
+                <div style="font-size: var(--b-title-size); color: ${formData.title_color || '#000'}; font-weight: 400; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
+                  <span style="display: inline;">${data.title || "Announcement"}</span>
                 </div>
+                ${(formData.announcement_type !== "running" && data.subheading) ? `
+                  <div style="font-size: var(--b-sub-size); color: ${formData.subheading_color || '#888'}; font-weight: 500; margin-top: 1px; line-height: 1.1; width: 100%;">
+                    <span style="display: inline;">${data.subheading}</span>
+                  </div>
+              </div>
               ` : ''}
+               ${ctaBtnHtml}
             </div>
-            ${ctaBtnHtml}
           </${wrapperTag}>
         `;
       };
@@ -332,7 +335,7 @@
               --b-btn-font: ${bSizeM}px;
               --b-icon-size: 28px;
               --b-gap: 8px;
-              --b-px: ${Math.max(20, bPxM)}px;
+              --b-px: ${Math.max(24, bPxM)}px;
               --b-btn-px: 2px 8px;
             }
           }
@@ -348,6 +351,11 @@
               --b-inner-py: 4px;
               --b-whitespace: normal;
               --b-fd: column;
+            }
+          }
+           @media (max-width: 320px) {
+            #ecs-b-${index} {
+              --b-gap: 4px;
             }
           }
         `;
@@ -521,7 +529,7 @@
               } else {
                 resetAutoplay(); // still sliding — retry in another 3 s
               }
-            }, 3000);
+            }, 4000); 
           };
 
           // ── public handlers ──────────────────────────────────────────────

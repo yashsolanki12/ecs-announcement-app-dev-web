@@ -20,8 +20,8 @@ import { templates } from "../utils/helper";
 const StepDesign = ({ formData, setFormData, setSnackbar }) => {
   const showButton =
     (formData.announcement_type !== "simple" &&
-      formData.cta_type === "button" &&
-      formData.announcement_type === "multiple") ||
+      formData.announcement_type === "multiple" &&
+      formData.announcements?.some((a) => a.cta_type === "button")) ||
     formData.cta_type === "button" ||
     (formData.announcement_type === "running" &&
       formData.cta_type === "button");
