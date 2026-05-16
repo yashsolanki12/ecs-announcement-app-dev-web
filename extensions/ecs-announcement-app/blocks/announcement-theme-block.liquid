@@ -168,7 +168,7 @@
 
           return `
           <${wrapperTag} ${wrapperProps} style="
-            text-decoration: none; color: inherit; display: flex; ${formData.announcement_type === "multiple" ? 'flex-direction: var(--b-fd)' : ""}; align-items: center; 
+            text-decoration: none; color: inherit; display: flex; align-items: center; 
             gap: var(--b-gap); flex-shrink: 1; padding: 0 var(--b-px); 
             min-width: 0;
             white-space: var(--b-whitespace, nowrap); cursor: ${isClickableBar ? 'pointer' : 'default'};
@@ -179,17 +179,19 @@
               </div>
             ` : ''}
             {% comment %} simple announcement padding {% endcomment %}
-            <div style="display: flex; flex-direction: column; align-items: flex-start; flex-shrink: 1; min-width: 0; max-width: 100%; padding: 5px 0px; overflow-wrap: break-word;"> 
-              <div style="font-size: var(--b-title-size); color: ${formData.title_color || '#000'}; font-weight: 400; line-height: 1.1;overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
-                <span style="display: inline;">${data.title || "Announcement"}</span>
-              </div>
-              ${(formData.announcement_type !== "running" && data.subheading) ? `
-                <div style="font-size: var(--b-sub-size); color: ${formData.subheading_color || '#888'}; font-weight: 500; margin-top: 1px; line-height: 1.1;width: 100%;">
-                  <span style="display: inline;">${data.subheading}</span>
+            <div style="display: flex; ${formData.announcement_type === "multiple" ? 'flex-direction: var(--b-fd)' : ""};">
+              <div style="display: flex; flex-direction: column; align-items: flex-start; flex-shrink: 1; min-width: 0; max-width: 100%; padding: 5px 0px; overflow-wrap: break-word;"> 
+                <div style="font-size: var(--b-title-size); color: ${formData.title_color || '#000'}; font-weight: 400; line-height: 1.1;overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
+                  <span style="display: inline;">${data.title || "Announcement"}</span>
                 </div>
-              ` : ''}
+                ${(formData.announcement_type !== "running" && data.subheading) ? `
+                  <div style="font-size: var(--b-sub-size); color: ${formData.subheading_color || '#888'}; font-weight: 500; margin-top: 1px; line-height: 1.1;width: 100%;">
+                    <span style="display: inline;">${data.subheading}</span>
+                  </div>
+                ` : ''}
+              </div>
+               ${ctaBtnHtml}
             </div>
-            ${ctaBtnHtml}
           </${wrapperTag}>
         `;
       };
@@ -234,11 +236,12 @@
               --b-gap: 8px;
               --b-px: ${Math.max(14, bPxM)}px;
               --b-btn-px: 2px 8px;
+              margin-left: 4px;
             }
           }
           @media (max-width: 480px) {
             #ecs-b-${blockId}-${index} {
-              --b-title-size: ${Math.max(12, tSize - 2)}px;
+              --b-title-size: 10.8px;
               --b-sub-size: ${Math.max(10, subSize - 2)}px;
               --b-btn-font: ${Math.max(10, bSize - 3)}px;
               --b-icon-size: 26px;
@@ -248,6 +251,11 @@
               --b-inner-py: 4px;
               --b-whitespace: normal;
               --b-fd: column
+            }
+          }
+          @media (max-width: 320px) {
+          #ecs-b-${blockId}-${index} {
+              --b-gap: 4px;
             }
           }
         `;
@@ -412,14 +420,14 @@
 
           // ── autoplay (setTimeout so each slide always gets a full 3 s) ─────────
           let resetAutoplay = function() {
-           clearTimeout(autoplayTimer);
+            clearTimeout(autoplayTimer);
             autoplayTimer = setTimeout(function() {
               if (!isSliding) {
                 handleNext();
               } else {
-                resetAutoplay(); // still sliding — retry in another 3 s
+                resetAutoplay(); // still sliding — retry in another 3s
               }
-            }, 3000); 
+            }, 4000); 
           };
 
           // ── public handlers ──────────────────────────────────────────────
