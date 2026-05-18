@@ -32,7 +32,11 @@ import useAnnouncementData from "../../hooks/useAnnouncementData";
 import useAnnouncementSubmit from "../../hooks/useAnnouncementSubmit";
 import CircularProgress from "@mui/material/CircularProgress";
 import Loader from "../../ui/loader";
-import { convertToLocalDateTime, convertToUTC } from "../../utils/helper";
+import {
+  convertToLocalDateTime,
+  convertToUTC,
+  getCurrentDateTime,
+} from "../../utils/helper";
 
 const steps = ["Content", "Design", "Placement"];
 
@@ -70,10 +74,10 @@ const AnnouncementForm = ({ id, heading }) => {
     subheading: "Limited time offer",
     icon: "",
     icon_color: "#e14749",
-    start_datetime: new Date().toISOString().slice(0, 16),
+    start_datetime: getCurrentDateTime(),
     has_end_date: false,
     sticky_bar: false,
-    end_datetime: "",
+    end_datetime: getCurrentDateTime(),
     position: "top",
     background_type: "gradient",
     background_color: "#b69784",
