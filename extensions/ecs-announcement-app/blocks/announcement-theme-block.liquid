@@ -44,6 +44,45 @@
       width: 1.9rem !important;
       height: 1.9rem !important;
     }
+    #ecs-announcement-top-container-{{ block.id }} .announcement-icon-svg-wrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: inherit;
+    }
+    #ecs-announcement-top-container-{{ block.id }} .announcement-icon-svg-wrapper svg {
+      width: 100% !important;       
+      height: 100% !important;     
+      max-width: 100% !important;
+      max-height: 100% !important;
+      display: block;
+    }
+    /* Fill-based icons (Instagram, Font Awesome etc) */
+    #ecs-announcement-top-container-{{ block.id }} .announcement-icon-svg-wrapper.ecs-icon-fill svg,
+    .announcement-icon-svg-wrapper.ecs-icon-fill svg path,
+    .announcement-icon-svg-wrapper.ecs-icon-fill svg circle,
+    .announcement-icon-svg-wrapper.ecs-icon-fill svg rect,
+    .announcement-icon-svg-wrapper.ecs-icon-fill svg polygon,
+    .announcement-icon-svg-wrapper.ecs-icon-fill svg ellipse,
+    .announcement-icon-svg-wrapper.ecs-icon-fill svg g {
+      fill: currentColor !important;
+      stroke: none !important;
+    }
+    /* Stroke-based icons (Feather, Heroicons etc) */
+    #ecs-announcement-top-container-{{ block.id }} .announcement-icon-svg-wrapper.ecs-icon-stroke svg,
+    .announcement-icon-svg-wrapper.ecs-icon-stroke svg path,
+    .announcement-icon-svg-wrapper.ecs-icon-stroke svg circle,
+    .announcement-icon-svg-wrapper.ecs-icon-stroke svg rect,
+    .announcement-icon-svg-wrapper.ecs-icon-stroke svg polygon,
+    .announcement-icon-svg-wrapper.ecs-icon-stroke svg ellipse,
+    .announcement-icon-svg-wrapper.ecs-icon-stroke svg line,
+    .announcement-icon-svg-wrapper.ecs-icon-stroke svg polyline {
+      stroke: currentColor !important;
+      fill: none !important;
+    }
+
   </style>
 
   <script>
@@ -104,6 +143,144 @@
         return `background-color: #fce1d0;`;
       };
 
+      // Render Icon
+     function renderIcon(icon) {
+        if (!icon || typeof icon !== 'string') return null;
+
+        /* ── base64-encoded SVG ─────────────────────────────────── */
+        if (icon.startsWith('data:image/svg+xml;base64,')) {
+          try {
+            const decoded = atob(icon.split(',')[1]);
+            return { rawSvg: decoded };
+          } catch(e) { return null; }
+        }
+
+        /* ── raw SVG string ─────────────────────────────────────── */
+        if (icon.startsWith('<svg') || icon.includes('<svg ')) {
+          return { rawSvg: icon };
+        }
+
+        /* ── raster data URL or http(s) URL → mask fallback ─────── */
+        if (icon.startsWith('data:image/') || icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('/')) {
+          return { maskUrl: icon };
+        }
+
+        `<div class="announcement-icon-img-wrapper" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;"><img src="${icon}" alt="Icon" style="width: 100%; height: 100%; object-fit: contain;"></div>`;
+      }
+
+      /* ══════════════════════════════════════════════════════════════
+         buildIconHtml
+         Takes the result of renderIcon() + iconColor and produces
+         the final HTML string for the icon slot.
+         ══════════════════════════════════════════════════════════════ */
+     function buildIconHtml(iconResult, iconColor) {
+      if (!iconResult) {
+        return `
+          <div class="announcement-icon-svg-wrapper ecs-icon-stroke" style="color:${iconColor};">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="14.31" y1="8"  x2="20.05" y2="17.94"></line>
+              <line x1="9.69"  y1="8"  x2="21.17" y2="8"></line>
+              <line x1="7.38"  y1="12" x2="13.12" y2="2.06"></line>
+              <line x1="9.69"  y1="16" x2="3.95"  y2="6.06"></line>
+              <line x1="14.31" y1="16" x2="2.83"  y2="16"></line>
+              <line x1="16.62" y1="12" x2="10.88" y2="21.94"></line>
+            </svg>
+          </div>`;
+      }
+
+        if (iconResult.maskUrl) {
+          const url = resolveImageUrl(iconResult.maskUrl);
+          // blob: and data: URLs work as <img> src but NOT as CSS mask-image url().
+          // Only use the CSS-mask path for real HTTP/HTTPS asset URLs.
+          if (url.startsWith('blob:') || url.startsWith('data:')) {
+            return `<img src="${url}" alt="Icon" style="width:100%;height:100%;object-fit:contain;display:block;" />`;
+          }
+          return `
+            <div style="
+              width:100%; height:100%;
+              background-color:${iconColor};
+              mask-image:url('${url}');
+              -webkit-mask-image:url('${url}');
+              mask-size:contain; -webkit-mask-size:contain;
+              mask-repeat:no-repeat; -webkit-mask-repeat:no-repeat;
+              mask-position:center; -webkit-mask-position:center;
+            "></div>`;
+        }
+
+        if (iconResult.rawSvg) {
+          let svg = iconResult.rawSvg.trim();
+
+          // ── Unwrap accidental double <svg> wrapper ────────────────────────
+          const doubleWrapMatch = svg.match(/^<svg[^>]*>\s*(<svg[\s\S]*<\/svg>)\s*<\/svg>$/i);
+          if (doubleWrapMatch) {
+            svg = doubleWrapMatch[1].trim();
+          }
+
+          // ── Detect stroke vs fill based SVG ──────────────────────────────
+          const isStrokeBased = (
+            /stroke-linecap/i.test(svg) ||
+            /stroke-linejoin/i.test(svg) ||
+            /stroke-width/i.test(svg)    ||
+            /stroke="currentColor"/i.test(svg)
+          ) && (
+            /fill="none"/i.test(svg) ||
+            !/<(path|circle|rect|polygon|polyline|ellipse)[^>]*fill=/i.test(svg)
+          );
+
+          let cleanedSvg;
+
+          if (isStrokeBased) {
+            cleanedSvg = svg
+              .replace(/\bstroke="[^"]*"/g, 'stroke="currentColor"')
+              .replace(/(<svg\b[^>]*?)\s+width="[^"]*"/gi, '$1')
+              .replace(/(<svg\b[^>]*?)\s+height="[^"]*"/gi, '$1')
+              .replace(/(<svg\b[^>]*?)\s+style="[^"]*"/gi, '$1')
+              .replace(/(<svg\b[^>]*?)(\s+fill="[^"]*")?([^>]*>)/,
+                (m, pre, ef, post) => pre + ' fill="none"' + post)
+              .replace(/<(path|circle|rect|polygon|polyline|line|ellipse)\b([^>]*?)(?:\s*\/?>)/gi,
+                (match, tag, attrs) => {
+                  if (!/stroke=/.test(attrs)) attrs += ' stroke="currentColor"';
+                  if (!/fill=/.test(attrs))   attrs += ' fill="none"';
+                  return `<${tag}${attrs}>`;
+                });
+
+            return `<div class="announcement-icon-svg-wrapper ecs-icon-stroke" style="color:${iconColor};">${cleanedSvg}</div>`;
+
+          } else {
+            // FILL-based SVG (Instagram etc)
+            const svgTagMatch  = svg.match(/^<svg\b[^>]*>/i);
+            const svgTailMatch = svg.match(/<\/svg>\s*$/i);
+            const inner = svg
+              .replace(/^<svg\b[^>]*>/i, '')
+              .replace(/<\/svg>\s*$/i, '');
+
+            const cleanedInner = inner
+              .replace(/\s+fill="[^"]*"/gi, '')
+              .replace(/\s+stroke="[^"]*"/gi, '')
+              .replace(/\s+fill-rule="[^"]*"/gi, '')
+              .replace(/\s+clip-rule="[^"]*"/gi, '')
+              // Strip dimensions from any nested <svg> tags inside inner content
+              .replace(/(<svg\b[^>]*?)\s+width="[^"]*"/gi, '$1')
+              .replace(/(<svg\b[^>]*?)\s+height="[^"]*"/gi, '$1')
+              .replace(/(<svg\b[^>]*?)\s+style="[^"]*"/gi, '$1');
+
+            const cleanedSvgTag = (svgTagMatch ? svgTagMatch[0] : '<svg>')
+              .replace(/\s+fill="[^"]*"/gi, '')
+              .replace(/\s+stroke="[^"]*"/gi, '')
+              .replace(/\s+width="[^"]*"/gi, '')
+              .replace(/\s+height="[^"]*"/gi, '')
+              .replace(/\s+style="[^"]*"/gi, '');
+
+            cleanedSvg = `${cleanedSvgTag}${cleanedInner}${svgTailMatch ? svgTailMatch[0] : '</svg>'}`;
+
+            return `<div class="announcement-icon-svg-wrapper ecs-icon-fill" style="color:${iconColor};">${cleanedSvg}</div>`;
+          }
+        }
+
+        return '';
+      }
+
       const createAnnouncementContent = (formData, data) => {
         const current_cta_type = (data && typeof data.cta_type !== 'undefined') ? data.cta_type : formData.cta_type;
         const current_cta_link = (data && typeof data.cta_link !== 'undefined') ? data.cta_link : formData.cta_link || '#';
@@ -119,31 +296,9 @@
         let iconHtml = '';
         const iconColor = (data && data.icon_color) || formData.icon_color || '#000';
         if (formData.announcement_type !== "running") {
-           const rawIcon = data.icon || formData.icon;
-           if (rawIcon) {
-             if (rawIcon.startsWith("<svg")) {
-               iconHtml = `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: ${iconColor};">${rawIcon.replace(/<svg/, '<svg width="100%" height="100%"')}</div>`;
-             } else {
-               const resolvedIcon = resolveImageUrl(rawIcon);
-               iconHtml = `
-                 <div style="
-                   width: 100%; 
-                   height: 100%; 
-                   background-color: ${iconColor};
-                   mask-image: url('${resolvedIcon}');
-                   -webkit-mask-image: url('${resolvedIcon}');
-                   mask-size: contain;
-                   -webkit-mask-size: contain;
-                   mask-repeat: no-repeat;
-                   -webkit-mask-repeat: no-repeat;
-                   mask-position: center;
-                   -webkit-mask-position: center;
-                 "></div>
-               `;
-             }
-           } else {
-             iconHtml = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="14.31" y1="8" x2="20.05" y2="17.94"></line><line x1="9.69" y1="8" x2="21.17" y2="8"></line><line x1="7.38" y1="12" x2="13.12" y2="2.06"></line><line x1="9.69" y1="16" x2="3.95" y2="6.06"></line><line x1="14.31" y1="16" x2="2.83" y2="16"></line><line x1="16.62" y1="12" x2="10.88" y2="21.94"></line></svg>`;
-           }
+           const rawIcon    = (data && data.icon) || formData.icon || null;
+           const iconResult = renderIcon(rawIcon);
+           iconHtml         = buildIconHtml(iconResult, iconColor);
         }
 
         let ctaBtnHtml = '';
@@ -222,7 +377,7 @@
             --b-title-size: ${tSize}px;
             --b-sub-size: ${subSize}px;
             --b-btn-font: ${bSize}px;
-            --b-icon-size: 30px;
+            --b-icon-size: 35px;
             --b-gap: 12px;
             --b-px: ${bPx}px;
             --b-btn-px: 4px 12px;
@@ -233,7 +388,7 @@
               --b-title-size: ${tSizeM}px;
               --b-sub-size: ${subSizeM}px;
               --b-btn-font: ${bSizeM}px;
-              --b-icon-size: 28px;
+              --b-icon-size: 38px;
               --b-gap: 8px;
               --b-px: ${Math.max(14, bPxM)}px;
               --b-btn-px: 2px 8px;
@@ -257,6 +412,8 @@
           @media (max-width: 320px) {
           #ecs-b-${blockId}-${index} {
               --b-gap: 4px;
+              ---b-icon-size: 22px;
+
             }
           }
         `;

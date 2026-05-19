@@ -174,16 +174,22 @@ export const templates = [
   },
 ];
 
-export const convertToUTC = (localDateTime) => {
-  if (!localDateTime) return "";
-  const date = new Date(localDateTime);
-  return date.toISOString();
+export const convertToUTC = (dateTimeStr) => {
+  if (!dateTimeStr) return "";
+  return dateTimeStr;
 };
 
 export const convertToLocalDateTime = (isoString) => {
   if (!isoString) return "";
   const date = new Date(isoString);
-  const offset = date.getTimezoneOffset() * 60000;
-  const localDate = new Date(date.getTime() - offset);
-  return localDate.toISOString().slice(0, 16);
+
+  const pad = (num) => String(num).padStart(2, "0");
+
+  const YYYY = date.getFullYear();
+  const MM = pad(date.getMonth() + 1);
+  const DD = pad(date.getDate());
+  const hh = pad(date.getHours());
+  const mm = pad(date.getMinutes());
+
+  return `${YYYY}-${MM}-${DD}T${hh}:${mm}`;
 };

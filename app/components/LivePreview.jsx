@@ -42,6 +42,16 @@ const LivePreview = ({ formData, viewMode }) => {
     setCurrentAnnouncementIndex((prev) => prev + 1);
   };
 
+  // Helper function to detect uploaded file types safely
+  const isSvgFile = (url) => {
+    if (!url) return false;
+    // Check for base64 SVG string data or standard URL patterns
+    return (
+      url.startsWith("data:image/svg+xml") ||
+      url.toLowerCase().split(/[?#]/)[0].endsWith(".svg")
+    );
+  };
+
   React.useEffect(() => {
     if (formData.announcement_type === "multiple" && items.length > 1) {
       const interval = setInterval(() => {
@@ -148,7 +158,7 @@ const LivePreview = ({ formData, viewMode }) => {
                   sx={{ width: "100%", height: "100%" }}
                   dangerouslySetInnerHTML={{ __html: data.icon }}
                 />
-              ) : (
+              ) : isSvgFile(data.icon) ? (
                 <Box
                   sx={{
                     width: "100%",
@@ -162,6 +172,17 @@ const LivePreview = ({ formData, viewMode }) => {
                     WebkitMaskSize: "contain",
                     WebkitMaskRepeat: "no-repeat",
                     WebkitMaskPosition: "center",
+                  }}
+                />
+              ) : (
+                <Box
+                  component="img"
+                  src={data.icon}
+                  alt="Uploaded Icon"
+                  sx={{
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    objectFit: "contain",
                   }}
                 />
               )
@@ -215,7 +236,7 @@ const LivePreview = ({ formData, viewMode }) => {
             }}
           />
 
-          {(data.subheading) && (
+          {data.subheading && (
             <Typography
               sx={{
                 fontSize: `${formData.subheading_size}px`,
