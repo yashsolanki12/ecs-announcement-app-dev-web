@@ -115,10 +115,10 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) {
+      if (file.size > 1 * 1024 * 1024) {
         setSnackbar({
           open: true,
-          message: "Image size must be less than 2MB.",
+          message: "Image size must be less than 1MB.",
           severity: "error",
         });
         e.target.value = "";
@@ -674,7 +674,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                             </Box>
                           </Box>
                           <Typography variant="caption" color="text.secondary">
-                            Max size: 2MB. Supports PNG, SVG, JPEG.
+                            Max size: 1MB. Supports PNG, SVG, JPEG.
                           </Typography>
                           <Stack direction="row" spacing={1}>
                             <Button
@@ -992,7 +992,7 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                       </Box>
                     </Box>
                     <Typography variant="caption" color="text.secondary">
-                      Max size: 2MB. Supports PNG, SVG, JPEG.
+                      Max size: 1MB. Supports PNG, SVG, JPEG.
                     </Typography>
                     <Stack direction="row" spacing={1}>
                       <Button
