@@ -557,18 +557,13 @@ const StepContent = ({ formData, setFormData, setSnackbar }) => {
                               />
                             ) : (
                               <Box
+                                component="img"
+                                src={announcement.icon}
+                                alt="Icon"
                                 sx={{
-                                  width: 50,
-                                  height: 50,
-                                  backgroundColor: announcement.icon_color,
-                                  maskImage: `url(${announcement.icon})`,
-                                  maskSize: "contain",
-                                  maskRepeat: "no-repeat",
-                                  maskPosition: "center",
-                                  WebkitMaskImage: `url(${announcement.icon})`,
-                                  WebkitMaskSize: "contain",
-                                  WebkitMaskRepeat: "no-repeat",
-                                  WebkitMaskPosition: "center",
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "contain",
                                 }}
                               />
                             )
