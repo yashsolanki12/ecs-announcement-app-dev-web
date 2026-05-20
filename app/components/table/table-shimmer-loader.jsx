@@ -52,6 +52,7 @@ const TableShimmerLoader = ({
                     fontSize: 13,
                     backgroundColor: "#f7f7f7",
                     width: 50,
+                    padding: 0,
                   }}
                 >
                   <Checkbox disabled />
@@ -90,7 +91,7 @@ const TableShimmerLoader = ({
             {Array.from({ length: rowCount }).map((_, rowIndex) => (
               <TableRow key={`row-${rowIndex}`}>
                 {showCheckbox && (
-                  <TableCell>
+                  <TableCell sx={{ padding: 0 }}>
                     <Checkbox disabled />
                   </TableCell>
                 )}
@@ -122,7 +123,7 @@ const TableShimmerLoader = ({
                   );
                 })}
                 {showActions && (
-                  <TableCell>
+                  <TableCell sx={{ padding: 1 }}>
                     <Box sx={{ display: "flex", gap: 1 }}>
                       <Skeleton variant="circular" width={32} height={32} />
                       <Skeleton variant="circular" width={32} height={32} />
