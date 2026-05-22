@@ -152,9 +152,13 @@ const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
     if (!announcementListData?.data) return [];
 
     if (filter === "active") {
-      return announcementListData.data.filter((item) => item.enabled === true);
+      return announcementListData.data.filter(
+        (item) => item.enabled === true,
+      );
     } else if (filter === "inactive") {
-      return announcementListData.data.filter((item) => item.enabled === false);
+      return announcementListData.data.filter(
+        (item) => item.enabled === false,
+      );
     }
     return announcementListData.data;
   };

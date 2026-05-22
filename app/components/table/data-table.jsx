@@ -302,7 +302,7 @@ const DataTable = ({
                       fontWeight: 600,
                       fontSize: 13,
                       backgroundColor: "#f7f7f7",
-                      p: 0
+                      p: 0,
                     }}
                   >
                     <Checkbox
@@ -353,6 +353,8 @@ const DataTable = ({
                 data.map((row) => {
                   const rowId = getId(row);
                   const isSelected = selectedIds.includes(rowId);
+                  const isShowData = row.enabled;
+
                   return (
                     <TableRow
                       key={rowId}
@@ -364,7 +366,7 @@ const DataTable = ({
                           backgroundColor: isSelected ? "#bbdefb" : "#f7f7f7",
                         },
                         "&:last-child td, &:last-child th": { border: 0 },
-                        opacity: row.enabled !== false ? 1 : 0.6,
+                        opacity: isShowData !== false ? 1 : 0.6,
                       }}
                     >
                       {showCheckbox && (
@@ -437,7 +439,7 @@ const DataTable = ({
                           {showStatus && mutations?.toggleMutation && (
                             <Tooltip
                               title={
-                                row.enabled
+                                isShowData
                                   ? "Disable (Hide from store)"
                                   : "Enable (Show in store)"
                               }
@@ -458,11 +460,11 @@ const DataTable = ({
                               <IconButton
                                 onClick={() => handleToggleEnabled(row)}
                                 color={
-                                  row.enabled !== false ? "success" : "default"
+                                  isShowData !== false ? "success" : "default"
                                 }
                                 disabled={togglingId === rowId}
                               >
-                                {row.enabled !== false ? (
+                                {isShowData !== false ? (
                                   <VisibilityIcon fontSize="medium" />
                                 ) : (
                                   <VisibilityOffIcon fontSize="medium" />
