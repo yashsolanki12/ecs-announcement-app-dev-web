@@ -148,21 +148,23 @@ const AnnouncementForm = ({ id, heading }) => {
     null,
   );
 
-  // Detail
+  // Detail - only fetch in edit mode
   const { data: announcementDetail, isLoading: announcementDetailLoading } =
-    useAnnouncementData(
-      ["announcement-detail"],
-      () => getAnnouncementById(id),
-      null,
-    );
+    isEditMode
+      ? useAnnouncementData(
+          ["announcement-detail"],
+          () => getAnnouncementById(id),
+          null,
+        )
+      : { data: null, isLoading: false };
 
   // List API with search and sort params
-  const { data: announcementListData, isLoading: announcementListLoading } =
-    useAnnouncementData(
-      ["announcement", searchQuery, sortOrder],
-      () => getAllAnnouncement(getQueryParams()),
-      null,
-    );
+  // const { data: announcementListData, isLoading: announcementListLoading } =
+  //   useAnnouncementData(
+  //     ["announcement", searchQuery, sortOrder],
+  //     () => getAllAnnouncement(getQueryParams()),
+  //     null,
+  //   );
 
   const fetchData = () => {
     try {
@@ -409,23 +411,23 @@ const AnnouncementForm = ({ id, heading }) => {
     : createMutation.isPending;
 
   React.useEffect(() => {
-    if (isEditMode && announcementDetail) {
+    if (isEditMode && id) {
       fetchData();
     }
   }, [id, isEditMode, announcementDetail]);
 
-  React.useEffect(() => {
-    if (announcementListData?.data.length >= 10) {
-      setSnackbar({
-        open: true,
-        message:
-          "Cannot create more than 10 Announcement. Please delete an existing one to create a new one.",
-        severity: "info",
-      });
-    }
-  }, [announcementListData]);
+  // React.useEffect(() => {
+  //   if (announcementListData?.data.length >= 10) {
+  //     setSnackbar({
+  //       open: true,
+  //       message:
+  //         "Cannot create more than 10 Announcement. Please delete an existing one to create a new one.",
+  //       severity: "info",
+  //     });
+  //   }
+  // }, [announcementListData]);
 
-  if (announcementDetailLoading) {
+  if (isEditMode && announcementDetailLoading) {
     return <Loader />;
   }
 
@@ -494,7 +496,7 @@ const AnnouncementForm = ({ id, heading }) => {
           <Button
             variant="contained"
             onClick={handleSave}
-            disabled={isSubmitting || announcementListData?.data.length >= 10}
+            disabled={isSubmitting} // || announcementListData?.data.length >= 10
             size="small"
             sx={{
               bgcolor: "#202223",
