@@ -1,7 +1,3 @@
-{% comment %}
-  Custom UX Scripts and Styles
-  This app embed loads global customizations without editing theme files
-{% endcomment %}
 
 {% if block.settings.enabled %}
   {% comment %} Load custom CSS {% endcomment %}
@@ -157,10 +153,6 @@
       stroke: currentColor !important;
       fill: none !important;
     }
-    {% comment %} .ecs-nav-btn svg {
-      width: 3.5rem !important;
-      height: 1.9rem !important;
-    } {% endcomment %}
   </style>
 
   <div id="ecs-announcement-top-container"></div>
@@ -329,16 +321,17 @@
           if (isStrokeBased) {
             cleanedSvg = svg
               .replace(/\bstroke="[^"]*"/g, 'stroke="currentColor"')
-              .replace(/(<svg\b[^>]*?)\s+width="[^"]*"/gi, '$1')
-              .replace(/(<svg\b[^>]*?)\s+height="[^"]*"/gi, '$1')
-              .replace(/(<svg\b[^>]*?)\s+style="[^"]*"/gi, '$1')
+              .replace(/(<svg\b[^>]*)\s+width="[^"]*"/gi, '$1')
+              .replace(/(<svg\b[^>]*)\s+height="[^"]*"/gi, '$1')
+              .replace(/(<svg\b[^>]*)\s+style="[^"]*"/gi, '$1')
               .replace(/(<svg\b[^>]*?)(\s+fill="[^"]*")?([^>]*>)/,
                 (m, pre, ef, post) => pre + ' fill="none"' + post)
               .replace(/<(path|circle|rect|polygon|polyline|line|ellipse)\b([^>]*?)(?:\s*\/?>)/gi,
                 (match, tag, attrs) => {
                   if (!/stroke=/.test(attrs)) attrs += ' stroke="currentColor"';
                   if (!/fill=/.test(attrs))   attrs += ' fill="none"';
-                  return `<${tag}${attrs}>`;
+                  const isSelfClosing = match.trim().endsWith('/>');
+                  return `<${tag}${attrs}${isSelfClosing ? ' />' : '>'}`;
                 });
 
             return `<div class="announcement-icon-svg-wrapper ecs-icon-stroke" style="color:${iconColor};">${cleanedSvg}</div>`;
@@ -357,15 +350,20 @@
               .replace(/\s+fill-rule="[^"]*"/gi, '')
               .replace(/\s+clip-rule="[^"]*"/gi, '')
               // Strip dimensions from any nested <svg> tags inside inner content
-              .replace(/(<svg\b[^>]*?)\s+width="[^"]*"/gi, '$1')
-              .replace(/(<svg\b[^>]*?)\s+height="[^"]*"/gi, '$1')
-              .replace(/(<svg\b[^>]*?)\s+style="[^"]*"/gi, '$1');
+              .replace(/(<svg\b[^>]*)\s+width="[^"]*"/gi, '$1')
+              .replace(/(<svg\b[^>]*)\s+height="[^"]*"/gi, '$1')
+              .replace(/(<svg\b[^>]*)\s+style="[^"]*"/gi, '$1')
+              .replace(/(\S)\s+width="[^"]*"/gi, '$1')
+              .replace(/(\S)\s+height="[^"]*"/gi, '$1')
+              .replace(/\s+style="[^"]*"/gi, '');
 
             const cleanedSvgTag = (svgTagMatch ? svgTagMatch[0] : '<svg>')
               .replace(/\s+fill="[^"]*"/gi, '')
               .replace(/\s+stroke="[^"]*"/gi, '')
-              .replace(/\s+width="[^"]*"/gi, '')
-              .replace(/\s+height="[^"]*"/gi, '')
+              .replace(/(<svg\b[^>]*)\s+width="[^"]*"/gi, '$1')
+              .replace(/(<svg\b[^>]*)\s+height="[^"]*"/gi, '$1')
+              .replace(/(\S)\s+width="[^"]*"/gi, '$1')
+              .replace(/(\S)\s+height="[^"]*"/gi, '$1')
               .replace(/\s+style="[^"]*"/gi, '');
 
             cleanedSvg = `${cleanedSvgTag}${cleanedInner}${svgTailMatch ? svgTailMatch[0] : '</svg>'}`;
@@ -420,7 +418,7 @@
 
         return `
           <${wrapperTag} ${wrapperProps} style="
-            text-decoration: none; color: inherit; display: flex; align-items: center; 
+            text-decoration: none; color: inherit; display: flex; align-items: center; ${formData.announcement_type === 'multiple' && current_cta_type === "button" ? '' : 'flex-direction: var(--b-fd);'}; ${formData.announcement_type === "simple" ? "flex-direction: var(--b-simple-announcement);": ""};
             gap: var(--b-gap); flex-shrink: 1; padding: 0 var(--b-px); 
             min-width: 0;
             white-space: var(--b-whitespace, nowrap); cursor: ${isClickableBar ? 'pointer' : 'default'};
@@ -431,18 +429,20 @@
               </div>
             ` : ''}
              {% comment %} simple announcement padding {% endcomment %}
-            <div style="display: flex; ${formData.announcement_type === "multiple" ? 'flex-direction: var(--b-fd)' : ""};" >
-              <div style="display: flex; flex-direction: column; align-items: flex-start; flex-shrink: 1; min-width: 0; max-width: 100%; padding: 5px 0px;"> 
-           
-                <div style="font-size: var(--b-title-size); color: ${formData.title_color || '#000'}; font-weight: 400; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
+            <div style="display: flex; ${formData.announcement_type === "multiple" ? 'flex-direction: var(--b-fd); align-items: var(--b-align-item);' : ""}; ">
+              <div style="display: flex; flex-direction: column; align-items: flex-start; flex-shrink: 1; min-width: 0; max-width: 100%; padding: 5px 0px; overflow-wrap: break-word;"> 
+                <div style="font-size: var(--b-title-size); color: ${formData.title_color || '#000'}; font-weight: 400; line-height: 1.1;overflow: hidden; text-overflow: ellipsis; max-width: 100%; width: max-content;">
                   <span style="display: inline;">${data.title || "Announcement"}</span>
                 </div>
-                ${(formData.announcement_type !== "running" && data.subheading) ? `
-                  <div style="font-size: var(--b-sub-size); color: ${formData.subheading_color || '#888'}; font-weight: 500; margin-top: 1px; line-height: 1.1; width: 100%;">
+                 <div style="font-size: var(--b-sub-size); color: ${formData.subheading_color || '#888'}; font-weight: 500; margin-top: 1px; line-height: 1.1;width: 100%;">
                     <span style="display: inline;">${data.subheading}</span>
                   </div>
+                {% comment %} ${(formData.announcement_type !== "running" && data.subheading) ? `
+                  <div style="font-size: var(--b-sub-size); color: ${formData.subheading_color || '#888'}; font-weight: 500; margin-top: 1px; line-height: 1.1;width: 100%;">
+                    <span style="display: inline;">${data.subheading}</span>
+                  </div>
+                ` : ''} {% endcomment %}
               </div>
-              ` : ''}
                ${ctaBtnHtml}
             </div>
           </${wrapperTag}>
@@ -480,6 +480,7 @@
             --b-px: ${bPx}px;
             --b-btn-px: 4px 12px;
             --b-whitespace: nowrap;
+            --b-align-item: center;
           }
           @media (max-width: 768px) {
             #ecs-b-${index} {
@@ -487,34 +488,53 @@
               --b-sub-size: ${subSizeM}px;
               --b-btn-font: ${bSizeM}px;
               --b-gap: 8px;
-              --b-px: ${Math.max(24, bPxM)}px;
+              --b-px: ${Math.max(16, bPxM)}px;
               --b-btn-px: 2px 8px;
               --b-icon-size: 30px; 
             }
           }
           @media (max-width: 480px) {
             #ecs-b-${index} {
-              --b-title-size: ${Math.max(12, tSize - 2)}px;
-              --b-sub-size: ${Math.max(10, subSize - 2)}px;
-              --b-btn-font: ${Math.max(10, bSize - 3)}px;
+              --b-title-size: 10.8px;
+              --b-sub-size: 10.8px;
+              --b-btn-font: 10.8px;
               --b-icon-size: 26px;
-              --b-gap: 8px;
-              {% comment %} --b-px: ${bPxM}px; {% endcomment %}
+              --b-gap: 10px;
+              {% comment %} --b-px: ${Math.max(14, bPxM)}}px; {% endcomment %}
               --b-btn-px: 2px 6px;
               --b-inner-py: 4px;
               --b-whitespace: normal;
               --b-fd: column;
+              --b-align-item: self-start;
+              --b-simple-announcement: row;
+            }
+          }
+          @media (max-width: 576px) {
+            #ecs-b-${index} {
+              --b-title-size: 10.8px;
+              --b-sub-size: 10.8px;
+              --b-btn-font: 10.8px;
             }
           }
            @media (max-width: 320px) {
             #ecs-b-${index} {
               --b-gap: 4px;
               --b-icon-size: 22px;
+              --b-px: ${Math.max(14, bPxM)}px;
             }
           }
         `;
 
         const innerDiv = document.createElement("div");
+        innerDiv.id = `announcement-running-btn-${index}`;
+        
+        styleTag.innerHTML += `
+          @media (max-width: 480px) {
+            #announcement-running-btn-${index} {
+              flex-direction: column;
+            }
+          }
+        `;
         innerDiv.style.cssText = `
           width: 100%; display: flex; align-items: center; justify-content: space-between;
           position: relative; overflow: hidden; padding: var(--b-inner-py, 4px) 0;
@@ -523,6 +543,16 @@
         `;
 
         const contentBox = document.createElement("div");
+        contentBox.id = `content-box-${index}`;
+
+        styleTag.innerHTML += `
+          @media (max-width: 480px) {
+            #content-box-${index} {
+              position: unset !important;
+            }
+          }
+        `
+
         contentBox.style.cssText = `display: flex; align-items: center; overflow: hidden; flex-grow: 1; height: 100%; position: relative;`;
 
         if (formData.announcement_type === "running") {
@@ -676,7 +706,7 @@
 
           // ── autoplay (setTimeout so each slide always gets a full 3 s) ─────────
           let resetAutoplay = function() {
-            clearTimeout(autoplayTimer);
+          clearTimeout(autoplayTimer);
             autoplayTimer = setTimeout(function() {
               if (!isSliding) {
                 handleNext();
@@ -745,10 +775,10 @@
             return; 
           }
           const announcements = res.data.filter((a) => a.enabled && shouldDisplayOnPage(a.page_display));
-          {% comment %} if(announcements.length > 0) {
+          if(announcements.length === 0) {
             showToast(res.message);
             return; 
-          } {% endcomment %}
+          } 
           
           // Render each bar into top or bottom container based on position
           announcements.forEach((formData, index) => {
