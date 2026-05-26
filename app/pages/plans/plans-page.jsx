@@ -10,8 +10,10 @@ import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import ConfirmDialog from "../../ui/confirmation-dialog";
 import LinearProgress from "@mui/material/LinearProgress";
-import { syncStoreMetrics } from "../../api/store-metrics";
 import useAnnouncementData from "../../hooks/useAnnouncementData";
+import StoreMetricsShimmer from "../../ui/store-metrics-shimmer";
+
+import { syncStoreMetrics } from "../../api/store-metrics";
 
 const PlansPage = ({ shop, submit, actionData }) => {
   const [snackbar, setSnackbar] = React.useState({
@@ -119,55 +121,64 @@ const PlansPage = ({ shop, submit, actionData }) => {
           Plans
         </Typography>
       </Stack>
+      {announcementStoreMetricsLoading ? (
+        <StoreMetricsShimmer />
+      ) : (
+        <>
+          {" "}
+          {/* Plan Usage */}
+          {announcementStoreMetricsData?.success === true &&
+            shop?.subscription !== undefined && (
+              <Box
+                sx={{
+                  mb: 3,
+                  p: { xs: 1.5, sm: 2 },
+                  border: "1px solid #e0e0e0",
+                  borderRadius: "10px",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{ mb: 1, color: "#202223", lineHeight: 1.5 }}
+                >
+                  You're currently on{" "}
+                  <strong>
+                    "{announcementStoreMetricsData?.data.plan_name}"
+                  </strong>{" "}
+                  ({announcementStoreMetricsData?.data.views_count} /{" "}
+                  {announcementStoreMetricsData?.data.limit === -1
+                    ? "Unlimited"
+                    : announcementStoreMetricsData?.data.limit}{" "}
+                  monthly views). One visitor can have multiple views per
+                  session.
+                </Typography>
 
-      {/* Plan Usage */}
-      {announcementStoreMetricsData?.success &&
-        shop?.subscription !== undefined && (
-          <Box
-            sx={{
-              mb: 3,
-              p: { xs: 1.5, sm: 2 },
-              border: "1px solid #e0e0e0",
-              borderRadius: "10px",
-              backgroundColor: "#fff",
-            }}
-          >
-            <Typography
-              variant="body2"
-              sx={{ mb: 1, color: "#202223", lineHeight: 1.5 }}
-            >
-              You're currently on{" "}
-              <strong>"{announcementStoreMetricsData?.data.plan_name}"</strong>{" "}
-              ({announcementStoreMetricsData?.data.views_count} /{" "}
-              {announcementStoreMetricsData?.data.limit === -1
-                ? "Unlimited"
-                : announcementStoreMetricsData?.data.limit}{" "}
-              monthly views). One visitor can have multiple views per session.
-            </Typography>
-
-            <LinearProgress
-              variant="determinate"
-              value={
-                announcementStoreMetricsData?.data.limit === -1
-                  ? 0
-                  : Math.min(
-                      (announcementStoreMetricsData?.data.views_count /
-                        announcementStoreMetricsData?.data.limit) *
-                        100,
-                      100,
-                    )
-              }
-              sx={{
-                height: 8,
-                borderRadius: 4,
-                backgroundColor: "#e0e0e0",
-                "& .MuiLinearProgress-bar": {
-                  backgroundColor: "#202223",
-                },
-              }}
-            />
-          </Box>
-        )}
+                <LinearProgress
+                  variant="determinate"
+                  value={
+                    announcementStoreMetricsData?.data.limit === -1
+                      ? 0
+                      : Math.min(
+                          (announcementStoreMetricsData?.data.views_count /
+                            announcementStoreMetricsData?.data.limit) *
+                            100,
+                          100,
+                        )
+                  }
+                  sx={{
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: "#e0e0e0",
+                    "& .MuiLinearProgress-bar": {
+                      backgroundColor: "#202223",
+                    },
+                  }}
+                />
+              </Box>
+            )}
+        </>
+      )}
 
       {/* Subscription Section */}
       {shop.subscription ? (
@@ -306,7 +317,12 @@ const PlansPage = ({ shop, submit, actionData }) => {
         message={`This action cannot be undone. This will cancel your "${shop.subscription?.name}" plan.`}
         onClose={() => setCancelPlanDialogOpen(false)}
         onConfirm={() =>
-          submit({}, { method: "POST" }, setCancelPlanDialogOpen(false),handleViewPlan)
+          submit(
+            {},
+            { method: "POST" },
+            setCancelPlanDialogOpen(false),
+            handleViewPlan,
+          )
         }
       />
 

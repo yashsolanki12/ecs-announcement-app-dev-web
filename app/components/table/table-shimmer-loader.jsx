@@ -112,7 +112,10 @@ const TableShimmerLoader = ({
                   }
 
                   return (
-                    <TableCell key={`cell-${rowIndex}-${colIndex}`}>
+                    <TableCell
+                      key={`cell-${rowIndex}-${colIndex}`}
+                      sx={{ padding: 0 }}
+                    >
                       <Skeleton
                         variant={skeletonVariant}
                         width={skeletonWidth}
@@ -123,7 +126,7 @@ const TableShimmerLoader = ({
                   );
                 })}
                 {showActions && (
-                  <TableCell sx={{ padding: 1 }}>
+                  <TableCell sx={{ padding: 0.85 }}>
                     <Box sx={{ display: "flex", gap: 1 }}>
                       <Skeleton variant="circular" width={32} height={32} />
                       <Skeleton variant="circular" width={32} height={32} />
