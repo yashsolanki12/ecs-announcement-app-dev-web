@@ -29,6 +29,7 @@ import ConfirmDialog from "../../ui/confirmation-dialog";
 import SearchSortControls from "../../components/search-sort-controls";
 import { syncStoreMetrics } from "../../api/store-metrics";
 import LinearProgress from "@mui/material/LinearProgress";
+import StoreMetricsShimmer from "../../ui/store-metrics-shimmer";
 // import TableShimmerLoader from "../../components/table/table-shimmer-loader";
 
 const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
@@ -87,7 +88,7 @@ const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
     null,
   );
 
-  const planName = subscription ? (subscription.name || "Free") : "No Plan";
+  const planName = subscription ? subscription.name || "Free" : "No Plan";
   const {
     data: announcementStoreMetricsData,
     isLoading: announcementStoreMetricsLoading,
@@ -152,13 +153,9 @@ const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
     if (!announcementListData?.data) return [];
 
     if (filter === "active") {
-      return announcementListData.data.filter(
-        (item) => item.enabled === true,
-      );
+      return announcementListData.data.filter((item) => item.enabled === true);
     } else if (filter === "inactive") {
-      return announcementListData.data.filter(
-        (item) => item.enabled === false,
-      );
+      return announcementListData.data.filter((item) => item.enabled === false);
     }
     return announcementListData.data;
   };
@@ -366,50 +363,59 @@ const AnnouncementListPage = ({ appEmbedEnabled, session, subscription }) => {
           )}
         </Stack>
       </Box>
-
-      {true === announcementStoreMetricsData?.success &&
-        subscription !== undefined && (
-          <Box
-            sx={{
-              mb: 3,
-              p: 2,
-              border: "1px solid #e0e0e0",
-              borderRadius: "8px",
-              backgroundColor: "#fff",
-            }}
-          >
-            <Typography variant="body2" sx={{ mb: 1, color: "#202223" }}>
-              You're currently on{" "}
-              <strong>"{announcementStoreMetricsData.data.plan_name}"</strong> (
-              {announcementStoreMetricsData.data.views_count} /{" "}
-              {announcementStoreMetricsData.data.limit === -1
-                ? "Unlimited"
-                : announcementStoreMetricsData.data.limit}{" "}
-              monthly views). One visitor can have multiple views per session.
-            </Typography>
-            <LinearProgress
-              variant="determinate"
-              value={
-                announcementStoreMetricsData.data.limit === -1
-                  ? 0
-                  : Math.min(
-                      (announcementStoreMetricsData.data.views_count /
-                        announcementStoreMetricsData.data.limit) *
-                        100,
-                      100,
-                    )
-              }
-              sx={{
-                height: 8,
-                borderRadius: 4,
-                backgroundColor: "#e0e0e0",
-                "& .MuiLinearProgress-bar": {
-                  backgroundColor: "#202223",
-                },
-              }}
-            />
-          </Box>
-        )}
+      {announcementStoreMetricsLoading ? (
+        <StoreMetricsShimmer list={"list-data"} />
+      ) : (
+        <>
+          {" "}
+          {announcementStoreMetricsData?.success === true &&
+            subscription !== undefined && (
+              <Box
+                sx={{
+                  mb: 3,
+                  p: 2,
+                  border: "1px solid #e0e0e0",
+                  borderRadius: "8px",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <Typography variant="body2" sx={{ mb: 1, color: "#202223" }}>
+                  You're currently on{" "}
+                  <strong>
+                    "{announcementStoreMetricsData.data.plan_name}"
+                  </strong>{" "}
+                  ({announcementStoreMetricsData.data.views_count} /{" "}
+                  {announcementStoreMetricsData.data.limit === -1
+                    ? "Unlimited"
+                    : announcementStoreMetricsData.data.limit}{" "}
+                  monthly views). One visitor can have multiple views per
+                  session.
+                </Typography>
+                <LinearProgress
+                  variant="determinate"
+                  value={
+                    announcementStoreMetricsData.data.limit === -1
+                      ? 0
+                      : Math.min(
+                          (announcementStoreMetricsData.data.views_count /
+                            announcementStoreMetricsData.data.limit) *
+                            100,
+                          100,
+                        )
+                  }
+                  sx={{
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: "#e0e0e0",
+                    "& .MuiLinearProgress-bar": {
+                      backgroundColor: "#202223",
+                    },
+                  }}
+                />
+              </Box>
+            )}
+        </>
+      )}
 
       {/* Filter Tabs */}
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
