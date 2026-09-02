@@ -1,9 +1,11 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "b47382df975f8a6180e5062035a211bc"
-name = "Inventory Manager Test App"
+client_id = "1ac6b75e62505ab35879b1c8d3c194ca"
+name = "ECS Inventory Manager"
 application_url = "https://ecs-announcement-app-dev-web.onrender.com"
 embedded = true
+
+
 
 [build]
 automatically_update_urls_on_dev = true
@@ -23,10 +25,14 @@ api_version = "2026-10"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products,write_metaobjects,write_metaobject_definitions"
+scopes = "write_products,read_themes"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [
+  "https://ecs-announcement-app-dev-web.onrender.com/auth/callback",
+  "https://ecs-announcement-app-dev-web.onrender.com/auth/shopify/callback",
+  "https://ecs-announcement-app-dev-web.onrender.com/api/auth/callback"
+]
 
 [product.metafields.app.demo_info]
 type = "single_line_text_field"
