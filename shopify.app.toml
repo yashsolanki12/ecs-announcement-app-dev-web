@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "bd6d6ca602b0833023a4dd1f6fc6fe5d"
-name = "ECS Announcement Dev"
+client_id = "c42f56a89488736f57bd2247e085e9ab"
+name = "Announcement Test"
 application_url = "https://ecs-announcement-app-dev-web.onrender.com"
 embedded = true
 
@@ -9,7 +9,11 @@ embedded = true
 automatically_update_urls_on_dev = true
 
 [webhooks]
-api_version = "2026-04"
+api_version = "2026-10"
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/scopes_update"
+  topics = [ "app/scopes_update" ]
 
   [[webhooks.subscriptions]]
   topics = [ "app/uninstalled" ]
@@ -27,3 +31,27 @@ redirect_urls = [
   "https://ecs-announcement-app-dev-web.onrender.com/api/auth/callback"
 ]
 
+
+[product.metafields.app.demo_info]
+type = "single_line_text_field"
+name = "Demo Source Info"
+description = "Tracks products created by the Shopify app template for development"
+
+  [product.metafields.app.demo_info.access]
+  admin = "merchant_read_write"
+
+[metaobjects.app.example]
+name = "Example"
+description = "An example metaobject definition created by this template"
+
+  [metaobjects.app.example.access]
+  admin = "merchant_read_write"
+
+[metaobjects.app.example.fields.title]
+name = "Title"
+type = "single_line_text_field"
+required = true
+
+[metaobjects.app.example.fields.description]
+name = "Description"
+type = "multi_line_text_field"
