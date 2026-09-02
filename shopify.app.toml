@@ -9,18 +9,19 @@ embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
+include_config_on_deploy = true
 
 [webhooks]
 api_version = "2026-10"
 
   [[webhooks.subscriptions]]
-  uri = "/webhooks/app/scopes_update"
-  topics = [ "app/scopes_update" ]
+  uri = "https://ecs-announcement-app-dev-backend.onrender.com/api/shopify/webhook"
+  compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
+  topics = [ "app/uninstalled" ]
 
   [[webhooks.subscriptions]]
-  topics = [ "app/uninstalled" ]
-  compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
-  uri = "https://ecs-announcement-app-dev-backend.onrender.com/api/shopify/webhook"
+  uri = "/webhooks/app/scopes_update"
+  topics = [ "app/scopes_update" ]
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
@@ -32,7 +33,6 @@ redirect_urls = [
   "https://ecs-announcement-app-dev-web.onrender.com/auth/shopify/callback",
   "https://ecs-announcement-app-dev-web.onrender.com/api/auth/callback"
 ]
-
 
 [product.metafields.app.demo_info]
 type = "single_line_text_field"
