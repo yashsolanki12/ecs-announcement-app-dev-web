@@ -47,14 +47,14 @@ const PlansPage = ({ shop, submit, actionData }) => {
 
   const handleViewPlan = () => {
     window.open(
-      `https://admin.shopify.com/store/${currentStore}/charges/ecs-announcement-app-dev/pricing_plans`,
+      `https://admin.shopify.com/store/${currentStore}/charges/announcement-test/pricing_plans`,
       "_top",
     );
   };
 
   const handleChangePlan = () => {
     window.open(
-      `https://admin.shopify.com/store/${currentStore}/charges/ecs-announcement-app-dev/pricing_plans`,
+      `https://admin.shopify.com/store/${currentStore}/charges/announcement-test/pricing_plans`,
       "_top",
     );
   };
