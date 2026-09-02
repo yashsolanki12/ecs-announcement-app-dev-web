@@ -49,7 +49,7 @@ const PlansPage = ({ shop, submit, actionData }) => {
     window.open(
       `https://admin.shopify.com/store/${currentStore}/charges/ecs-inventory-manager/pricing_plans`,
       "_top",
-    );
+    ); 
   };
 
   const handleChangePlan = () => {

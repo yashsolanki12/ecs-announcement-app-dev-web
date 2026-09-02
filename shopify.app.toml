@@ -5,6 +5,8 @@ name = "ECS Inventory Manager"
 application_url = "https://ecs-announcement-app-dev-web.onrender.com"
 embedded = true
 
+
+
 [build]
 automatically_update_urls_on_dev = true
 
