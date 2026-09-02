@@ -13,7 +13,7 @@ export const loader = async ({ request }) => {
   } = await authenticate.admin(request);
   const { hasActivePayment } = await billing.check();
 
-  const appHandle = "announcement-test";
+  const appHandle = "ecs-inventory-manager";
   const shop = session.shop;
   const storeHandle = shop.replace(".myshopify.com", "");
 

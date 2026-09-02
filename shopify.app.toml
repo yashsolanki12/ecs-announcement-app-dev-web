@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "c42f56a89488736f57bd2247e085e9ab"
-name = "Announcement Test"
+client_id = "1ac6b75e62505ab35879b1c8d3c194ca"
+name = "ECS Inventory Manager"
 application_url = "https://ecs-announcement-app-dev-web.onrender.com"
 embedded = true
 
